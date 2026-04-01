@@ -80,7 +80,19 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
         },
         child: Container(
           width: double.infinity, padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(border: Border.all(color: kVerdeNeon.withOpacity(0.4)), borderRadius: BorderRadius.circular(8)),
+          decoration: BoxDecoration(
+            color: kNegro,
+            border: Border.all(color: kVerdeNeon.withOpacity(0.4)), 
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [
+              BoxShadow(
+                color: kVerdeNeon.withOpacity(0.15),
+                blurRadius: 8,
+                spreadRadius: 1,
+                offset: const Offset(0, 3),
+              )
+            ]
+          ),
           child: Row(children: [
             Icon(op['icono'], color: kVerdeNeon, size: 20),
             const SizedBox(width: 12),
