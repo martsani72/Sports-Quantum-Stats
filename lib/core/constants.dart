@@ -31,13 +31,9 @@ import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await QuantumStorage.init();
-  perfilUsuario = QuantumStorage.cargarPerfil();
-
-  runApp(const MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: PantallaPrincipal(),
-  ));
-}
+const Color kNegro = Colors.black;
+const Color kVerdeNeon = Color(0xFF00FF41);
+const Color kVerdeOscuro = Color(0xFF003B00);
+const Color kCelestePlay = Color(0xFF00BFFF); 
+const Color kRojoStop = Color(0xFFFF3333);   
+const Color kAmarilloTarjeta = Color(0xFFFFEA00);

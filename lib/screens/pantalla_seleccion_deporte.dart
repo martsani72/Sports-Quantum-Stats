@@ -31,13 +31,32 @@ import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await QuantumStorage.init();
-  perfilUsuario = QuantumStorage.cargarPerfil();
+class PantallaSeleccionDeporte extends StatelessWidget {
+  const PantallaSeleccionDeporte({super.key});
+  @override Widget build(BuildContext context) {
+    final List<String> deportesKeys = DeporteConfig.datos.keys.toList();
+    return Scaffold(
+      backgroundColor: kNegro,
+      appBar: AppBar(backgroundColor: kNegro, leading: IconButton(icon: const Icon(Icons.arrow_back, color: kVerdeNeon), onPressed: () => Navigator.pop(context))),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(20),
+        itemCount: deportesKeys.length,
+        itemBuilder: (context, index) {
+          String nombreInterno = deportesKeys[index]; 
+          var data = DeporteConfig.datos[nombreInterno]!;
+          String nombreTraducido = Traductor.get(nombreInterno); 
 
-  runApp(const MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: PantallaPrincipal(),
-  ));
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 15.0),
+            child: ListTile(
+              shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeOscuro), borderRadius: BorderRadius.circular(10)),
+              leading: Icon(data['icono'], color: kVerdeNeon),
+              title: Text("${index + 1} - ${nombreTraducido.toUpperCase()}", style: const TextStyle(color: kVerdeNeon, fontSize: 13)),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PantallaConfiguracionDinamica(nombreDeporte: nombreInterno, configInicial: data))),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }

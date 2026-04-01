@@ -31,13 +31,7 @@ import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await QuantumStorage.init();
-  perfilUsuario = QuantumStorage.cargarPerfil();
+late Map<String, dynamic> perfilUsuario;
 
-  runApp(const MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: PantallaPrincipal(),
-  ));
-}
+List<Partido> partidosGuardados = [];
+List<Partido> parametrosGuardados = []; 

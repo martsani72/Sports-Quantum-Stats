@@ -31,13 +31,29 @@ import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await QuantumStorage.init();
-  perfilUsuario = QuantumStorage.cargarPerfil();
+class QuantumStorage {
+  static late SharedPreferences prefs;
 
-  runApp(const MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: PantallaPrincipal(),
-  ));
+  static Future<void> init() async {
+    prefs = await SharedPreferences.getInstance();
+  }
+
+  static Future<void> guardarPerfil(Map<String, dynamic> perfil) async {
+    await prefs.setString('perfil_usuario', jsonEncode(perfil));
+  }
+
+  static Map<String, dynamic> cargarPerfil() {
+    String? data = prefs.getString('perfil_usuario');
+    if (data == null) {
+      return {
+        'nombre': '',
+        'medio': '',
+        'redSocial': '',
+        'usarFirma': true,
+        'deporteDefecto': '',
+        'idioma': 'Español' 
+      };
+    }
+    return jsonDecode(data);
+  }
 }
