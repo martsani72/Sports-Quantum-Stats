@@ -9,27 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mi_nueva_app/core/constants.dart';
 import 'package:mi_nueva_app/core/globals.dart';
-import 'package:mi_nueva_app/core/quantum_storage.dart';
-import 'package:mi_nueva_app/core/traductor.dart';
-
 import 'package:mi_nueva_app/models/partido.dart';
-import 'package:mi_nueva_app/models/deporte_config.dart';
-
-import 'package:mi_nueva_app/widgets/widget_camiseta.dart';
-
-import 'package:mi_nueva_app/screens/pantalla_principal.dart';
-import 'package:mi_nueva_app/screens/pantalla_seleccion_deporte.dart';
-import 'package:mi_nueva_app/screens/pantalla_configuracion_dinamica.dart';
-import 'package:mi_nueva_app/screens/pantalla_pre_inicio.dart';
-import 'package:mi_nueva_app/screens/pantalla_tablero_control.dart';
-import 'package:mi_nueva_app/screens/pantalla_registro_evento.dart';
-import 'package:mi_nueva_app/screens/pantalla_encuentros_guardados.dart';
-import 'package:mi_nueva_app/screens/pantalla_resumen_partido.dart';
-import 'package:mi_nueva_app/screens/pantalla_encuentros_personalizados.dart';
-import 'package:mi_nueva_app/screens/pantalla_mi_cuenta.dart';
-import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
-import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
-import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
 class QuantumStorage {
   static late SharedPreferences prefs;
@@ -55,5 +35,24 @@ class QuantumStorage {
       };
     }
     return jsonDecode(data);
+  }
+
+  static Future<void> guardarPartidoActivo(Partido partido) async {
+    await prefs.setString('partido_activo', jsonEncode(partido.toMap()));
+  }
+
+  static Partido? cargarPartidoActivo() {
+    String? data = prefs.getString('partido_activo');
+    if (data == null) return null;
+    try {
+      return Partido.fromMap(jsonDecode(data));
+    } catch (e) {
+      print('Error al cargar partido activo: $e');
+      return null;
+    }
+  }
+
+  static Future<void> borrarPartidoActivo() async {
+    await prefs.remove('partido_activo');
   }
 }

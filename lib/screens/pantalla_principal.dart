@@ -17,7 +17,6 @@ import 'package:mi_nueva_app/models/deporte_config.dart';
 
 import 'package:mi_nueva_app/widgets/widget_camiseta.dart';
 
-import 'package:mi_nueva_app/screens/pantalla_principal.dart';
 import 'package:mi_nueva_app/screens/pantalla_seleccion_deporte.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuracion_dinamica.dart';
 import 'package:mi_nueva_app/screens/pantalla_pre_inicio.dart';
@@ -30,6 +29,7 @@ import 'package:mi_nueva_app/screens/pantalla_mi_cuenta.dart';
 import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
+import 'package:mi_nueva_app/assets_data.dart';
 
 class PantallaPrincipal extends StatefulWidget {
   const PantallaPrincipal({super.key});
@@ -61,39 +61,49 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'SPORTS', 
-                      style: TextStyle(
-                        color: kVerdeNeon.withOpacity(0.7), 
-                        fontSize: 15, 
-                        letterSpacing: 12, 
-                        fontWeight: FontWeight.w300
-                      )
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // The Logo - Colored and Sharpened to remove soft glow
+                        ColorFiltered(
+                          colorFilter: const ColorFilter.mode(
+                            kVerdeNeon, 
+                            BlendMode.modulate,
+                          ),
+                          child: Image.memory(getLogoBytes(), height: 60),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'SPORTS', 
+                          style: TextStyle(
+                            color: kVerdeNeon.withOpacity(0.9), 
+                            fontSize: 18, 
+                            letterSpacing: 10, 
+                            fontWeight: FontWeight.w400,
+                            // Removed shadows for more minimalist look
+                          )
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 5),
-                    const Text(
+                    const SizedBox(height: 2),
+                    Text(
                       'QUANTUM STATS', 
                       style: TextStyle(
                         color: kVerdeNeon, 
-                        fontSize: 42, 
+                        fontSize: 38, 
                         fontWeight: FontWeight.w900, 
                         height: 1.0,
-                        shadows: [
-                          Shadow(color: kVerdeNeon, blurRadius: 20),
-                          Shadow(color: kVerdeNeon, blurRadius: 40),
-                        ]
+                        letterSpacing: -1,
+                        // Removed shadows for more minimalist look
                       )
                     ),
-                    // Underline glow to differentiate from buttons
+                    // Shared Underline - No shadows
                     Container(
-                      margin: const EdgeInsets.only(top: 8),
-                      width: 100,
-                      height: 2,
-                      decoration: BoxDecoration(
+                      margin: const EdgeInsets.only(top: 10),
+                      width: 120,
+                      height: 3,
+                      decoration: const BoxDecoration(
                         color: kVerdeNeon,
-                        boxShadow: [
-                          BoxShadow(color: kVerdeNeon, blurRadius: 10, spreadRadius: 1)
-                        ]
                       ),
                     )
                   ],
@@ -123,14 +133,17 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
           width: double.infinity, padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
             color: kNegro,
-            border: Border.all(color: kVerdeNeon.withOpacity(0.4)), 
-            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: kVerdeNeon.withOpacity(0.5), width: 1.5), 
+            borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
-                color: kVerdeNeon.withOpacity(0.15),
-                blurRadius: 8,
+                color: kVerdeNeon.withOpacity(0.2),
+                blurRadius: 15,
                 spreadRadius: 1,
-                offset: const Offset(0, 3),
+              ),
+              BoxShadow(
+                color: kVerdeNeon.withOpacity(0.1),
+                blurRadius: 5,
               )
             ]
           ),

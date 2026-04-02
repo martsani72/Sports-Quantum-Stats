@@ -1,35 +1,9 @@
-// ignore_for_file: prefer_const_constructors, unused_import, prefer_const_literals_to_create_immutables, use_key_in_widget_constructors, deprecated_member_use
-import 'dart:async';
-import 'dart:convert';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:mi_nueva_app/core/constants.dart';
 import 'package:mi_nueva_app/core/globals.dart';
-import 'package:mi_nueva_app/core/quantum_storage.dart';
 import 'package:mi_nueva_app/core/traductor.dart';
-
+import 'package:mi_nueva_app/core/quantum_storage.dart';
 import 'package:mi_nueva_app/models/partido.dart';
-import 'package:mi_nueva_app/models/deporte_config.dart';
-
-import 'package:mi_nueva_app/widgets/widget_camiseta.dart';
-
-import 'package:mi_nueva_app/screens/pantalla_principal.dart';
-import 'package:mi_nueva_app/screens/pantalla_seleccion_deporte.dart';
-import 'package:mi_nueva_app/screens/pantalla_configuracion_dinamica.dart';
-import 'package:mi_nueva_app/screens/pantalla_pre_inicio.dart';
-import 'package:mi_nueva_app/screens/pantalla_tablero_control.dart';
-import 'package:mi_nueva_app/screens/pantalla_registro_evento.dart';
-import 'package:mi_nueva_app/screens/pantalla_encuentros_guardados.dart';
-import 'package:mi_nueva_app/screens/pantalla_resumen_partido.dart';
-import 'package:mi_nueva_app/screens/pantalla_encuentros_personalizados.dart';
-import 'package:mi_nueva_app/screens/pantalla_mi_cuenta.dart';
-import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
-import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
-import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
 class PantallaRegistroEvento extends StatefulWidget {
   final Partido partido;
@@ -47,6 +21,7 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
     String valorPrimario = '';
     String valorSecundario = '';
     bool editandoSecundario = false; 
+    bool esCambio = eventoNombre == 'Cambio';
 
     showDialog(
       context: context,
@@ -76,31 +51,7 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
               });
             }
 
-            bool esCambio = eventoNombre == 'Cambio';
-            bool puedeConfirmar = esCambio 
-                ? (valorPrimario.isNotEmpty && valorSecundario.isNotEmpty)
-                : true;
-
-            Widget buildNumpadRow(List<String> teclas) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: teclas.map((tecla) => InkWell(
-                    onTap: () => onTeclaPulsada(tecla),
-                    child: Container(
-                      width: 65, height: 45,
-                      decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(5), border: Border.all(color: Colors.white12)),
-                      child: Center(
-                        child: tecla == '<' ? const Icon(Icons.backspace, color: Colors.redAccent, size: 20) :
-                               tecla == 'C' ? const Text('C', style: TextStyle(color: Colors.redAccent, fontSize: 20, fontWeight: FontWeight.bold)) :
-                               Text(tecla, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                      )
-                    )
-                  )).toList(),
-                ),
-              );
-            }
+            bool puedeConfirmar = !esCambio || (valorPrimario.isNotEmpty && valorSecundario.isNotEmpty);
 
             return AlertDialog(
               backgroundColor: kNegro, 
@@ -108,64 +59,25 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
               title: Column(
                 children: [
                   Text(nombreEq.toUpperCase(), style: TextStyle(color: textoEq, fontSize: 12, letterSpacing: 2)),
-                  Text(Traductor.get('registrar_mayus') + ' $eventoNombre', textAlign: TextAlign.center, style: TextStyle(color: textoEq, fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text('${Traductor.get('registrar_mayus')} $eventoNombre', textAlign: TextAlign.center, style: TextStyle(color: textoEq, fontSize: 16, fontWeight: FontWeight.bold)),
                 ],
               ),
               content: SizedBox(
                 width: double.maxFinite, 
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      GestureDetector(
-                        onTap: () => setStateDialog(() => editandoSecundario = false),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-                          decoration: BoxDecoration(
-                            color: !editandoSecundario ? fondoEq.withOpacity(0.5) : Colors.transparent,
-                            border: Border.all(color: !editandoSecundario ? textoEq : Colors.white24),
-                            borderRadius: BorderRadius.circular(8)
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(esCambio ? Traductor.get('num_sale_rojo') : 'N° JUGADOR', style: TextStyle(color: !editandoSecundario ? textoEq : Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
-                              Text(valorPrimario.isEmpty ? '_' : valorPrimario, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                            ]
-                          )
-                        )
-                      ),
-                      
-                      if (esCambio) ...[
-                        const SizedBox(height: 10),
-                        GestureDetector(
-                          onTap: () => setStateDialog(() => editandoSecundario = true),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: editandoSecundario ? fondoEq.withOpacity(0.5) : Colors.transparent,
-                              border: Border.all(color: editandoSecundario ? textoEq : Colors.white24),
-                              borderRadius: BorderRadius.circular(8)
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(Traductor.get('num_entra_verde'), style: TextStyle(color: editandoSecundario ? textoEq : Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
-                                Text(valorSecundario.isEmpty ? '_' : valorSecundario, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                              ]
-                            )
-                          )
-                        ),
-                      ],
-                      
-                      const SizedBox(height: 20),
-                      
-                      buildNumpadRow(['1','2','3']),
-                      buildNumpadRow(['4','5','6']),
-                      buildNumpadRow(['7','8','9']),
-                      buildNumpadRow(['C','0','<']),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildNumpadDisplay(esCambio ? Traductor.get('num_sale_rojo') : 'N° JUGADOR', valorPrimario, !editandoSecundario, fondoEq, textoEq, () => setStateDialog(() => editandoSecundario = false)),
+                    if (esCambio) ...[
+                      const SizedBox(height: 10),
+                      _buildNumpadDisplay(Traductor.get('num_entra_verde'), valorSecundario, editandoSecundario, fondoEq, textoEq, () => setStateDialog(() => editandoSecundario = true)),
                     ],
-                  ),
+                    const SizedBox(height: 20),
+                    _buildNumpadRow(['1','2','3'], onTeclaPulsada),
+                    _buildNumpadRow(['4','5','6'], onTeclaPulsada),
+                    _buildNumpadRow(['7','8','9'], onTeclaPulsada),
+                    _buildNumpadRow(['C','0','<'], onTeclaPulsada),
+                  ],
                 ),
               ),
               actions: [
@@ -173,8 +85,8 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: puedeConfirmar ? textoEq : Colors.grey),
                   onPressed: puedeConfirmar ? () {
-                    Navigator.pop(context); 
-                    Navigator.pop(context, {
+                    Navigator.pop(ctxDialog); // Closes Dialog
+                    Navigator.pop(context, {   // Closes Screen with result
                       'evento': eventoNombre, 
                       'jugador': valorPrimario.isEmpty ? '?' : valorPrimario,
                       'jugadorEntra': valorSecundario.isEmpty ? '?' : valorSecundario,
@@ -187,6 +99,48 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
           }
         );
       }
+    );
+  }
+
+  Widget _buildNumpadDisplay(String label, String value, bool active, Color fondo, Color texto, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+        decoration: BoxDecoration(
+          color: active ? fondo.withOpacity(0.5) : Colors.transparent,
+          border: Border.all(color: active ? texto : Colors.white24),
+          borderRadius: BorderRadius.circular(8)
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: TextStyle(color: active ? texto : Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
+            Text(value.isEmpty ? '_' : value, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+          ]
+        )
+      )
+    );
+  }
+
+  Widget _buildNumpadRow(List<String> teclas, Function(String) onTecla) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: teclas.map((tecla) => InkWell(
+          onTap: () => onTecla(tecla),
+          child: Container(
+            width: 65, height: 45,
+            decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(5), border: Border.all(color: Colors.white12)),
+            child: Center(
+              child: tecla == '<' ? const Icon(Icons.backspace, color: Colors.redAccent, size: 20) :
+                     tecla == 'C' ? const Text('C', style: TextStyle(color: Colors.redAccent, fontSize: 20, fontWeight: FontWeight.bold)) :
+                     Text(tecla, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+            )
+          )
+        )).toList(),
+      ),
     );
   }
 
@@ -219,13 +173,12 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
     Color fondoEq = widget.equipoSeleccionado == 'Local' ? widget.partido.localFondo : widget.partido.visitaFondo;
     Color textoEq = widget.equipoSeleccionado == 'Local' ? widget.partido.localTexto : widget.partido.visitaTexto;
     String nombreEq = widget.equipoSeleccionado == 'Local' ? widget.partido.local : widget.partido.visita;
-    
     Color appBarColor = fondoEq == Colors.black ? const Color(0xFF111111) : fondoEq;
 
     return Scaffold(
       backgroundColor: kNegro,
       appBar: AppBar(
-        title: Text(Traductor.get('registro_dp') + ' ${nombreEq.toUpperCase()}', style: TextStyle(color: textoEq, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1)), 
+        title: Text('${Traductor.get('registro_dp')} ${nombreEq.toUpperCase()}', style: TextStyle(color: textoEq, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1)), 
         backgroundColor: appBarColor,
         leading: BackButton(color: textoEq), 
       ),
@@ -242,7 +195,6 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
               itemCount: widget.partido.ordenEventosActivos.length,
               itemBuilder: (context, index) {
                 String evento = widget.partido.ordenEventosActivos[index];
-                
                 return DragTarget<int>(
                   onAccept: (draggedIndex) {
                     setState(() {
@@ -250,6 +202,7 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
                       widget.partido.ordenEventosActivos[index] = widget.partido.ordenEventosActivos[draggedIndex];
                       widget.partido.ordenEventosActivos[draggedIndex] = temp;
                     });
+                    QuantumStorage.guardarPartidoActivo(widget.partido); 
                   },
                   builder: (context, candidateData, rejectedData) {
                     return LongPressDraggable<int>(
@@ -263,10 +216,7 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
                           child: _buildCajaEvento(evento, fondoEq, textoEq, true),
                         ),
                       ),
-                      childWhenDragging: Opacity(
-                        opacity: 0.2,
-                        child: _buildCajaEvento(evento, fondoEq, textoEq, false),
-                      ),
+                      childWhenDragging: Opacity(opacity: 0.2, child: _buildCajaEvento(evento, fondoEq, textoEq, false)),
                       child: InkWell(
                         onTap: () => _pedirJugador(context, evento, fondoEq, textoEq, nombreEq),
                         child: _buildCajaEvento(evento, fondoEq, textoEq, false),
@@ -282,3 +232,4 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
     );
   }
 }
+

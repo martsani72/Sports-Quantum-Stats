@@ -9,27 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mi_nueva_app/core/constants.dart';
 import 'package:mi_nueva_app/core/globals.dart';
-import 'package:mi_nueva_app/core/quantum_storage.dart';
-import 'package:mi_nueva_app/core/traductor.dart';
-
-import 'package:mi_nueva_app/models/partido.dart';
 import 'package:mi_nueva_app/models/deporte_config.dart';
-
-import 'package:mi_nueva_app/widgets/widget_camiseta.dart';
-
-import 'package:mi_nueva_app/screens/pantalla_principal.dart';
-import 'package:mi_nueva_app/screens/pantalla_seleccion_deporte.dart';
-import 'package:mi_nueva_app/screens/pantalla_configuracion_dinamica.dart';
-import 'package:mi_nueva_app/screens/pantalla_pre_inicio.dart';
-import 'package:mi_nueva_app/screens/pantalla_tablero_control.dart';
-import 'package:mi_nueva_app/screens/pantalla_registro_evento.dart';
-import 'package:mi_nueva_app/screens/pantalla_encuentros_guardados.dart';
-import 'package:mi_nueva_app/screens/pantalla_resumen_partido.dart';
-import 'package:mi_nueva_app/screens/pantalla_encuentros_personalizados.dart';
-import 'package:mi_nueva_app/screens/pantalla_mi_cuenta.dart';
-import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
-import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
-import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
 enum PatronCamiseta {
   liso,              
@@ -129,5 +109,55 @@ class Partido {
       }
     });
     return total;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'deporte': deporte,
+      'local': local,
+      'visita': visita,
+      'contadores': contadores,
+      'switches': switches,
+      'localFondo': localFondo.value,
+      'localTexto': localTexto.value,
+      'visitaFondo': visitaFondo.value,
+      'visitaTexto': visitaTexto.value,
+      'jugadoresLocal': jugadoresLocal,
+      'jugadoresVisita': jugadoresVisita,
+      'patronLocal': patronLocal.index,
+      'patronVisita': patronVisita.index,
+      'stats': stats,
+      'anotaciones': anotaciones,
+      'tarjetas': tarjetas,
+      'cambiosList': cambiosList,
+      'logEventos': logEventos,
+      'ordenEventosActivos': ordenEventosActivos,
+    };
+  }
+
+  factory Partido.fromMap(Map<String, dynamic> map) {
+    var p = Partido(
+      deporte: map['deporte'],
+      local: map['local'],
+      visita: map['visita'],
+      contadores: Map<String, int>.from(map['contadores']),
+      switches: Map<String, bool>.from(map['switches']),
+      localFondo: Color(map['localFondo']),
+      localTexto: Color(map['localTexto']),
+      visitaFondo: Color(map['visitaFondo']),
+      visitaTexto: Color(map['visitaTexto']),
+      jugadoresLocal: Map<String, String>.from(map['jugadoresLocal']),
+      jugadoresVisita: Map<String, String>.from(map['jugadoresVisita']),
+      patronLocal: PatronCamiseta.values[map['patronLocal']],
+      patronVisita: PatronCamiseta.values[map['patronVisita']],
+    );
+    // Overwrite default values after constructor
+    p.stats = (map['stats'] as Map).map((k, v) => MapEntry(k as String, Map<String, int>.from(v as Map)));
+    p.anotaciones = (map['anotaciones'] as Map).map((k, v) => MapEntry(k as String, (v as List).map((e) => Map<String, String>.from(e as Map)).toList()));
+    p.tarjetas = (map['tarjetas'] as Map).map((k, v) => MapEntry(k as String, (v as List).map((e) => Map<String, String>.from(e as Map)).toList()));
+    p.cambiosList = (map['cambiosList'] as Map).map((k, v) => MapEntry(k as String, (v as List).map((e) => Map<String, String>.from(e as Map)).toList()));
+    p.logEventos = List<String>.from(map['logEventos']);
+    p.ordenEventosActivos = List<String>.from(map['ordenEventosActivos']);
+    return p;
   }
 }

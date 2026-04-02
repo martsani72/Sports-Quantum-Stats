@@ -14,21 +14,8 @@ import 'package:mi_nueva_app/core/traductor.dart';
 
 import 'package:mi_nueva_app/models/partido.dart';
 import 'package:mi_nueva_app/models/deporte_config.dart';
-
 import 'package:mi_nueva_app/widgets/widget_camiseta.dart';
-
-import 'package:mi_nueva_app/screens/pantalla_principal.dart';
-import 'package:mi_nueva_app/screens/pantalla_seleccion_deporte.dart';
-import 'package:mi_nueva_app/screens/pantalla_configuracion_dinamica.dart';
-import 'package:mi_nueva_app/screens/pantalla_pre_inicio.dart';
-import 'package:mi_nueva_app/screens/pantalla_tablero_control.dart';
 import 'package:mi_nueva_app/screens/pantalla_registro_evento.dart';
-import 'package:mi_nueva_app/screens/pantalla_encuentros_guardados.dart';
-import 'package:mi_nueva_app/screens/pantalla_resumen_partido.dart';
-import 'package:mi_nueva_app/screens/pantalla_encuentros_personalizados.dart';
-import 'package:mi_nueva_app/screens/pantalla_mi_cuenta.dart';
-import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
-import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
 class PantallaTableroControl extends StatefulWidget {
@@ -37,9 +24,10 @@ class PantallaTableroControl extends StatefulWidget {
   @override State<PantallaTableroControl> createState() => _PantallaTableroControlState();
 }
 
-class _PantallaTableroControlState extends State<PantallaTableroControl> with SingleTickerProviderStateMixin {
+class _PantallaTableroControlState extends State<PantallaTableroControl> with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   Timer? _timer;
-  int _segundosTotales = 0;
+  int _segundosAcumulados = 0; 
+  DateTime? _momentoInicioActual; 
   bool _estaCorriendo = false;
   int _periodoActual = 1;
   late AnimationController _blinkController;
@@ -50,17 +38,39 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _blinkController = AnimationController(vsync: this, duration: const Duration(milliseconds: 600))..repeat(reverse: true);
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _guardarEstado();
+    }
+  }
+
+  void _guardarEstado() {
+    QuantumStorage.guardarPartidoActivo(widget.partido);
+  }
+
+  int get _segundosTotales {
+    int transcurrido = 0;
+    if (_momentoInicioActual != null) {
+      transcurrido = DateTime.now().difference(_momentoInicioActual!).inSeconds;
+    }
+    return _segundosAcumulados + transcurrido;
+  }
+
   void _iniciarTimer() {
-    if (_timer != null && _timer!.isActive) return;
-    setState(() => _estaCorriendo = true);
+    if (_estaCorriendo) return;
+    setState(() {
+      _estaCorriendo = true;
+      _momentoInicioActual = DateTime.now();
+    });
     _blinkController.forward();
     _blinkController.stop();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
-        _segundosTotales++;
         if (widget.partido.deporte.toLowerCase() == 'rugby') {
           for (String equipo in ['Local', 'Visita']) {
             for (var t in widget.partido.tarjetas[equipo]!) {
@@ -72,13 +82,20 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           }
         }
       });
+      if (timer.tick % 5 == 0) _guardarEstado(); 
     });
   }
 
   void _pausarTimer() {
+    if (!_estaCorriendo) return;
     _timer?.cancel();
-    setState(() => _estaCorriendo = false);
+    setState(() {
+      _segundosAcumulados = _segundosTotales;
+      _momentoInicioActual = null;
+      _estaCorriendo = false;
+    });
     _blinkController.repeat(reverse: true);
+    _guardarEstado();
   }
 
   Future<void> _manejarFinPeriodo() async {
@@ -93,8 +110,10 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         setState(() {
           widget.partido.logEventos.add('--- FIN DEL $nombreRef $_periodoActual ---');
           _periodoActual++;
-          _segundosTotales = 0; 
+          _segundosAcumulados = 0;
+          _momentoInicioActual = null;
         });
+        _guardarEstado();
       }
     } else {
       bool confirmar = await _mostrarDialogo(Traductor.get('finalizar_encuentro_titulo'), Traductor.get('finalizar_encuentro_msj'), Traductor.get('terminar_mayus'));
@@ -105,6 +124,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
             partidosGuardados.add(widget.partido);
           }
         });
+        QuantumStorage.borrarPartidoActivo();
         Navigator.popUntil(context, (route) => route.isFirst); 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('encuentro_finalizado_bitacora'), style: TextStyle(color: kVerdeNeon)), backgroundColor: kNegro));
       }
@@ -180,6 +200,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                 setState(() {
                   widget.partido.logEventos.add('MIN $tiempoActual | 📝 NOTA: ${notaController.text.trim()}');
                 });
+                _guardarEstado();
               }
               Navigator.pop(context);
             },
@@ -247,6 +268,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
             String nombreReal = equipoNombre == 'Local' ? widget.partido.local : widget.partido.visita;
             widget.partido.logEventos.add('MIN $tiempoActual | ${nombreReal.toUpperCase()}: Cambio ($nombreSale x $nombreEntra)');
           });
+          _guardarEstado();
 
           primeraVez = false; 
 
@@ -308,6 +330,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           String nombreReal = equipoNombre == 'Local' ? widget.partido.local : widget.partido.visita;
           widget.partido.logEventos.add('MIN $tiempoActual | ${nombreReal.toUpperCase()}: $eventoRegistrado ($nombreActor)');
         });
+        _guardarEstado();
       }
     }
   }
@@ -531,6 +554,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   }
 
   @override void dispose() { 
+    WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel(); 
     _blinkController.dispose();
     super.dispose(); 
