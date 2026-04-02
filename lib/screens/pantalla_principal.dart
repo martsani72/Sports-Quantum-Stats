@@ -119,42 +119,89 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
   }
 
   Widget _buildBotonMenu(BuildContext context, Map op) {
+    bool esInicio = op['titulo'] == Traductor.get('menu_1');
+    String defSport = perfilUsuario['deporteDefecto'] ?? '';
+    bool tieneDefecto = esInicio && defSport.isNotEmpty;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
-      child: InkWell(
-        onTap: () {
-          if (op['ruta'] != null) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => op['ruta'])).then((_) => setState((){}));
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('en_construccion'))));
-          }
-        },
-        child: Container(
-          width: double.infinity, padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: kNegro,
-            border: Border.all(color: kVerdeNeon.withOpacity(0.5), width: 1.5), 
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: kVerdeNeon.withOpacity(0.2),
-                blurRadius: 15,
-                spreadRadius: 1,
-              ),
-              BoxShadow(
-                color: kVerdeNeon.withOpacity(0.1),
-                blurRadius: 5,
-              )
-            ]
-          ),
-          child: Row(children: [
-            Icon(op['icono'], color: kVerdeNeon, size: 20),
-            const SizedBox(width: 12),
-            Text(op['titulo'].toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontWeight: FontWeight.bold, fontSize: 12)),
-            const Spacer(),
-            const Icon(Icons.chevron_right, color: kVerdeNeon, size: 18),
-          ]),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: kNegro,
+          border: Border.all(color: kVerdeNeon.withOpacity(0.5), width: 1.5), 
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(color: kVerdeNeon.withOpacity(0.2), blurRadius: 15, spreadRadius: 1),
+            BoxShadow(color: kVerdeNeon.withOpacity(0.1), blurRadius: 5)
+          ]
         ),
+        child: tieneDefecto 
+          ? Row(
+              children: [
+                // Parte Principal: Iniciar Deporte Preferido
+                Expanded(
+                  flex: 4,
+                  child: InkWell(
+                    onTap: () {
+                      var data = DeporteConfig.datos[defSport]!;
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) => PantallaConfiguracionDinamica(nombreDeporte: defSport, configInicial: data)
+                      )).then((_) => setState((){}));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                      child: Row(
+                        children: [
+                          Icon(op['icono'], color: kVerdeNeon, size: 20),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              "${Traductor.get('iniciar_mayus')} ${Traductor.get(defSport).toUpperCase()}", 
+                              style: const TextStyle(color: kVerdeNeon, fontWeight: FontWeight.bold, fontSize: 12, overflow: TextOverflow.ellipsis)
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                // Divisor Vertical
+                Container(width: 1, height: 30, color: kVerdeNeon.withOpacity(0.3)),
+                // Parte Secundaria: Selección de Deporte
+                Expanded(
+                  flex: 1,
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const PantallaSeleccionDeporte())).then((_) => setState((){}));
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      child: Icon(Icons.swap_horiz, color: kVerdeNeon, size: 22),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : InkWell(
+              onTap: () {
+                if (op['ruta'] != null) {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => op['ruta'])).then((_) => setState((){}));
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('en_construccion'))));
+                }
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: Row(children: [
+                  Icon(op['icono'], color: kVerdeNeon, size: 20),
+                  const SizedBox(width: 12),
+                  Text(op['titulo'].toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontWeight: FontWeight.bold, fontSize: 12)),
+                  const Spacer(),
+                  const Icon(Icons.chevron_right, color: kVerdeNeon, size: 18),
+                ]),
+              ),
+            ),
       ),
     );
   }
