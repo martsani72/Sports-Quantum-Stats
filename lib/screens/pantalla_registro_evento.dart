@@ -108,7 +108,7 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
               title: Column(
                 children: [
                   Text(nombreEq.toUpperCase(), style: TextStyle(color: textoEq, fontSize: 12, letterSpacing: 2)),
-                  Text('REGISTRAR $eventoNombre', textAlign: TextAlign.center, style: TextStyle(color: textoEq, fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(Traductor.get('registrar_mayus') + ' $eventoNombre', textAlign: TextAlign.center, style: TextStyle(color: textoEq, fontSize: 16, fontWeight: FontWeight.bold)),
                 ],
               ),
               content: SizedBox(
@@ -129,7 +129,7 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(esCambio ? 'N° SALE (Rojo)' : 'N° JUGADOR', style: TextStyle(color: !editandoSecundario ? textoEq : Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
+                              Text(esCambio ? Traductor.get('num_sale_rojo') : 'N° JUGADOR', style: TextStyle(color: !editandoSecundario ? textoEq : Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
                               Text(valorPrimario.isEmpty ? '_' : valorPrimario, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                             ]
                           )
@@ -150,7 +150,7 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('N° ENTRA (Verde)', style: TextStyle(color: editandoSecundario ? textoEq : Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
+                                Text(Traductor.get('num_entra_verde'), style: TextStyle(color: editandoSecundario ? textoEq : Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
                                 Text(valorSecundario.isEmpty ? '_' : valorSecundario, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                               ]
                             )
@@ -169,7 +169,7 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCELAR', style: TextStyle(color: Colors.grey))),
+                TextButton(onPressed: () => Navigator.pop(context), child: Text(Traductor.get('cancelar_mayus'), style: TextStyle(color: Colors.grey))),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: puedeConfirmar ? textoEq : Colors.grey),
                   onPressed: puedeConfirmar ? () {
@@ -180,7 +180,7 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
                       'jugadorEntra': valorSecundario.isEmpty ? '?' : valorSecundario,
                     }); 
                   } : null,
-                  child: Text('CONFIRMAR', style: TextStyle(color: puedeConfirmar ? kNegro : Colors.black45, fontWeight: FontWeight.bold)),
+                  child: Text(Traductor.get('confirmar_mayus'), style: TextStyle(color: puedeConfirmar ? kNegro : Colors.black45, fontWeight: FontWeight.bold)),
                 )
               ],
             );
@@ -204,7 +204,7 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
-              evento.toUpperCase(), 
+              Traductor.get(evento).toUpperCase(), 
               textAlign: TextAlign.center, 
               style: TextStyle(color: textoEq, fontWeight: FontWeight.bold, fontSize: 12)
             ),
@@ -225,7 +225,7 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
     return Scaffold(
       backgroundColor: kNegro,
       appBar: AppBar(
-        title: Text('REGISTRO: ${nombreEq.toUpperCase()}', style: TextStyle(color: textoEq, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1)), 
+        title: Text(Traductor.get('registro_dp') + ' ${nombreEq.toUpperCase()}', style: TextStyle(color: textoEq, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1)), 
         backgroundColor: appBarColor,
         leading: BackButton(color: textoEq), 
       ),
@@ -233,7 +233,7 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 15.0),
-            child: Text('Mantén presionado un botón para moverlo', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 10)),
+            child: Text(Traductor.get('mantenga_presionado'), style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 10)),
           ),
           Expanded(
             child: GridView.builder(

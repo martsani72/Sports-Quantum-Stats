@@ -85,10 +85,10 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     _pausarTimer();
     String clavePeriodo = widget.partido.contadores.containsKey('Cuartos') ? 'Cuartos' : (widget.partido.contadores.containsKey('Entradas') ? 'Entradas' : 'Tiempos');
     int maxPeriodos = widget.partido.contadores[clavePeriodo] ?? 1;
-    String nombreRef = clavePeriodo.toUpperCase().substring(0, clavePeriodo.length - 1); 
+    String nombreRef = Traductor.get(clavePeriodo).toUpperCase(); 
 
     if (_periodoActual < maxPeriodos) {
-      bool confirmar = await _mostrarDialogo('¿FINALIZAR $nombreRef $_periodoActual?', 'El cronómetro se reiniciará para el próximo período.', 'SIGUIENTE');
+      bool confirmar = await _mostrarDialogo(Traductor.get('finalizar_periodo_titulo') + nombreRef + ' $_periodoActual?', Traductor.get('finalizar_periodo_msj'), Traductor.get('siguiente_mayus'));
       if (confirmar) {
         setState(() {
           widget.partido.logEventos.add('--- FIN DEL $nombreRef $_periodoActual ---');
@@ -97,7 +97,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         });
       }
     } else {
-      bool confirmar = await _mostrarDialogo('¿FINALIZAR ENCUENTRO?', 'Estás en el último período. ¿Deseas terminar el partido y generar el reporte?', 'TERMINAR');
+      bool confirmar = await _mostrarDialogo(Traductor.get('finalizar_encuentro_titulo'), Traductor.get('finalizar_encuentro_msj'), Traductor.get('terminar_mayus'));
       if (confirmar) {
         setState(() {
           widget.partido.logEventos.add('--- FIN DEL PARTIDO ---');
@@ -106,7 +106,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           }
         });
         Navigator.popUntil(context, (route) => route.isFirst); 
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Encuentro finalizado y bitácora generada en Guardados', style: TextStyle(color: kVerdeNeon)), backgroundColor: kNegro));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('encuentro_finalizado_bitacora'), style: TextStyle(color: kVerdeNeon)), backgroundColor: kNegro));
       }
     }
   }
@@ -119,7 +119,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         title: Text(titulo, style: const TextStyle(color: kRojoStop, fontSize: 16, fontWeight: FontWeight.bold)),
         content: Text(mensaje, style: const TextStyle(color: Colors.white, fontSize: 14)),
         actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('CANCELAR', style: TextStyle(color: Colors.grey))),
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(Traductor.get('cancelar_mayus'), style: TextStyle(color: Colors.grey))),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: kRojoStop),
             onPressed: () => Navigator.of(context).pop(true),
@@ -132,7 +132,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
 
   Future<bool> _confirmarSalida() async {
     _pausarTimer();
-    return await _mostrarDialogo('¿ABANDONAR SIN GUARDAR?', 'Si sales ahora perderás este registro en vivo.', 'SALIR DE TODAS FORMAS');
+    return await _mostrarDialogo(Traductor.get('abandonar_titulo'), Traductor.get('abandonar_msj'), Traductor.get('salir_todas_formas'));
   }
 
   String _formatearTiempo() {
@@ -163,7 +163,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           maxLines: 4,
           textCapitalization: TextCapitalization.sentences,
           decoration: InputDecoration(
-            hintText: 'Escribí o dictá el comentario del partido acá...',
+            hintText: Traductor.get('nota_hint'),
             hintStyle: const TextStyle(color: Colors.white24, fontSize: 13),
             filled: true,
             fillColor: Colors.white.withOpacity(0.05),
@@ -172,7 +172,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('CANCELAR', style: TextStyle(color: Colors.grey))),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(Traductor.get('cancelar_mayus'), style: TextStyle(color: Colors.grey))),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: kVerdeNeon),
             onPressed: () {
@@ -183,7 +183,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
               }
               Navigator.pop(context);
             },
-            child: const Text('GUARDAR', style: TextStyle(color: kNegro, fontWeight: FontWeight.bold)),
+            child: Text(Traductor.get('guardar_mayus'), style: TextStyle(color: kNegro, fontWeight: FontWeight.bold)),
           )
         ],
       )
@@ -213,16 +213,16 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
 
           if (primeraVez) {
             if (maxV > 0 && hechasV >= maxV) {
-              bool confirmar = await _mostrarDialogo('LÍMITE DE VENTANAS AGOTADO', 'El equipo ya no tiene ventanas disponibles ($hechasV/$maxV). ¿Continuar de todas formas?', 'SÍ');
+              bool confirmar = await _mostrarDialogo(Traductor.get('limite_ventanas_titulo'), Traductor.get('limite_ventanas_msj_1') + '$hechasV/$maxV' + Traductor.get('limite_ventanas_msj_2'), Traductor.get('si_mayus'));
               if (!confirmar) return; 
             }
             if (maxC > 0 && hechosC >= maxC) {
-              bool confirmar = await _mostrarDialogo('LÍMITE DE CAMBIOS AGOTADO', 'El equipo ya no tiene cambios disponibles ($hechosC/$maxC). ¿Continuar de todas formas?', 'SÍ');
+              bool confirmar = await _mostrarDialogo(Traductor.get('limite_cambios_titulo'), Traductor.get('limite_cambios_msj_1') + '$hechosC/$maxC' + Traductor.get('limite_cambios_msj_2'), Traductor.get('si_mayus'));
               if (!confirmar) return;
             }
           } else {
             if (maxC > 0 && hechosC >= maxC) {
-              bool confirmar = await _mostrarDialogo('LÍMITE DE CAMBIOS AGOTADO', 'El equipo ya no tiene cambios disponibles ($hechosC/$maxC). ¿Continuar de todas formas?', 'SÍ');
+              bool confirmar = await _mostrarDialogo(Traductor.get('limite_cambios_titulo'), Traductor.get('limite_cambios_msj_1') + '$hechosC/$maxC' + Traductor.get('limite_cambios_msj_2'), Traductor.get('si_mayus'));
               if (!confirmar) break; 
             }
           }
@@ -256,14 +256,14 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
             builder: (context) => AlertDialog(
               backgroundColor: kNegro,
               shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon), borderRadius: BorderRadius.circular(10)),
-              title: const Text('CAMBIO REGISTRADO', style: TextStyle(color: kVerdeNeon, fontSize: 16, fontWeight: FontWeight.bold)),
+              title: Text(Traductor.get('cambio_registrado'), style: TextStyle(color: kVerdeNeon, fontSize: 16, fontWeight: FontWeight.bold)),
               content: const Text('¿Quiere realizar otro cambio en esta mesma ventana?', style: TextStyle(color: Colors.white, fontSize: 14)),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('NO', style: TextStyle(color: Colors.grey))),
+                TextButton(onPressed: () => Navigator.pop(context, false), child: Text(Traductor.get('no_mayus'), style: TextStyle(color: Colors.grey))),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: kVerdeNeon),
                   onPressed: () => Navigator.pop(context, true), 
-                  child: const Text('SÍ', style: TextStyle(color: kNegro, fontWeight: FontWeight.bold))
+                  child: Text(Traductor.get('si_mayus'), style: TextStyle(color: kNegro, fontWeight: FontWeight.bold))
                 ),
               ]
             )
@@ -377,7 +377,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
               title: Column(
                 children: [
                   Text(equipoNombre.toUpperCase(), style: TextStyle(color: textoEq, fontSize: 12, letterSpacing: 2)),
-                  Text('REGISTRAR CAMBIO EXTRA', textAlign: TextAlign.center, style: TextStyle(color: textoEq, fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(Traductor.get('registrar_cambio_extra'), textAlign: TextAlign.center, style: TextStyle(color: textoEq, fontSize: 16, fontWeight: FontWeight.bold)),
                 ],
               ),
               content: SizedBox(
@@ -398,7 +398,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('N° SALE (Rojo)', style: TextStyle(color: !editandoSecundario ? textoEq : Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
+                              Text(Traductor.get('num_sale_rojo'), style: TextStyle(color: !editandoSecundario ? textoEq : Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
                               Text(valorPrimario.isEmpty ? '_' : valorPrimario, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                             ]
                           )
@@ -417,7 +417,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('N° ENTRA (Verde)', style: TextStyle(color: editandoSecundario ? textoEq : Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
+                              Text(Traductor.get('num_entra_verde'), style: TextStyle(color: editandoSecundario ? textoEq : Colors.white54, fontSize: 12, fontWeight: FontWeight.bold)),
                               Text(valorSecundario.isEmpty ? '_' : valorSecundario, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                             ]
                           )
@@ -433,7 +433,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                 ),
               ),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(context, null), child: const Text('CANCELAR', style: TextStyle(color: Colors.grey))),
+                TextButton(onPressed: () => Navigator.pop(context, null), child: Text(Traductor.get('cancelar_mayus'), style: TextStyle(color: Colors.grey))),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: puedeConfirmar ? textoEq : Colors.grey),
                   onPressed: puedeConfirmar ? () {
@@ -443,7 +443,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                       'jugadorEntra': valorSecundario,
                     }); 
                   } : null,
-                  child: Text('CONFIRMAR', style: TextStyle(color: puedeConfirmar ? kNegro : Colors.black45, fontWeight: FontWeight.bold)),
+                  child: Text(Traductor.get('confirmar_mayus'), style: TextStyle(color: puedeConfirmar ? kNegro : Colors.black45, fontWeight: FontWeight.bold)),
                 )
               ],
             );
@@ -465,7 +465,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         content: SizedBox(
           width: double.maxFinite,
           child: datos.isEmpty
-            ? const Text('No hay registros aún.', style: TextStyle(color: Colors.white54), textAlign: TextAlign.center)
+            ? Text(Traductor.get('no_hay_registros'), style: TextStyle(color: Colors.white54), textAlign: TextAlign.center)
             : ListView.separated(
                 shrinkWrap: true,
                 itemCount: datos.length,
@@ -525,7 +525,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                 }
               )
         ),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('CERRAR', style: TextStyle(color: Colors.grey)))],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(Traductor.get('cerrar_mayus'), style: TextStyle(color: Colors.grey)))],
       )
     );
   }
@@ -546,7 +546,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   @override 
   Widget build(BuildContext context) {
     String clavePeriodo = widget.partido.contadores.containsKey('Cuartos') ? 'Cuartos' : (widget.partido.contadores.containsKey('Entradas') ? 'Entradas' : 'Tiempos');
-    String nombrePeriodo = clavePeriodo.toUpperCase().substring(0, clavePeriodo.length - 1); 
+    String nombrePeriodo = Traductor.get(clavePeriodo).toUpperCase(); 
 
     if (!_notaInicializada) {
       _notaX = MediaQuery.of(context).size.width - 80; 
@@ -689,7 +689,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                       mainAxisAlignment: MainAxisAlignment.spaceAround, 
                       children: [ 
                         GestureDetector(onTap: () => _mostrarDetallePopUp('CAMBIOS - ${widget.partido.local}', widget.partido.cambiosList['Local']!, 'cambio'), child: _infoCambios('Local')), 
-                        const Text('RESERVAS', style: TextStyle(color: kVerdeOscuro, fontSize: 10, letterSpacing: 2)), 
+                        Text(Traductor.get('reservas_mayus'), style: TextStyle(color: kVerdeOscuro, fontSize: 10, letterSpacing: 2)), 
                         GestureDetector(onTap: () => _mostrarDetallePopUp('CAMBIOS - ${widget.partido.visita}', widget.partido.cambiosList['Visita']!, 'cambio'), child: _infoCambios('Visita')), 
                       ], 
                     ), 
@@ -710,7 +710,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(backgroundColor: widget.partido.localFondo == Colors.black ? const Color(0xFF1A1A1A) : widget.partido.localFondo, padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: widget.partido.localTexto.withOpacity(0.5)))), 
                             onPressed: () => _abrirRegistro('Local'), 
-                            child: Column(children: [Text('REGISTRAR', style: TextStyle(color: widget.partido.localTexto, fontSize: 10)), Text(widget.partido.local, style: TextStyle(color: widget.partido.localTexto, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis)])
+                            child: Column(children: [Text(Traductor.get('registrar_mayus'), style: TextStyle(color: widget.partido.localTexto, fontSize: 10)), Text(widget.partido.local, style: TextStyle(color: widget.partido.localTexto, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis)])
                           )
                         ), 
                         const SizedBox(width: 10), 
@@ -718,7 +718,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(backgroundColor: widget.partido.visitaFondo == Colors.black ? const Color(0xFF1A1A1A) : widget.partido.visitaFondo, padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: widget.partido.visitaTexto.withOpacity(0.5)))), 
                             onPressed: () => _abrirRegistro('Visita'), 
-                            child: Column(children: [Text('REGISTRAR', style: TextStyle(color: widget.partido.visitaTexto, fontSize: 10)), Text(widget.partido.visita, style: TextStyle(color: widget.partido.visitaTexto, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis)])
+                            child: Column(children: [Text(Traductor.get('registrar_mayus'), style: TextStyle(color: widget.partido.visitaTexto, fontSize: 10)), Text(widget.partido.visita, style: TextStyle(color: widget.partido.visitaTexto, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis)])
                           )
                         ), 
                       ], 
@@ -827,7 +827,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     child: Text('$cantLocal', textAlign: TextAlign.center, style: TextStyle(color: widget.partido.localTexto, fontSize: 15, fontWeight: FontWeight.bold))
                   )
                 ),
-                Expanded(child: Text(evento.toUpperCase(), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70, fontSize: 11, letterSpacing: 1))),
+                Expanded(child: Text(Traductor.get(evento).toUpperCase(), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70, fontSize: 11, letterSpacing: 1))),
                 SizedBox(
                   width: 45,
                   child: Container(

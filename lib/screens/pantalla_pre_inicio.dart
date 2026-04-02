@@ -96,7 +96,7 @@ class PantallaPreInicio extends StatelessWidget {
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(backgroundColor: kVerdeNeon, minimumSize: const Size(double.infinity, 60)),
                 icon: const Icon(Icons.play_circle_filled, color: kNegro, size: 30),
-                label: const Text('INICIAR ENCUENTRO', style: TextStyle(color: kNegro, fontSize: 16, fontWeight: FontWeight.bold)),
+                label: Text(Traductor.get('iniciar_encuentro'), style: TextStyle(color: kNegro, fontSize: 16, fontWeight: FontWeight.bold)),
                 onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => PantallaTableroControl(partido: partido))),
               ),
               const SizedBox(height: 20),
@@ -104,11 +104,11 @@ class PantallaPreInicio extends StatelessWidget {
               OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(side: const BorderSide(color: kVerdeOscuro, width: 2), minimumSize: const Size(double.infinity, 60)),
                 icon: const Icon(Icons.bookmark_add, color: kVerdeNeon),
-                label: const Text('GUARDAR PARÁMETROS', style: TextStyle(color: kVerdeNeon, fontSize: 16)),
+                label: Text(Traductor.get('guardar_parametros'), style: TextStyle(color: kVerdeNeon, fontSize: 16)),
                 onPressed: () {
                   if (!parametrosGuardados.contains(partido)) parametrosGuardados.add(partido);
                   Navigator.popUntil(context, (route) => route.isFirst);
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Parámetros guardados como plantilla', style: TextStyle(color: kVerdeNeon)), backgroundColor: kNegro));
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('parametros_plantilla'), style: TextStyle(color: kVerdeNeon)), backgroundColor: kNegro));
                 },
               ),
             ],

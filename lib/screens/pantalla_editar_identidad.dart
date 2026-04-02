@@ -59,7 +59,7 @@ class _PantallaEditarIdentidadState extends State<PantallaEditarIdentidad> {
     });
     QuantumStorage.guardarPerfil(perfilUsuario);
     FocusScope.of(context).unfocus(); 
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Identidad guardada con éxito', style: TextStyle(color: kVerdeNeon)), backgroundColor: kNegro));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('identidad_guardada'), style: TextStyle(color: kVerdeNeon)), backgroundColor: kNegro));
     Navigator.pop(context); 
   }
 
@@ -68,7 +68,7 @@ class _PantallaEditarIdentidadState extends State<PantallaEditarIdentidad> {
     return Scaffold(
       backgroundColor: kNegro,
       appBar: AppBar(
-        title: const Text('IDENTIDAD Y FIRMA', style: TextStyle(color: kVerdeNeon, fontSize: 14, letterSpacing: 2)),
+        title: Text(Traductor.get('identidad_firma'), style: TextStyle(color: kVerdeNeon, fontSize: 14, letterSpacing: 2)),
         backgroundColor: kNegro,
         leading: const BackButton(color: kVerdeNeon),
       ),
@@ -77,27 +77,27 @@ class _PantallaEditarIdentidadState extends State<PantallaEditarIdentidad> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('DATOS DEL CRONISTA / ANALISTA', style: TextStyle(color: kVerdeOscuro, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1)),
+            Text(Traductor.get('datos_cronista'), style: TextStyle(color: kVerdeOscuro, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1)),
             const SizedBox(height: 15),
             
             TextField(
               controller: _nombreCtrl,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: 'Tu Nombre / Apodo', labelStyle: TextStyle(color: Colors.white54), enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white24)), focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: kVerdeNeon))),
+              decoration: InputDecoration(labelText: Traductor.get('tu_nombre_apodo'), labelStyle: const TextStyle(color: Colors.white54), enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white24)), focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: kVerdeNeon))),
             ),
             const SizedBox(height: 15),
             
             TextField(
               controller: _medioCtrl,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: 'Medio / Organización (Ej: ESPN, Radio Mitre)', labelStyle: TextStyle(color: Colors.white54), enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white24)), focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: kVerdeNeon))),
+              decoration: InputDecoration(labelText: Traductor.get('medio_organizacion'), labelStyle: const TextStyle(color: Colors.white54), enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white24)), focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: kVerdeNeon))),
             ),
             const SizedBox(height: 15),
             
             TextField(
               controller: _redesCtrl,
               style: const TextStyle(color: Colors.white),
-              decoration: const InputDecoration(labelText: 'Usuario en Redes (Ej: @MartinDatos)', labelStyle: TextStyle(color: Colors.white54), enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.white24)), focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: kVerdeNeon))),
+              decoration: InputDecoration(labelText: Traductor.get('usuario_redes'), labelStyle: const TextStyle(color: Colors.white54), enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white24)), focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: kVerdeNeon))),
             ),
             
             const SizedBox(height: 30),
@@ -107,7 +107,7 @@ class _PantallaEditarIdentidadState extends State<PantallaEditarIdentidad> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Flexible(child: Text('INCLUIR FIRMA AUTOMÁTICA EN REPORTES', style: TextStyle(color: kVerdeNeon, fontSize: 12, fontWeight: FontWeight.bold))),
+                  Flexible(child: Text(Traductor.get('incluir_firma'), style: const TextStyle(color: kVerdeNeon, fontSize: 12, fontWeight: FontWeight.bold))),
                   Switch(
                     value: perfilUsuario['usarFirma'],
                     activeColor: kVerdeNeon,
@@ -123,7 +123,7 @@ class _PantallaEditarIdentidadState extends State<PantallaEditarIdentidad> {
             ElevatedButton.icon(
               style: ElevatedButton.styleFrom(backgroundColor: kVerdeNeon, minimumSize: const Size(double.infinity, 55)),
               icon: const Icon(Icons.save, color: kNegro),
-              label: const Text('GUARDAR IDENTIDAD', style: TextStyle(color: kNegro, fontWeight: FontWeight.bold, fontSize: 16)),
+              label: Text(Traductor.get('guardar_identidad'), style: TextStyle(color: kNegro, fontWeight: FontWeight.bold, fontSize: 16)),
               onPressed: _guardarPerfil,
             ),
           ],

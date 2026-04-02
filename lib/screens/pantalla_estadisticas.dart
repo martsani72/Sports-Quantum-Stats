@@ -55,7 +55,7 @@ class PantallaEstadisticas extends StatelessWidget {
         leading: const BackButton(color: kVerdeNeon),
       ),
       body: totalPartidos == 0
-          ? const Center(child: Text('No hay partidos registrados para analizar.', style: TextStyle(color: Colors.white54, fontSize: 14)))
+          ? Center(child: Text(Traductor.get('no_hay_partidos_analizar'), style: TextStyle(color: Colors.white54, fontSize: 14)))
           : ListView(
               padding: const EdgeInsets.all(20),
               children: [
@@ -69,7 +69,7 @@ class PantallaEstadisticas extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 30),
-                const Text('ENCUENTROS POR DEPORTE', style: TextStyle(color: kVerdeOscuro, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 2)),
+                Text(Traductor.get('encuentros_por_deporte'), style: TextStyle(color: kVerdeOscuro, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 2)),
                 const SizedBox(height: 15),
                 
                 ...partidosPorDeporte.entries.map((e) => _buildFilaDeporte(Traductor.get(e.key), e.value, totalPartidos)).toList(),

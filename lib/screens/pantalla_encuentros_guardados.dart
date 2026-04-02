@@ -40,7 +40,7 @@ class PantallaEncuentrosGuardados extends StatelessWidget {
       backgroundColor: kNegro,
       appBar: AppBar(title: Text(Traductor.get('menu_6').toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 14, letterSpacing: 2)), backgroundColor: kNegro, leading: const BackButton(color: kVerdeNeon)),
       body: partidosGuardados.isEmpty
-          ? const Center(child: Text('No hay encuentros registrados aún.', style: TextStyle(color: Colors.white54, fontSize: 16)))
+          ? Center(child: Text(Traductor.get('no_hay_encuentros'), style: TextStyle(color: Colors.white54, fontSize: 16)))
           : ListView.builder(
               padding: const EdgeInsets.all(20),
               itemCount: partidosGuardados.length,

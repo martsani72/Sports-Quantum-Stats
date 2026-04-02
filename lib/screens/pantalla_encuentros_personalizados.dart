@@ -40,7 +40,7 @@ class PantallaEncuentrosPersonalizados extends StatelessWidget {
       backgroundColor: kNegro,
       appBar: AppBar(title: Text(Traductor.get('menu_2').toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 14, letterSpacing: 2)), backgroundColor: kNegro, leading: const BackButton(color: kVerdeNeon)),
       body: parametrosGuardados.isEmpty
-          ? const Center(child: Text('No hay plantillas personalizadas aún.', style: TextStyle(color: Colors.white54, fontSize: 16)))
+          ? Center(child: Text(Traductor.get('no_hay_plantillas'), style: TextStyle(color: Colors.white54, fontSize: 16)))
           : ListView.builder(
               padding: const EdgeInsets.all(20),
               itemCount: parametrosGuardados.length,

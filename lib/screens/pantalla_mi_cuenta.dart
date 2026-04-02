@@ -48,7 +48,7 @@ class _PantallaMiCuentaState extends State<PantallaMiCuenta> {
       builder: (context) => AlertDialog(
         backgroundColor: kNegro,
         shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon), borderRadius: BorderRadius.circular(10)),
-        title: const Text('DEPORTE POR DEFECTO', style: TextStyle(color: kVerdeNeon, fontSize: 14, fontWeight: FontWeight.bold)),
+        title: Text(Traductor.get('deporte_defecto'), style: TextStyle(color: kVerdeNeon, fontSize: 14, fontWeight: FontWeight.bold)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: deportes.map((d) => ListTile(
@@ -67,7 +67,7 @@ class _PantallaMiCuentaState extends State<PantallaMiCuenta> {
 
   Future<void> _exportarBaseDeDatos() async {
     if (partidosGuardados.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No hay partidos en el historial para exportar', style: TextStyle(color: Colors.redAccent)), backgroundColor: kNegro));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('no_hay_partidos_exportar'), style: TextStyle(color: Colors.redAccent)), backgroundColor: kNegro));
       return;
     }
 
@@ -90,7 +90,7 @@ class _PantallaMiCuentaState extends State<PantallaMiCuenta> {
       
       await Share.shareXFiles([archivoCsv], text: 'Backup de todos los partidos');
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error al exportar', style: TextStyle(color: Colors.redAccent)), backgroundColor: kNegro));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('error_exportar'), style: TextStyle(color: Colors.redAccent)), backgroundColor: kNegro));
     }
   }
 
@@ -130,7 +130,7 @@ class _PantallaMiCuentaState extends State<PantallaMiCuenta> {
           ),
           
           const SizedBox(height: 30),
-          const Text('AJUSTES DE TRABAJO', style: TextStyle(color: Colors.white54, fontSize: 10, letterSpacing: 2)),
+          Text(Traductor.get('ajustes_trabajo'), style: TextStyle(color: Colors.white54, fontSize: 10, letterSpacing: 2)),
           const SizedBox(height: 10),
 
           _buildOpcionMenu(
@@ -148,7 +148,7 @@ class _PantallaMiCuentaState extends State<PantallaMiCuenta> {
           ),
 
           const SizedBox(height: 20),
-          const Text('GESTIÓN DE DATOS', style: TextStyle(color: Colors.white54, fontSize: 10, letterSpacing: 2)),
+          Text(Traductor.get('gestion_datos'), style: TextStyle(color: Colors.white54, fontSize: 10, letterSpacing: 2)),
           const SizedBox(height: 10),
 
           _buildOpcionMenu(

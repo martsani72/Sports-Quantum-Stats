@@ -98,7 +98,7 @@ class PantallaResumenPartido extends StatelessWidget {
       await Share.shareXFiles([archivoCsv], text: 'Reporte CSV de Estadísticas');
 
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Error al exportar el archivo', style: TextStyle(color: Colors.redAccent)), backgroundColor: kNegro));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('error_exportar_archivo'), style: TextStyle(color: Colors.redAccent)), backgroundColor: kNegro));
     }
   }
 
@@ -109,7 +109,7 @@ class PantallaResumenPartido extends StatelessWidget {
     return Scaffold(
       backgroundColor: kNegro,
       appBar: AppBar(
-        title: const Text('REPORTE DEL PARTIDO', style: TextStyle(color: kVerdeNeon, fontSize: 14, letterSpacing: 2)), 
+        title: Text(Traductor.get('reporte_partido'), style: TextStyle(color: kVerdeNeon, fontSize: 14, letterSpacing: 2)), 
         backgroundColor: kNegro, 
         leading: const BackButton(color: kVerdeNeon),
         actions: [
@@ -123,7 +123,7 @@ class PantallaResumenPartido extends StatelessWidget {
             tooltip: 'Copiar Texto',
             onPressed: () {
               Clipboard.setData(ClipboardData(text: textoResumen));
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Bitácora copiada al portapapeles', style: TextStyle(color: kVerdeNeon)), backgroundColor: kNegro));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('bitacora_copiada'), style: TextStyle(color: kVerdeNeon)), backgroundColor: kNegro));
             },
           )
         ],
@@ -138,7 +138,7 @@ class PantallaResumenPartido extends StatelessWidget {
             Text(Traductor.get(partido.deporte).toUpperCase(), style: const TextStyle(color: Colors.white54, fontSize: 12, letterSpacing: 3)),
             const SizedBox(height: 25),
             
-            const Align(alignment: Alignment.centerLeft, child: Text('BITÁCORA DE EVENTOS', style: TextStyle(color: kVerdeOscuro, fontSize: 12, letterSpacing: 2, fontWeight: FontWeight.bold))),
+            Align(alignment: Alignment.centerLeft, child: Text(Traductor.get('bitacora_eventos'), style: TextStyle(color: kVerdeOscuro, fontSize: 12, letterSpacing: 2, fontWeight: FontWeight.bold))),
             const SizedBox(height: 10),
             
             Expanded(
