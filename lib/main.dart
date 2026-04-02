@@ -31,6 +31,8 @@ import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
+import 'package:mi_nueva_app/screens/pantalla_splash.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await QuantumStorage.init();
@@ -38,6 +40,6 @@ void main() async {
 
   runApp(const MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: PantallaPrincipal(),
+    home: PantallaSplash(),
   ));
 }
