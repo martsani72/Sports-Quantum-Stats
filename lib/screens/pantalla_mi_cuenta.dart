@@ -73,7 +73,7 @@ class _PantallaMiCuentaState extends State<PantallaMiCuenta> {
 
     try {
       StringBuffer csv = StringBuffer();
-      csv.writeln('APP,Quantum Referee - Backup Global');
+      csv.writeln('APP,Sports Quantum Stats - Backup Global');
       csv.writeln('FECHA EXPORTACION,${DateTime.now().toString()}');
       csv.writeln('');
       
@@ -86,7 +86,7 @@ class _PantallaMiCuentaState extends State<PantallaMiCuenta> {
 
       List<int> bytes = utf8.encode(csv.toString());
       Uint8List archivoBytes = Uint8List.fromList(bytes);
-      XFile archivoCsv = XFile.fromData(archivoBytes, mimeType: 'text/csv', name: 'Quantum_Backup_Global.csv');
+      XFile archivoCsv = XFile.fromData(archivoBytes, mimeType: 'text/csv', name: 'SQStats_Backup_Global.csv');
       
       await Share.shareXFiles([archivoCsv], text: 'Backup de todos los partidos');
     } catch (e) {

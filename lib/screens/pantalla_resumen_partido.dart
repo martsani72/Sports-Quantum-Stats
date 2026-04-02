@@ -45,7 +45,7 @@ class PantallaResumenPartido extends StatelessWidget {
         String textoFirma = '\n\n---\nReporte generado por ${nombre.isEmpty ? 'Analista' : nombre}';
         if (medio.isNotEmpty) textoFirma += ' para $medio';
         if (redes.isNotEmpty) textoFirma += ' ($redes)';
-        textoFirma += ' | App: Quantum Referee';
+        textoFirma += ' | App: Sports Quantum Stats';
         return textoFirma;
       }
     }
@@ -56,7 +56,7 @@ class PantallaResumenPartido extends StatelessWidget {
     try {
       StringBuffer csv = StringBuffer();
       
-      csv.writeln('TORNEO/APP,Quantum Referee');
+      csv.writeln('TORNEO/APP,Sports Quantum Stats');
       csv.writeln('DEPORTE,${partido.deporte.toUpperCase()}');
       csv.writeln('LOCAL,${partido.local.toUpperCase()},PUNTOS:,${partido.obtenerPuntaje("Local")}');
       csv.writeln('VISITA,${partido.visita.toUpperCase()},PUNTOS:,${partido.obtenerPuntaje("Visita")}');
@@ -92,7 +92,7 @@ class PantallaResumenPartido extends StatelessWidget {
 
       List<int> bytes = utf8.encode(csv.toString());
       Uint8List archivoBytes = Uint8List.fromList(bytes);
-      String nombreArchivo = 'Quantum_${partido.local}_vs_${partido.visita}.csv'.replaceAll(' ', '_');
+      String nombreArchivo = 'SQStats_${partido.local}_vs_${partido.visita}.csv'.replaceAll(' ', '_');
 
       XFile archivoCsv = XFile.fromData(archivoBytes, mimeType: 'text/csv', name: nombreArchivo);
       await Share.shareXFiles([archivoCsv], text: 'Reporte CSV de Estadísticas');

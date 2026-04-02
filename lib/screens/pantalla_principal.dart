@@ -56,8 +56,49 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('QUANTUM', style: TextStyle(color: kVerdeOscuro, fontSize: 14, letterSpacing: 8)),
-              const Text('REFEREE', style: TextStyle(color: kVerdeNeon, fontSize: 38, fontWeight: FontWeight.bold, shadows: [Shadow(color: kVerdeNeon, blurRadius: 10)])),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 30.0, left: 5.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'SPORTS', 
+                      style: TextStyle(
+                        color: kVerdeNeon.withOpacity(0.7), 
+                        fontSize: 15, 
+                        letterSpacing: 12, 
+                        fontWeight: FontWeight.w300
+                      )
+                    ),
+                    const SizedBox(height: 5),
+                    const Text(
+                      'QUANTUM STATS', 
+                      style: TextStyle(
+                        color: kVerdeNeon, 
+                        fontSize: 42, 
+                        fontWeight: FontWeight.w900, 
+                        height: 1.0,
+                        shadows: [
+                          Shadow(color: kVerdeNeon, blurRadius: 20),
+                          Shadow(color: kVerdeNeon, blurRadius: 40),
+                        ]
+                      )
+                    ),
+                    // Underline glow to differentiate from buttons
+                    Container(
+                      margin: const EdgeInsets.only(top: 8),
+                      width: 100,
+                      height: 2,
+                      decoration: BoxDecoration(
+                        color: kVerdeNeon,
+                        boxShadow: [
+                          BoxShadow(color: kVerdeNeon, blurRadius: 10, spreadRadius: 1)
+                        ]
+                      ),
+                    )
+                  ],
+                ),
+              ),
               const SizedBox(height: 40),
               ...opcionesMenu.map((op) => _buildBotonMenu(context, op)),
             ],
