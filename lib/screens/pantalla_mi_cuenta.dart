@@ -119,9 +119,9 @@ class _PantallaMiCuentaState extends State<PantallaMiCuenta> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(perfilUsuario['nombre'].toString().isEmpty ? 'Usuario sin nombre' : perfilUsuario['nombre'], style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text(perfilUsuario['nombre'].toString().isEmpty ? Traductor.get('no_definidos') : perfilUsuario['nombre'], style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 5),
-                      Text(perfilUsuario['medio'].toString().isEmpty ? 'Configurá tu identidad' : '${perfilUsuario['medio']} | ${perfilUsuario['redSocial']}', style: const TextStyle(color: kVerdeNeon, fontSize: 12)),
+                      Text(perfilUsuario['medio'].toString().isEmpty ? Traductor.get('titulo_firma_hint') : '${perfilUsuario['medio']} | ${perfilUsuario['redSocial']}', style: const TextStyle(color: kVerdeNeon, fontSize: 12)),
                     ],
                   ),
                 )
@@ -135,15 +135,15 @@ class _PantallaMiCuentaState extends State<PantallaMiCuenta> {
 
           _buildOpcionMenu(
             icono: Icons.badge, 
-            titulo: 'Identidad y Firma', 
-            subtitulo: 'Configurá tu nombre y firma automática',
+            titulo: Traductor.get('identidad_firma'), 
+            subtitulo: Traductor.get('perfil_ajustes_identidad'),
             onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const PantallaEditarIdentidad())).then((_) => setState((){})),
           ),
 
           _buildOpcionMenu(
             icono: Icons.sports, 
-            titulo: 'Deporte por Defecto', 
-            subtitulo: deporteElegido.isEmpty ? 'Elegí con qué deporte arranca la app' : 'Actual: ${Traductor.get(deporteElegido).toUpperCase()}',
+            titulo: Traductor.get('deporte_defecto'), 
+            subtitulo: deporteElegido.isEmpty ? Traductor.get('perfil_ajustes_deporte') : '${Traductor.get('perfil_ajustes_deporte_actual')}${Traductor.get(deporteElegido).toUpperCase()}',
             onTap: _seleccionarDeporteDefecto,
           ),
 
@@ -153,8 +153,8 @@ class _PantallaMiCuentaState extends State<PantallaMiCuenta> {
 
           _buildOpcionMenu(
             icono: Icons.download_for_offline, 
-            titulo: 'Exportar Base de Datos', 
-            subtitulo: 'Descargar CSV con todos los partidos jugados',
+            titulo: Traductor.get('perfil_exportar_db_titulo'), 
+            subtitulo: Traductor.get('perfil_exportar_db_sub'),
             onTap: _exportarBaseDeDatos,
           ),
         ],

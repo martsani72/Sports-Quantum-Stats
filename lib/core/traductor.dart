@@ -165,6 +165,13 @@ class Traductor {
       'limite_cambios_msj_1': 'El equipo ya no tiene cambios disponibles (',
       'limite_cambios_msj_2': '). ¿Continuar de todas formas?',
       'nota_hint': 'Escribí o dictá el comentario del partido acá...',
+      'perfil_ajustes_identidad': 'Configurá tu nombre y firma automática',
+      'perfil_ajustes_deporte': 'Elegí con qué deporte arranca la app',
+      'perfil_ajustes_deporte_actual': 'Actual: ',
+      'perfil_exportar_db_titulo': 'Exportar Base de Datos',
+      'perfil_exportar_db_sub': 'Descargar CSV con todos los encuentros',
+      'ninguno': 'Ninguno',
+      'titulo_firma_hint': 'Configurá tu identidad',
     },
     'English': {
       'menu_1': '1 - Start a match',
