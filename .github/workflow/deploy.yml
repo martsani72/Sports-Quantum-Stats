@@ -1,0 +1,26 @@
+name: Deploy Web
+on:
+  push:
+    branches:
+      - main # Si tu rama se llama 'master', cambiá 'main' por 'master'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          
+      - name: Build Web
+        # REEMPLAZA 'mi_nueva_app' por el nombre exacto de tu repo en GitHub si es distinto
+        run: flutter build web --release --base-href "/mi_nueva_app/"
+        
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
