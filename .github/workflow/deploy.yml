@@ -16,7 +16,7 @@ jobs:
           channel: 'stable'
           
       - name: Build Web
-        run: flutter build web --release --base-href "/Sports_Quantum_Stats/"
+        run: flutter build web --release --base-href "/Sports-Quantum-Stats/"
         
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
