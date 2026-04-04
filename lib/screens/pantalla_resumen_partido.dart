@@ -252,8 +252,8 @@ class PantallaResumenPartido extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('${pLocal.toStringAsFixed(0)}% ${partido.local.toUpperCase()}', style: TextStyle(color: colorL, fontSize: 11, fontWeight: FontWeight.bold)),
-            Text('${partido.visita.toUpperCase()} ${pVisita.toStringAsFixed(0)}%', style: TextStyle(color: colorV, fontSize: 11, fontWeight: FontWeight.bold)),
+            Text('${pLocal.toStringAsFixed(0)}% ${partido.local.toUpperCase()}', style: TextStyle(color: partido.localTexto, fontSize: 11, fontWeight: FontWeight.bold)),
+            Text('${partido.visita.toUpperCase()} ${pVisita.toStringAsFixed(0)}%', style: TextStyle(color: partido.visitaTexto, fontSize: 11, fontWeight: FontWeight.bold)),
           ],
         ),
         if (breakdown.isNotEmpty) ...[

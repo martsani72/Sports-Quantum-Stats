@@ -933,6 +933,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     double pLocal = total == 0 ? 50 : (tLocal / total) * 100;
     double pVisita = total == 0 ? 50 : (tVisita / total) * 100;
 
+    // Vibrant colors for the bars/backgrounds
     Color colorL = (widget.partido.localFondo == kNegro || widget.partido.localFondo.value == 0xFF000000) ? widget.partido.localTexto : widget.partido.localFondo;
     Color colorV = (widget.partido.visitaFondo == kNegro || widget.partido.visitaFondo.value == 0xFF000000) ? widget.partido.visitaTexto : widget.partido.visitaFondo;
 
@@ -942,18 +943,18 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(30)),
       child: Row(
         children: [
-          _buildItemPosesion('Local', widget.partido.local, pLocal, colorL),
+          _buildItemPosesion('Local', widget.partido.local, pLocal, colorL, widget.partido.localTexto),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text('POSESIÓN', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 8, fontWeight: FontWeight.bold, letterSpacing: 1)),
           ),
-          _buildItemPosesion('Visita', widget.partido.visita, pVisita, colorV),
+          _buildItemPosesion('Visita', widget.partido.visita, pVisita, colorV, widget.partido.visitaTexto),
         ],
       ),
     );
   }
 
-  Widget _buildItemPosesion(String equipo, String nombre, double porcentaje, Color color) {
+  Widget _buildItemPosesion(String equipo, String nombre, double porcentaje, Color colorFondo, Color colorTexto) {
     bool activo = _equipoPosesion == equipo;
     bool esLocal = equipo == 'Local';
 
@@ -964,7 +965,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           decoration: BoxDecoration(
-            color: activo ? color.withOpacity(0.2) : Colors.transparent,
+            color: activo ? colorFondo.withOpacity(0.3) : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
           ),
           child: esLocal 
@@ -972,15 +973,15 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                 children: [
                   Expanded(child: Text(nombre.toUpperCase(), overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white54, fontSize: 9, letterSpacing: 1))),
                   const SizedBox(width: 5),
-                  Text('${porcentaje.toStringAsFixed(0)}%', style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13)),
-                  if (activo) ...[const SizedBox(width: 4), Icon(Icons.timer, color: color, size: 10)],
+                  Text('${porcentaje.toStringAsFixed(0)}%', style: TextStyle(color: colorTexto, fontWeight: FontWeight.bold, fontSize: 13)),
+                  if (activo) ...[const SizedBox(width: 4), Icon(Icons.timer, color: colorTexto, size: 10)],
                 ],
               )
             : Row( // Visita: [Percentage] [NAME]
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  if (activo) ...[Icon(Icons.timer, color: color, size: 10), const SizedBox(width: 4)],
-                  Text('${porcentaje.toStringAsFixed(0)}%', style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13)),
+                  if (activo) ...[Icon(Icons.timer, color: colorTexto, size: 10), const SizedBox(width: 4)],
+                  Text('${porcentaje.toStringAsFixed(0)}%', style: TextStyle(color: colorTexto, fontWeight: FontWeight.bold, fontSize: 13)),
                   const SizedBox(width: 5),
                   Expanded(child: Text(nombre.toUpperCase(), textAlign: TextAlign.right, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white54, fontSize: 9, letterSpacing: 1))),
                 ],
