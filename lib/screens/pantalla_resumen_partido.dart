@@ -237,41 +237,25 @@ class PantallaResumenPartido extends StatelessWidget {
         Text('POSESIÓN', style: TextStyle(color: kVerdeOscuro, fontSize: 11, letterSpacing: 2, fontWeight: FontWeight.bold)),
         const SizedBox(height: 10),
         
-        // Premium Possession Bar (Redesigned with Stack/FractionallySizedBox)
+        // Redesigned 2-color Possession Bar
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Container(
             height: 12,
             width: double.infinity,
-            decoration: BoxDecoration(color: Colors.white12),
-            child: Stack(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Local Bar
-                FractionallySizedBox(
-                  widthFactor: pLocal / 100,
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: colorL,
-                      boxShadow: [
-                        BoxShadow(color: colorL.withOpacity(0.3), blurRadius: 4)
-                      ]
-                    ),
+                if (pLocal > 0) 
+                  Expanded(
+                    flex: (pLocal * 10).round().toInt(),
+                    child: Container(color: colorL),
                   ),
-                ),
-                // Visita Bar
-                FractionallySizedBox(
-                  widthFactor: pVisita / 100,
-                  alignment: Alignment.centerRight,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: colorV,
-                      boxShadow: [
-                        BoxShadow(color: colorV.withOpacity(0.3), blurRadius: 4)
-                      ]
-                    ),
+                if (pVisita > 0)
+                  Expanded(
+                    flex: (pVisita * 10).round().toInt(),
+                    child: Container(color: colorV),
                   ),
-                ),
               ],
             ),
           ),

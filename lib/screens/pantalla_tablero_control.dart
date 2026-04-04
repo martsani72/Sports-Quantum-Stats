@@ -120,6 +120,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         setState(() {
           widget.partido.logEventos.add('--- FIN DEL $nombreRef $_periodoActual ---');
           _periodoActual++;
+          _equipoPosesion = null; // Reset possession for the new period
           _segundosAcumulados = 0;
           _momentoInicioActual = null;
         });
