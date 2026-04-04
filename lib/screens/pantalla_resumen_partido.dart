@@ -245,10 +245,11 @@ class PantallaResumenPartido extends StatelessWidget {
             width: double.infinity,
             decoration: BoxDecoration(color: Colors.white12),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (pLocal > 0) 
+                if (pLocal > 0.1) 
                   Expanded(
-                    flex: pLocal.round().toInt(),
+                    flex: pLocal.ceil().toInt(),
                     child: Container(
                       decoration: BoxDecoration(
                         color: colorL,
@@ -258,9 +259,9 @@ class PantallaResumenPartido extends StatelessWidget {
                       ),
                     ),
                   ),
-                if (pVisita > 0)
+                if (pVisita > 0.1)
                   Expanded(
-                    flex: pVisita.round().toInt(),
+                    flex: pVisita.ceil().toInt(),
                     child: Container(
                       decoration: BoxDecoration(
                         color: colorV,
