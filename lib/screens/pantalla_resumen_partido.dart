@@ -227,6 +227,9 @@ class PantallaResumenPartido extends StatelessWidget {
       }
     });
 
+    Color colorL = (partido.localFondo == kNegro || partido.localFondo.value == 0xFF000000) ? partido.localTexto : partido.localFondo;
+    Color colorV = (partido.visitaFondo == kNegro || partido.visitaFondo.value == 0xFF000000) ? partido.visitaTexto : partido.visitaFondo;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -237,11 +240,11 @@ class PantallaResumenPartido extends StatelessWidget {
           children: [
             Expanded(
               flex: (pLocal * 10).round().toInt(),
-              child: Container(height: 6, decoration: BoxDecoration(color: partido.localTexto, borderRadius: const BorderRadius.horizontal(left: Radius.circular(4)))),
+              child: Container(height: 6, decoration: BoxDecoration(color: colorL, borderRadius: const BorderRadius.horizontal(left: Radius.circular(4)))),
             ),
             Expanded(
               flex: (pVisita * 10).round().toInt(),
-              child: Container(height: 6, decoration: BoxDecoration(color: partido.visitaTexto, borderRadius: const BorderRadius.horizontal(right: Radius.circular(4)))),
+              child: Container(height: 6, decoration: BoxDecoration(color: colorV, borderRadius: const BorderRadius.horizontal(right: Radius.circular(4)))),
             ),
           ],
         ),
@@ -249,8 +252,8 @@ class PantallaResumenPartido extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('${pLocal.toStringAsFixed(0)}% ${partido.local.toUpperCase()}', style: TextStyle(color: partido.localTexto, fontSize: 11, fontWeight: FontWeight.bold)),
-            Text('${partido.visita.toUpperCase()} ${pVisita.toStringAsFixed(0)}%', style: TextStyle(color: partido.visitaTexto, fontSize: 11, fontWeight: FontWeight.bold)),
+            Text('${pLocal.toStringAsFixed(0)}% ${partido.local.toUpperCase()}', style: TextStyle(color: colorL, fontSize: 11, fontWeight: FontWeight.bold)),
+            Text('${partido.visita.toUpperCase()} ${pVisita.toStringAsFixed(0)}%', style: TextStyle(color: colorV, fontSize: 11, fontWeight: FontWeight.bold)),
           ],
         ),
         if (breakdown.isNotEmpty) ...[

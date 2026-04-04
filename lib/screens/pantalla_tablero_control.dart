@@ -933,18 +933,21 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     double pLocal = total == 0 ? 50 : (tLocal / total) * 100;
     double pVisita = total == 0 ? 50 : (tVisita / total) * 100;
 
+    Color colorL = (widget.partido.localFondo == kNegro || widget.partido.localFondo.value == 0xFF000000) ? widget.partido.localTexto : widget.partido.localFondo;
+    Color colorV = (widget.partido.visitaFondo == kNegro || widget.partido.visitaFondo.value == 0xFF000000) ? widget.partido.visitaTexto : widget.partido.visitaFondo;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(30)),
       child: Row(
         children: [
-          _buildItemPosesion('Local', widget.partido.local, pLocal, widget.partido.localTexto),
+          _buildItemPosesion('Local', widget.partido.local, pLocal, colorL),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Text('POSESIÓN', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 8, fontWeight: FontWeight.bold, letterSpacing: 1)),
           ),
-          _buildItemPosesion('Visita', widget.partido.visita, pVisita, widget.partido.visitaTexto),
+          _buildItemPosesion('Visita', widget.partido.visita, pVisita, colorV),
         ],
       ),
     );
