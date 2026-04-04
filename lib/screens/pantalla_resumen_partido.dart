@@ -237,40 +237,41 @@ class PantallaResumenPartido extends StatelessWidget {
         Text('POSESIÓN', style: TextStyle(color: kVerdeOscuro, fontSize: 11, letterSpacing: 2, fontWeight: FontWeight.bold)),
         const SizedBox(height: 10),
         
-        // Premium Possession Bar
+        // Premium Possession Bar (Redesigned with Stack/FractionallySizedBox)
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Container(
             height: 12,
             width: double.infinity,
             decoration: BoxDecoration(color: Colors.white12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: Stack(
               children: [
-                if (pLocal > 0.1) 
-                  Expanded(
-                    flex: pLocal.ceil().toInt(),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: colorL,
-                        boxShadow: [
-                          BoxShadow(color: colorL.withOpacity(0.3), blurRadius: 4)
-                        ]
-                      ),
+                // Local Bar
+                FractionallySizedBox(
+                  widthFactor: pLocal / 100,
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: colorL,
+                      boxShadow: [
+                        BoxShadow(color: colorL.withOpacity(0.3), blurRadius: 4)
+                      ]
                     ),
                   ),
-                if (pVisita > 0.1)
-                  Expanded(
-                    flex: pVisita.ceil().toInt(),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: colorV,
-                        boxShadow: [
-                          BoxShadow(color: colorV.withOpacity(0.3), blurRadius: 4)
-                        ]
-                      ),
+                ),
+                // Visita Bar
+                FractionallySizedBox(
+                  widthFactor: pVisita / 100,
+                  alignment: Alignment.centerRight,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: colorV,
+                      boxShadow: [
+                        BoxShadow(color: colorV.withOpacity(0.3), blurRadius: 4)
+                      ]
                     ),
                   ),
+                ),
               ],
             ),
           ),
