@@ -65,6 +65,8 @@ class Partido {
     'Local': 0,
     'Visita': 0,
   };
+  
+  Map<String, Map<String, int>> posesionPorPeriodo = {};
 
   Partido({
     required this.deporte, required this.local, required this.visita,
@@ -138,6 +140,7 @@ class Partido {
       'logEventos': logEventos,
       'ordenEventosActivos': ordenEventosActivos,
       'posesionSegundos': posesionSegundos,
+      'posesionPorPeriodo': posesionPorPeriodo,
     };
   }
 
@@ -166,6 +169,9 @@ class Partido {
     p.ordenEventosActivos = List<String>.from(map['ordenEventosActivos']);
     if (map.containsKey('posesionSegundos')) {
       p.posesionSegundos = Map<String, int>.from(map['posesionSegundos']);
+    }
+    if (map.containsKey('posesionPorPeriodo')) {
+      p.posesionPorPeriodo = (map['posesionPorPeriodo'] as Map).map((k, v) => MapEntry(k as String, Map<String, int>.from(v as Map)));
     }
     return p;
   }

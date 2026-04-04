@@ -84,6 +84,12 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         }
         if (_equipoPosesion != null) {
           widget.partido.posesionSegundos[_equipoPosesion!] = (widget.partido.posesionSegundos[_equipoPosesion!] ?? 0) + 1;
+          
+          String pKey = _periodoActual.toString();
+          if (!widget.partido.posesionPorPeriodo.containsKey(pKey)) {
+            widget.partido.posesionPorPeriodo[pKey] = {'Local': 0, 'Visita': 0};
+          }
+          widget.partido.posesionPorPeriodo[pKey]![_equipoPosesion!] = (widget.partido.posesionPorPeriodo[pKey]![_equipoPosesion!] ?? 0) + 1;
         }
       });
       if (timer.tick % 5 == 0) _guardarEstado(); 
@@ -934,7 +940,10 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       child: Row(
         children: [
           _buildItemPosesion('Local', widget.partido.local, pLocal, widget.partido.localTexto),
-          Container(width: 1, height: 20, color: Colors.white12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text('POSESIÓN', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 8, fontWeight: FontWeight.bold, letterSpacing: 1)),
+          ),
           _buildItemPosesion('Visita', widget.partido.visita, pVisita, widget.partido.visitaTexto),
         ],
       ),
@@ -943,26 +952,36 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
 
   Widget _buildItemPosesion(String equipo, String nombre, double porcentaje, Color color) {
     bool activo = _equipoPosesion == equipo;
+    bool esLocal = equipo == 'Local';
+
     return Expanded(
       child: GestureDetector(
         onTap: () => setState(() => _equipoPosesion = activo ? null : equipo),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           decoration: BoxDecoration(
             color: activo ? color.withOpacity(0.2) : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (activo) Icon(Icons.timer, color: color, size: 12),
-              const SizedBox(width: 5),
-              Text('${porcentaje.toStringAsFixed(0)}%', style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 14)),
-              const SizedBox(width: 5),
-              Expanded(child: Text(nombre.toUpperCase(), overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white54, fontSize: 9, letterSpacing: 1))),
-            ],
-          ),
+          child: esLocal 
+            ? Row( // Local: [NAME] [Percentage]
+                children: [
+                  Expanded(child: Text(nombre.toUpperCase(), overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white54, fontSize: 9, letterSpacing: 1))),
+                  const SizedBox(width: 5),
+                  Text('${porcentaje.toStringAsFixed(0)}%', style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13)),
+                  if (activo) ...[const SizedBox(width: 4), Icon(Icons.timer, color: color, size: 10)],
+                ],
+              )
+            : Row( // Visita: [Percentage] [NAME]
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  if (activo) ...[Icon(Icons.timer, color: color, size: 10), const SizedBox(width: 4)],
+                  Text('${porcentaje.toStringAsFixed(0)}%', style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 13)),
+                  const SizedBox(width: 5),
+                  Expanded(child: Text(nombre.toUpperCase(), textAlign: TextAlign.right, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white54, fontSize: 9, letterSpacing: 1))),
+                ],
+              ),
         ),
       ),
     );

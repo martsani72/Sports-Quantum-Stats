@@ -70,6 +70,23 @@ class PantallaResumenPartido extends StatelessWidget {
         });
       }
       csv.writeln('');
+      
+      if (partido.posesionSegundos['Local']! + partido.posesionSegundos['Visita']! > 0) {
+        csv.writeln('--- POSESION ---');
+        int tl = partido.posesionSegundos['Local']!;
+        int tv = partido.posesionSegundos['Visita']!;
+        int tt = tl + tv;
+        csv.writeln('TOTAL,${(tl/tt*100).toStringAsFixed(0)}%,${(tv/tt*100).toStringAsFixed(0)}%');
+        partido.posesionPorPeriodo.forEach((per, data) {
+          int dtl = data['Local'] ?? 0;
+          int dtv = data['Visita'] ?? 0;
+          int dtt = dtl + dtv;
+          if (dtt > 0) {
+            csv.writeln('TIEMPO $per,${(dtl/dtt*100).toStringAsFixed(0)}%,${(dtv/dtt*100).toStringAsFixed(0)}%');
+          }
+        });
+        csv.writeln('');
+      }
 
       csv.writeln('--- MINUTO A MINUTO ---');
       csv.writeln('TIEMPO,EQUIPO,EVENTO_Y_JUGADOR');
@@ -138,6 +155,8 @@ class PantallaResumenPartido extends StatelessWidget {
             Text(Traductor.get(partido.deporte).toUpperCase(), style: const TextStyle(color: Colors.white54, fontSize: 12, letterSpacing: 3)),
             const SizedBox(height: 25),
             
+            _buildSeccionPosesion(),
+
             Align(alignment: Alignment.centerLeft, child: Text(Traductor.get('bitacora_eventos'), style: TextStyle(color: kVerdeOscuro, fontSize: 12, letterSpacing: 2, fontWeight: FontWeight.bold))),
             const SizedBox(height: 10),
             
@@ -154,6 +173,74 @@ class PantallaResumenPartido extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSeccionPosesion() {
+    int tLocal = partido.posesionSegundos['Local'] ?? 0;
+    int tVisita = partido.posesionSegundos['Visita'] ?? 0;
+    int total = tLocal + tVisita;
+    
+    if (total == 0) return const SizedBox();
+
+    double pLocal = (tLocal / total) * 100;
+    double pVisita = (tVisita / total) * 100;
+
+    List<Widget> breakdown = [];
+    partido.posesionPorPeriodo.forEach((periodo, tiempos) {
+      int tl = tiempos['Local'] ?? 0;
+      int tv = tiempos['Visita'] ?? 0;
+      int tt = tl + tv;
+      if (tt > 0) {
+        double pl = (tl / tt) * 100;
+        double pv = (tv / tt) * 100;
+        breakdown.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('TIEMPO $periodo:', style: const TextStyle(color: Colors.white54, fontSize: 11)),
+                Text('${pl.toStringAsFixed(0)}% - ${pv.toStringAsFixed(0)}%', style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          )
+        );
+      }
+    });
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 5),
+        Text('POSESIÓN', style: TextStyle(color: kVerdeOscuro, fontSize: 11, letterSpacing: 2, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              flex: (pLocal * 10).round().toInt(),
+              child: Container(height: 6, decoration: BoxDecoration(color: partido.localTexto, borderRadius: const BorderRadius.horizontal(left: Radius.circular(4)))),
+            ),
+            Expanded(
+              flex: (pVisita * 10).round().toInt(),
+              child: Container(height: 6, decoration: BoxDecoration(color: partido.visitaTexto, borderRadius: const BorderRadius.horizontal(right: Radius.circular(4)))),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('${pLocal.toStringAsFixed(0)}% ${partido.local.toUpperCase()}', style: TextStyle(color: partido.localTexto, fontSize: 11, fontWeight: FontWeight.bold)),
+            Text('${partido.visita.toUpperCase()} ${pVisita.toStringAsFixed(0)}%', style: TextStyle(color: partido.visitaTexto, fontSize: 11, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        if (breakdown.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          ...breakdown,
+        ],
+        const SizedBox(height: 20),
+      ],
     );
   }
 }
