@@ -236,19 +236,46 @@ class PantallaResumenPartido extends StatelessWidget {
         const SizedBox(height: 5),
         Text('POSESIÓN', style: TextStyle(color: kVerdeOscuro, fontSize: 11, letterSpacing: 2, fontWeight: FontWeight.bold)),
         const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              flex: (pLocal * 10).round().toInt(),
-              child: Container(height: 6, decoration: BoxDecoration(color: colorL, borderRadius: const BorderRadius.horizontal(left: Radius.circular(4)))),
+        
+        // Premium Possession Bar
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Container(
+            height: 12,
+            width: double.infinity,
+            decoration: BoxDecoration(color: Colors.white12),
+            child: Row(
+              children: [
+                if (pLocal > 0) 
+                  Expanded(
+                    flex: pLocal.round().toInt(),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: colorL,
+                        boxShadow: [
+                          BoxShadow(color: colorL.withOpacity(0.3), blurRadius: 4)
+                        ]
+                      ),
+                    ),
+                  ),
+                if (pVisita > 0)
+                  Expanded(
+                    flex: pVisita.round().toInt(),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: colorV,
+                        boxShadow: [
+                          BoxShadow(color: colorV.withOpacity(0.3), blurRadius: 4)
+                        ]
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            Expanded(
-              flex: (pVisita * 10).round().toInt(),
-              child: Container(height: 6, decoration: BoxDecoration(color: colorV, borderRadius: const BorderRadius.horizontal(right: Radius.circular(4)))),
-            ),
-          ],
+          ),
         ),
-        const SizedBox(height: 8),
+        
+        const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
