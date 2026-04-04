@@ -121,7 +121,25 @@ class PantallaResumenPartido extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String textoResumen = partido.logEventos.join('\n\n') + _generarFirma();
+    int tL = partido.posesionSegundos['Local'] ?? 0;
+    int tV = partido.posesionSegundos['Visita'] ?? 0;
+    int tT = tL + tV;
+    String posTxt = "";
+    if (tT > 0) {
+      posTxt = "--- POSESIÓN ---\n";
+      posTxt += "TOTAL: ${(tL/tT*100).toStringAsFixed(0)}% ${partido.local.toUpperCase()} - ${partido.visita.toUpperCase()} ${(tV/tT*100).toStringAsFixed(0)}%\n";
+      partido.posesionPorPeriodo.forEach((per, data) {
+        int dtl = data['Local'] ?? 0;
+        int dtv = data['Visita'] ?? 0;
+        int dtt = dtl + dtv;
+        if (dtt > 0) {
+          posTxt += "TIEMPO $per: ${(dtl/dtt*100).toStringAsFixed(0)}% - ${(dtv/dtt*100).toStringAsFixed(0)}%\n";
+        }
+      });
+      posTxt += "\n--- BITÁCORA ---\n";
+    }
+
+    String textoResumen = posTxt + partido.logEventos.join('\n\n') + _generarFirma();
 
     return Scaffold(
       backgroundColor: kNegro,
