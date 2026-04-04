@@ -248,12 +248,12 @@ class PantallaResumenPartido extends StatelessWidget {
               children: [
                 if (pLocal > 0) 
                   Expanded(
-                    flex: (pLocal * 10).round().toInt(),
+                    flex: pLocal.ceil().toInt() < 1 ? 1 : pLocal.ceil().toInt(),
                     child: Container(color: colorL),
                   ),
                 if (pVisita > 0)
                   Expanded(
-                    flex: (pVisita * 10).round().toInt(),
+                    flex: pVisita.ceil().toInt() < 1 ? 1 : pVisita.ceil().toInt(),
                     child: Container(color: colorV),
                   ),
               ],
