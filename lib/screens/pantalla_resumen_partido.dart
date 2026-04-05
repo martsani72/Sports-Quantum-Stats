@@ -227,8 +227,11 @@ class PantallaResumenPartido extends StatelessWidget {
       }
     });
 
-    Color colorL = (partido.localFondo == kNegro || partido.localFondo.value == 0xFF000000) ? partido.localTexto : partido.localFondo;
-    Color colorV = (partido.visitaFondo == kNegro || partido.visitaFondo.value == 0xFF000000) ? partido.visitaTexto : partido.visitaFondo;
+    // High visibility colors (vibrant fallback if too dark)
+    Color colorL = (partido.localFondo.computeLuminance() < 0.15) ? partido.localTexto : partido.localFondo;
+    Color colorV = (partido.visitaFondo.computeLuminance() < 0.15) ? partido.visitaTexto : partido.visitaFondo;
+    if (colorL.computeLuminance() < 0.15) colorL = kVerdeNeon;
+    if (colorV.computeLuminance() < 0.15) colorV = Colors.redAccent;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,7 +244,7 @@ class PantallaResumenPartido extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
           child: Container(
-            height: 12,
+            height: 14, // Slightly thicker
             width: double.infinity,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,

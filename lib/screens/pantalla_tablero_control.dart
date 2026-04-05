@@ -120,7 +120,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         setState(() {
           widget.partido.logEventos.add('--- FIN DEL $nombreRef $_periodoActual ---');
           _periodoActual++;
-          _equipoPosesion = null; // Reset possession for the new period
+          _equipoPosesion = null; // Reset selection for new period
           _segundosAcumulados = 0;
           _momentoInicioActual = null;
         });
@@ -927,16 +927,18 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   }
 
   Widget _buildSelectorPosesion() {
-    int tLocal = widget.partido.posesionSegundos['Local'] ?? 0;
-    int tVisita = widget.partido.posesionSegundos['Visita'] ?? 0;
+    // CURRENT PERIOD percentages
+    String pKey = _periodoActual.toString();
+    int tLocal = widget.partido.posesionPorPeriodo[pKey]?['Local'] ?? 0;
+    int tVisita = widget.partido.posesionPorPeriodo[pKey]?['Visita'] ?? 0;
     int total = tLocal + tVisita;
     
     double pLocal = total == 0 ? 50 : (tLocal / total) * 100;
     double pVisita = total == 0 ? 50 : (tVisita / total) * 100;
 
-    // Vibrant colors for the bars/backgrounds
-    Color colorL = (widget.partido.localFondo == kNegro || widget.partido.localFondo.value == 0xFF000000) ? widget.partido.localTexto : widget.partido.localFondo;
-    Color colorV = (widget.partido.visitaFondo == kNegro || widget.partido.visitaFondo.value == 0xFF000000) ? widget.partido.visitaTexto : widget.partido.visitaFondo;
+    // Guaranteed visible colors
+    Color colorL = (widget.partido.localFondo.computeLuminance() < 0.1) ? widget.partido.localTexto : widget.partido.localFondo;
+    Color colorV = (widget.partido.visitaFondo.computeLuminance() < 0.1) ? widget.partido.visitaTexto : widget.partido.visitaFondo;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -966,25 +968,27 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           decoration: BoxDecoration(
-            color: activo ? colorFondo.withOpacity(0.3) : Colors.transparent,
+            // High opacity (0.8) when active for extreme clarity
+            color: activo ? colorFondo.withOpacity(0.8) : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
+            border: activo ? Border.all(color: Colors.white.withOpacity(0.3), width: 1) : null,
           ),
           child: esLocal 
-            ? Row( // Local: [NAME] [Percentage]
+            ? Row(
                 children: [
-                  Expanded(child: Text(nombre.toUpperCase(), overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white54, fontSize: 9, letterSpacing: 1))),
+                  Expanded(child: Text(nombre.toUpperCase(), overflow: TextOverflow.ellipsis, style: TextStyle(color: activo ? Colors.white : Colors.white54, fontSize: 9, fontWeight: activo ? FontWeight.bold : FontWeight.normal, letterSpacing: 1))),
                   const SizedBox(width: 5),
-                  Text('${porcentaje.toStringAsFixed(0)}%', style: TextStyle(color: colorTexto, fontWeight: FontWeight.bold, fontSize: 13)),
-                  if (activo) ...[const SizedBox(width: 4), Icon(Icons.timer, color: colorTexto, size: 10)],
+                  Text('${porcentaje.toStringAsFixed(0)}%', style: TextStyle(color: activo ? Colors.white : colorTexto, fontWeight: FontWeight.bold, fontSize: 13)),
+                  if (activo) ...[const SizedBox(width: 4), Icon(Icons.timer, color: Colors.white, size: 12)],
                 ],
               )
-            : Row( // Visita: [Percentage] [NAME]
+            : Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  if (activo) ...[Icon(Icons.timer, color: colorTexto, size: 10), const SizedBox(width: 4)],
-                  Text('${porcentaje.toStringAsFixed(0)}%', style: TextStyle(color: colorTexto, fontWeight: FontWeight.bold, fontSize: 13)),
+                  if (activo) ...[Icon(Icons.timer, color: Colors.white, size: 12), const SizedBox(width: 4)],
+                  Text('${porcentaje.toStringAsFixed(0)}%', style: TextStyle(color: activo ? Colors.white : colorTexto, fontWeight: FontWeight.bold, fontSize: 13)),
                   const SizedBox(width: 5),
-                  Expanded(child: Text(nombre.toUpperCase(), textAlign: TextAlign.right, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white54, fontSize: 9, letterSpacing: 1))),
+                  Expanded(child: Text(nombre.toUpperCase(), textAlign: TextAlign.right, overflow: TextOverflow.ellipsis, style: TextStyle(color: activo ? Colors.white : Colors.white54, fontSize: 9, fontWeight: activo ? FontWeight.bold : FontWeight.normal, letterSpacing: 1))),
                 ],
               ),
         ),
