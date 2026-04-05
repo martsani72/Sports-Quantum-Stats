@@ -26,7 +26,6 @@ import 'package:mi_nueva_app/screens/pantalla_registro_evento.dart';
 import 'package:mi_nueva_app/screens/pantalla_encuentros_guardados.dart';
 import 'package:mi_nueva_app/screens/pantalla_resumen_partido.dart';
 import 'package:mi_nueva_app/screens/pantalla_encuentros_personalizados.dart';
-import 'package:mi_nueva_app/screens/pantalla_mi_cuenta.dart';
 import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';

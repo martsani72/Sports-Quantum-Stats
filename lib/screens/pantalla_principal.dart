@@ -25,7 +25,6 @@ import 'package:mi_nueva_app/screens/pantalla_registro_evento.dart';
 import 'package:mi_nueva_app/screens/pantalla_encuentros_guardados.dart';
 import 'package:mi_nueva_app/screens/pantalla_resumen_partido.dart';
 import 'package:mi_nueva_app/screens/pantalla_encuentros_personalizados.dart';
-import 'package:mi_nueva_app/screens/pantalla_mi_cuenta.dart';
 import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
@@ -43,7 +42,6 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
       {'titulo': '${Traductor.get('menu_2')} (${parametrosGuardados.length})', 'icono': Icons.dashboard_customize, 'ruta': const PantallaEncuentrosPersonalizados()},
       {'titulo': Traductor.get('menu_3'), 'icono': Icons.bar_chart, 'ruta': const PantallaEstadisticas()},
       {'titulo': Traductor.get('menu_4'), 'icono': Icons.settings, 'ruta': const PantallaConfiguraciones()},
-      {'titulo': Traductor.get('menu_5'), 'icono': Icons.person, 'ruta': const PantallaMiCuenta()},
       {'titulo': '${Traductor.get('menu_6')} (${partidosGuardados.length})', 'icono': Icons.save, 'ruta': const PantallaEncuentrosGuardados()}, 
     ];
 
