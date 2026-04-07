@@ -120,7 +120,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         setState(() {
           widget.partido.logEventos.add('--- FIN DEL $nombreRef $_periodoActual ---');
           _periodoActual++;
-          _equipoPosesion = null; // Reset selection for new period
+          _equipoPosesion = null; 
           _segundosAcumulados = 0;
           _momentoInicioActual = null;
         });
@@ -323,7 +323,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           String eventoMin = eventoRegistrado.toLowerCase();
           String nombreActor = widget.partido.obtenerNombreJugador(equipoNombre, jugadorNum);
 
-         if (eventoMin.contains('tarjeta')) {
+          if (eventoMin.contains('tarjeta')) {
             widget.partido.tarjetas[equipoNombre]!.add({
               'minuto': tiempoActual,
               'tipo': eventoRegistrado,
@@ -741,6 +741,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                   ),
                   
                   _buildSelectorPosesion(),
+
                   Container( 
                     padding: const EdgeInsets.all(10), color: const Color(0xFF050505), 
                     child: Row( 
@@ -845,65 +846,97 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   Widget _infoCambios(String equipo) { int maxC = widget.partido.contadores['Cambios'] ?? 0; int maxV = widget.partido.contadores['Ventanas'] ?? 0; int hechosC = widget.partido.stats[equipo]!['CambiosHechos'] ?? 0; int hechasV = widget.partido.stats[equipo]!['VentanasHechas'] ?? 0; String texto = 'C: $hechosC/$maxC'; if (maxV > 0) texto += ' | V: $hechasV/$maxV'; return Text(texto, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)); }
   
   List<Widget> _generarListaEstadisticasUnificada() { 
-    List<Widget> filas = []; 
-    final List<String> eventosRapidos = ['Corner', 'Falta', 'Remates', 'Remates al arco', 'Penal', 'Line Out', 'Scrum', 'Rebotes', 'Tapones', 'Ponche', 'Castigo'];
+    List<Widget> filasRapidas = []; 
+    List<Widget> filasPasivas = []; 
+    
+    final List<String> eventosRapidos = [
+      'Corner', 'Falta', 'Remates', 'Remates al arco', 'Penal', 
+      'Line Out', 'Scrum', 'Rebotes', 'Tapones', 'Ponche', 'Castigo'
+    ];
 
     widget.partido.stats['Local']!.forEach((evento, _) { 
-      bool esAnotacion = evento.toLowerCase().contains('gol') || evento.toLowerCase().contains('punto') || evento.toLowerCase().contains('try') || evento.toLowerCase().contains('carrera');
+      bool esAnotacion = evento.toLowerCase().contains('gol') || 
+                         evento.toLowerCase().contains('punto') || 
+                         evento.toLowerCase().contains('try') || 
+                         evento.toLowerCase().contains('carrera');
       bool esHecho = evento.contains('Hech');
       
       if (!esAnotacion && !esHecho) { 
         int cantLocal = widget.partido.stats['Local']![evento] ?? 0;
         int cantVisita = widget.partido.stats['Visita']![evento] ?? 0;
-
         bool rapido = eventosRapidos.contains(evento);
 
-        filas.add( 
-          Padding( 
-            padding: const EdgeInsets.symmetric(vertical: 8.0), 
-            child: Row( 
-              mainAxisAlignment: MainAxisAlignment.spaceBetween, 
-              children: [ 
-                // Local Side
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 45,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 4), 
-                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(5)), 
-                        child: Text('$cantLocal', textAlign: TextAlign.center, style: TextStyle(color: widget.partido.localTexto, fontSize: 15, fontWeight: FontWeight.bold))
-                      )
-                    ),
-                    const SizedBox(width: 5),
-                    if (rapido) _buildBotonRapido('Local', evento),
-                  ],
-                ),
+        Widget fila = Padding( 
+          padding: const EdgeInsets.symmetric(vertical: 8.0), 
+          child: Row( 
+            mainAxisAlignment: MainAxisAlignment.spaceBetween, 
+            children: [ 
+              // Lado Local
+              Row(
+                children: [
+                  SizedBox(
+                    width: 45,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 4), 
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1), 
+                        borderRadius: BorderRadius.circular(5)
+                      ), 
+                      child: Text('$cantLocal', textAlign: TextAlign.center, style: TextStyle(color: widget.partido.localTexto, fontSize: 15, fontWeight: FontWeight.bold))
+                    )
+                  ),
+                  const SizedBox(width: 5),
+                  if (rapido) _buildBotonRapido('Local', evento) else const SizedBox(width: 24),
+                ],
+              ),
 
-                Expanded(child: Text(Traductor.get(evento).toUpperCase(), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white70, fontSize: 11, letterSpacing: 1))),
-                
-                // Visita Side
-                Row(
-                  children: [
-                    if (rapido) _buildBotonRapido('Visita', evento),
-                    const SizedBox(width: 5),
-                    SizedBox(
-                      width: 45,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 4), 
-                        decoration: BoxDecoration(color: Colors.white.withOpacity(0.1), borderRadius: BorderRadius.circular(5)), 
-                        child: Text('$cantVisita', textAlign: TextAlign.center, style: TextStyle(color: widget.partido.visitaTexto, fontSize: 15, fontWeight: FontWeight.bold))
-                      )
-                    ),
-                  ],
-                ),
-              ], 
-            ), 
-          ) 
-        ); 
+              Expanded(
+                child: Text(
+                  Traductor.get(evento).toUpperCase(), 
+                  textAlign: TextAlign.center, 
+                  style: const TextStyle(color: Colors.white70, fontSize: 11, letterSpacing: 1)
+                )
+              ),
+              
+              // Lado Visita
+              Row(
+                children: [
+                  if (rapido) _buildBotonRapido('Visita', evento) else const SizedBox(width: 24),
+                  const SizedBox(width: 5),
+                  SizedBox(
+                    width: 45,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 4), 
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.1), 
+                        borderRadius: BorderRadius.circular(5)
+                      ), 
+                      child: Text('$cantVisita', textAlign: TextAlign.center, style: TextStyle(color: widget.partido.visitaTexto, fontSize: 15, fontWeight: FontWeight.bold))
+                    )
+                  ),
+                ],
+              ),
+            ], 
+          ), 
+        );
+
+        if (rapido) {
+          filasRapidas.add(fila);
+        } else {
+          filasPasivas.add(fila);
+        }
       } 
     }); 
-    return filas; 
+
+    return [
+      ...filasRapidas,
+      if (filasPasivas.isNotEmpty && filasRapidas.isNotEmpty) 
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 10),
+          child: Divider(color: Colors.white10, thickness: 1),
+        ),
+      ...filasPasivas,
+    ]; 
   }
 
   Widget _buildBotonRapido(String equipo, String evento) {
@@ -927,7 +960,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   }
 
   Widget _buildSelectorPosesion() {
-    // CURRENT PERIOD percentages
     String pKey = _periodoActual.toString();
     int tLocal = widget.partido.posesionPorPeriodo[pKey]?['Local'] ?? 0;
     int tVisita = widget.partido.posesionPorPeriodo[pKey]?['Visita'] ?? 0;
@@ -936,24 +968,44 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     double pLocal = total == 0 ? 50 : (tLocal / total) * 100;
     double pVisita = total == 0 ? 50 : (tVisita / total) * 100;
 
-    // Guaranteed visible colors
     Color colorL = (widget.partido.localFondo.computeLuminance() < 0.1) ? widget.partido.localTexto : widget.partido.localFondo;
     Color colorV = (widget.partido.visitaFondo.computeLuminance() < 0.1) ? widget.partido.visitaTexto : widget.partido.visitaFondo;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(30)),
-      child: Row(
-        children: [
-          _buildItemPosesion('Local', widget.partido.local, pLocal, colorL, widget.partido.localTexto),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Text('POSESIÓN', style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 8, fontWeight: FontWeight.bold, letterSpacing: 1)),
+    return AnimatedBuilder(
+      animation: _blinkController,
+      builder: (context, child) {
+        bool sinSeleccion = _equipoPosesion == null;
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05), 
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: sinSeleccion ? kVerdeNeon.withOpacity(_blinkController.value * 0.7) : Colors.transparent, 
+              width: 1.5
+            ),
           ),
-          _buildItemPosesion('Visita', widget.partido.visita, pVisita, colorV, widget.partido.visitaTexto),
-        ],
-      ),
+          child: Row(
+            children: [
+              _buildItemPosesion('Local', widget.partido.local, pLocal, colorL, widget.partido.localTexto),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: Text(
+                  'POSESIÓN', 
+                  style: TextStyle(
+                    color: sinSeleccion ? kVerdeNeon.withOpacity(_blinkController.value) : Colors.white.withOpacity(0.3), 
+                    fontSize: 8, 
+                    fontWeight: FontWeight.bold, 
+                    letterSpacing: 1
+                  )
+                ),
+              ),
+              _buildItemPosesion('Visita', widget.partido.visita, pVisita, colorV, widget.partido.visitaTexto),
+            ],
+          ),
+        );
+      }
     );
   }
 
@@ -963,12 +1015,14 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
 
     return Expanded(
       child: GestureDetector(
-        onTap: () => setState(() => _equipoPosesion = activo ? null : equipo),
+        onTap: () {
+          setState(() => _equipoPosesion = activo ? null : equipo);
+          HapticFeedback.lightImpact();
+        },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           decoration: BoxDecoration(
-            // High opacity (0.8) when active for extreme clarity
             color: activo ? colorFondo.withOpacity(0.8) : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
             border: activo ? Border.all(color: Colors.white.withOpacity(0.3), width: 1) : null,

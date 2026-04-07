@@ -1,9 +1,12 @@
+// ignore_for_file: prefer_const_constructors, unused_import, prefer_const_literals_to_create_immutables, use_key_in_widget_constructors, deprecated_member_use
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mi_nueva_app/core/constants.dart';
 import 'package:mi_nueva_app/core/globals.dart';
 import 'package:mi_nueva_app/core/traductor.dart';
 import 'package:mi_nueva_app/core/quantum_storage.dart';
 import 'package:mi_nueva_app/models/partido.dart';
+import 'package:mi_nueva_app/models/deporte_config.dart';
 
 class PantallaRegistroEvento extends StatefulWidget {
   final Partido partido;
@@ -17,6 +20,21 @@ class PantallaRegistroEvento extends StatefulWidget {
 
 class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
   
+  // Mapeo rápido de iconos por palabra clave para que el periodista identifique visualmente
+  IconData _obtenerIconoEvento(String evento) {
+    String ev = evento.toLowerCase();
+    if (ev.contains('gol') || ev.contains('remate') || ev.contains('tiro')) return Icons.sports_soccer;
+    if (ev.contains('tarjeta')) return Icons.style;
+    if (ev.contains('cambio')) return Icons.sync;
+    if (ev.contains('falta') || ev.contains('penal')) return Icons.gavel;
+    if (ev.contains('corner')) return Icons.flag;
+    if (ev.contains('rebote')) return Icons.sports_basketball;
+    if (ev.contains('try') || ev.contains('conversi')) return Icons.sports_rugby;
+    if (ev.contains('ace') || ev.contains('punto')) return Icons.sports_tennis;
+    if (ev.contains('asistencia')) return Icons.handshake;
+    return Icons.ads_click; // Icono por defecto
+  }
+
   void _pedirJugador(BuildContext context, String eventoNombre, Color fondoEq, Color textoEq, String nombreEq) {
     String valorPrimario = '';
     String valorSecundario = '';
@@ -31,6 +49,7 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
           builder: (BuildContext ctxStateful, StateSetter setStateDialog) {
 
             void onTeclaPulsada(String tecla) {
+              HapticFeedback.selectionClick(); // Feedback táctil al escribir
               setStateDialog(() {
                 if (tecla == '<') {
                   if (editandoSecundario && valorSecundario.isNotEmpty) {
@@ -85,8 +104,9 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: puedeConfirmar ? textoEq : Colors.grey),
                   onPressed: puedeConfirmar ? () {
-                    Navigator.pop(ctxDialog); // Closes Dialog
-                    Navigator.pop(context, {   // Closes Screen with result
+                    HapticFeedback.mediumImpact();
+                    Navigator.pop(ctxDialog); 
+                    Navigator.pop(context, {   
                       'evento': eventoNombre, 
                       'jugador': valorPrimario.isEmpty ? '?' : valorPrimario,
                       'jugadorEntra': valorSecundario.isEmpty ? '?' : valorSecundario,
@@ -147,23 +167,28 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
   Widget _buildCajaEvento(String evento, Color fondoEq, Color textoEq, bool isDragging) {
     return Container(
       decoration: BoxDecoration(
-        color: fondoEq.withOpacity(isDragging ? 0.3 : 0.1),
-        border: Border.all(color: isDragging ? textoEq : (fondoEq == Colors.black ? Colors.white24 : fondoEq)),
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: isDragging ? [BoxShadow(color: textoEq.withOpacity(0.5), blurRadius: 10)] : [],
+        color: fondoEq.withOpacity(isDragging ? 0.3 : 0.08),
+        border: Border.all(color: isDragging ? textoEq : (fondoEq == Colors.black ? Colors.white12 : fondoEq.withOpacity(0.3))),
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: isDragging ? [BoxShadow(color: textoEq.withOpacity(0.3), blurRadius: 10)] : [],
       ),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: FittedBox(
-            fit: BoxFit.scaleDown,
-            child: Text(
-              Traductor.get(evento).toUpperCase(), 
-              textAlign: TextAlign.center, 
-              style: TextStyle(color: textoEq, fontWeight: FontWeight.bold, fontSize: 12)
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(_obtenerIconoEvento(evento), color: textoEq.withOpacity(0.8), size: 22),
+          const SizedBox(height: 6),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6.0),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                Traductor.get(evento).toUpperCase(), 
+                textAlign: TextAlign.center, 
+                style: TextStyle(color: textoEq, fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 0.5)
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -175,23 +200,35 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
     String nombreEq = widget.equipoSeleccionado == 'Local' ? widget.partido.local : widget.partido.visita;
     Color appBarColor = fondoEq == Colors.black ? const Color(0xFF111111) : fondoEq;
 
+    // Detectamos si es PC o pantalla ancha para ajustar columnas
+    double width = MediaQuery.of(context).size.width;
+    int columnas = width > 600 ? 4 : 2; // En PC mostramos 4 columnas
+
     return Scaffold(
       backgroundColor: kNegro,
       appBar: AppBar(
-        title: Text('${Traductor.get('registro_dp')} ${nombreEq.toUpperCase()}', style: TextStyle(color: textoEq, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1)), 
+        title: Text('${Traductor.get('registro_dp')} ${nombreEq.toUpperCase()}', style: TextStyle(color: textoEq, fontSize: 13, fontWeight: FontWeight.bold)), 
         backgroundColor: appBarColor,
         leading: BackButton(color: textoEq), 
+        elevation: 0,
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 15.0),
-            child: Text(Traductor.get('mantenga_presionado'), style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 10)),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            color: appBarColor.withOpacity(0.2),
+            child: Text(Traductor.get('mantenga_presionado'), textAlign: TextAlign.center, style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 9, letterSpacing: 1)),
           ),
           Expanded(
             child: GridView.builder(
-              padding: const EdgeInsets.all(20),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, crossAxisSpacing: 15, mainAxisSpacing: 15, childAspectRatio: 1.5),
+              padding: const EdgeInsets.all(15),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: columnas, 
+                crossAxisSpacing: 12, 
+                mainAxisSpacing: 12, 
+                childAspectRatio: 1.3 // Botones un poco más "cuadrados" y compactos
+              ),
               itemCount: widget.partido.ordenEventosActivos.length,
               itemBuilder: (context, index) {
                 String evento = widget.partido.ordenEventosActivos[index];
@@ -211,14 +248,17 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
                       feedback: Material(
                         color: Colors.transparent,
                         child: SizedBox(
-                          width: MediaQuery.of(context).size.width / 2.3, 
-                          height: 70, 
+                          width: (width / columnas) - 20, 
+                          height: 80, 
                           child: _buildCajaEvento(evento, fondoEq, textoEq, true),
                         ),
                       ),
                       childWhenDragging: Opacity(opacity: 0.2, child: _buildCajaEvento(evento, fondoEq, textoEq, false)),
                       child: InkWell(
-                        onTap: () => _pedirJugador(context, evento, fondoEq, textoEq, nombreEq),
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          _pedirJugador(context, evento, fondoEq, textoEq, nombreEq);
+                        },
                         child: _buildCajaEvento(evento, fondoEq, textoEq, false),
                       ),
                     );
@@ -232,4 +272,3 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
     );
   }
 }
-
