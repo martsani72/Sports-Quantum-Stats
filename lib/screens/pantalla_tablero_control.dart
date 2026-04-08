@@ -68,8 +68,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       _estaCorriendo = true;
       _momentoInicioActual = DateTime.now();
     });
-    _blinkController.forward();
-    _blinkController.stop();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (widget.partido.deporte.toLowerCase() == 'rugby') {
@@ -104,7 +102,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       _momentoInicioActual = null;
       _estaCorriendo = false;
     });
-    _blinkController.repeat(reverse: true);
     _guardarEstado();
   }
 
@@ -981,8 +978,11 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.05), 
             borderRadius: BorderRadius.circular(30),
+            // CORRECCIÓN DEL BORDE: El borde parpadea si NO hay selección.
             border: Border.all(
-              color: sinSeleccion ? kVerdeNeon.withOpacity(_blinkController.value * 0.7) : Colors.transparent, 
+              color: sinSeleccion 
+                ? kVerdeNeon.withOpacity(_blinkController.value * 0.6) // Parpadeo suave
+                : Colors.transparent, // Desaparece si hay selección
               width: 1.5
             ),
           ),
@@ -994,7 +994,11 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                 child: Text(
                   'POSESIÓN', 
                   style: TextStyle(
-                    color: sinSeleccion ? kVerdeNeon.withOpacity(_blinkController.value) : Colors.white.withOpacity(0.3), 
+                    // CORRECCIÓN DEL TEXTO: Parpadea fuerte si NO hay selección.
+                    // Si hay selección, se vuelve un gris muy sutil.
+                    color: sinSeleccion 
+                        ? kVerdeNeon.withOpacity(_blinkController.value) 
+                        : Colors.white.withOpacity(0.15), 
                     fontSize: 8, 
                     fontWeight: FontWeight.bold, 
                     letterSpacing: 1
