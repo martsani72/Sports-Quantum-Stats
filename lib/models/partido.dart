@@ -58,6 +58,7 @@ class Partido {
     'Visita': [],
   };
   
+  List<Map<String, dynamic>> historialAcciones = [];
   List<String> logEventos = [];
   late List<String> ordenEventosActivos;
   
@@ -141,6 +142,7 @@ class Partido {
       'ordenEventosActivos': ordenEventosActivos,
       'posesionSegundos': posesionSegundos,
       'posesionPorPeriodo': posesionPorPeriodo,
+      'historialAcciones': historialAcciones,
     };
   }
 
@@ -173,6 +175,70 @@ class Partido {
     if (map.containsKey('posesionPorPeriodo')) {
       p.posesionPorPeriodo = (map['posesionPorPeriodo'] as Map).map((k, v) => MapEntry(k as String, Map<String, int>.from(v as Map)));
     }
+    if (map.containsKey('historialAcciones')) {
+      p.historialAcciones = List<Map<String, dynamic>>.from(map['historialAcciones']);
+    }
     return p;
+  }
+
+  void registrarAccion({
+    required String equipo,
+    required String tipo, // 'stat', 'anotacion', 'tarjeta', 'cambio', 'nota'
+    required String evento, 
+    Map<String, String>? datosExtra,
+    required String log,
+  }) {
+    historialAcciones.add({
+      'equipo': equipo,
+      'tipo': tipo,
+      'evento': evento,
+      'datosExtra': datosExtra,
+      'log': log,
+    });
+    logEventos.add(log);
+  }
+
+  bool deshacerUltimaAccion() {
+    if (historialAcciones.isEmpty) return false;
+
+    var ultima = historialAcciones.removeLast();
+    String equipo = ultima['equipo'];
+    String tipo = ultima['tipo'];
+    String evento = ultima['evento'];
+    String log = ultima['log'];
+
+    // Remover del log
+    logEventos.removeWhere((element) => element == log);
+
+    if (tipo == 'stat' || tipo == 'anotacion' || tipo == 'tarjeta') {
+      if (stats[equipo]!.containsKey(evento)) {
+        if (stats[equipo]![evento]! > 0) {
+          stats[equipo]![evento] = stats[equipo]![evento]! - 1;
+        }
+      }
+    }
+
+    if (tipo == 'anotacion') {
+      if (anotaciones[equipo]!.isNotEmpty) {
+        anotaciones[equipo]!.removeLast();
+      }
+    }
+
+    if (tipo == 'tarjeta') {
+      if (tarjetas[equipo]!.isNotEmpty) {
+        tarjetas[equipo]!.removeLast();
+      }
+    }
+
+    if (tipo == 'cambio') {
+      if (cambiosList[equipo]!.isNotEmpty) {
+        cambiosList[equipo]!.removeLast();
+      }
+      stats[equipo]!['CambiosHechos'] = (stats[equipo]!['CambiosHechos'] ?? 1) - 1;
+      // Nota: No restamos 'VentanasHechas' automáticamente porque una ventana puede tener varios cambios.
+      // Esto es una limitación aceptable por ahora para no complicar en exceso.
+    }
+
+    return true;
   }
 }

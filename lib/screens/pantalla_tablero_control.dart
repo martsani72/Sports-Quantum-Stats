@@ -205,8 +205,14 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
             style: ElevatedButton.styleFrom(backgroundColor: kVerdeNeon),
             onPressed: () {
               if (notaController.text.trim().isNotEmpty) {
+                String log = 'MIN $tiempoActual | 📝 NOTA: ${notaController.text.trim()}';
                 setState(() {
-                  widget.partido.logEventos.add('MIN $tiempoActual | 📝 NOTA: ${notaController.text.trim()}');
+                  widget.partido.registrarAccion(
+                    equipo: 'Local', // O neutral
+                    tipo: 'nota',
+                    evento: 'Nota',
+                    log: log
+                  );
                 });
                 _guardarEstado();
               }
@@ -277,7 +283,15 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
             });
             
             String nombreReal = equipoNombre == 'Local' ? widget.partido.local : widget.partido.visita;
-            widget.partido.logEventos.add('MIN $tiempoActual | ${nombreReal.toUpperCase()}: Cambio ($nombreSale x $nombreEntra)');
+            String log = 'MIN $tiempoActual | ${nombreReal.toUpperCase()}: Cambio ($nombreSale x $nombreEntra)';
+            
+            widget.partido.registrarAccion(
+              equipo: equipoNombre,
+              tipo: 'cambio',
+              evento: 'Cambio',
+              datosExtra: {'sale': nombreSale, 'entra': nombreEntra},
+              log: log
+            );
           });
           _guardarEstado();
 
@@ -339,7 +353,15 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           }
 
           String nombreReal = equipoNombre == 'Local' ? widget.partido.local : widget.partido.visita;
-          widget.partido.logEventos.add('MIN $tiempoActual | ${nombreReal.toUpperCase()}: $eventoRegistrado ($nombreActor)');
+          String log = 'MIN $tiempoActual | ${nombreReal.toUpperCase()}: $eventoRegistrado ($nombreActor)';
+          
+          widget.partido.registrarAccion(
+            equipo: equipoNombre,
+            tipo: eventoMin.contains('tarjeta') ? 'tarjeta' : (eventoMin.contains('gol') || eventoMin.contains('try') || eventoMin.contains('punto') ? 'anotacion' : 'stat'),
+            evento: eventoRegistrado,
+            datosExtra: {'jugador': jugadorNum, 'actor': nombreActor},
+            log: log
+          );
         });
         _guardarEstado();
       }
@@ -659,7 +681,18 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                             Text('$nombrePeriodo $_periodoActual', style: const TextStyle(color: Colors.white54, fontSize: 12, letterSpacing: 2)),
                             Text(_formatearTiempo(), style: const TextStyle(color: Colors.white, fontSize: 28, fontFamily: 'monospace', fontWeight: FontWeight.bold)),
                             Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
+                                // BOTÓN UNDO (QUANTUM)
+                                IconButton(
+                                  icon: Icon(Icons.undo, color: widget.partido.historialAcciones.isEmpty ? Colors.white10 : Colors.white38, size: 22),
+                                  onPressed: widget.partido.historialAcciones.isEmpty ? null : () {
+                                    HapticFeedback.vibrate();
+                                    setState(() => widget.partido.deshacerUltimaAccion());
+                                    _guardarEstado();
+                                  },
+                                ),
+                                const SizedBox(width: 8),
                                 AnimatedBuilder(
                                   animation: _blinkController,
                                   builder: (context, child) => Opacity(
@@ -745,17 +778,33 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                       children: [ 
                         Expanded(
                           child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(backgroundColor: widget.partido.localFondo == Colors.black ? const Color(0xFF1A1A1A) : widget.partido.localFondo, padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: widget.partido.localTexto.withOpacity(0.5)))), 
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: widget.partido.localFondo.withOpacity(0.15), 
+                              padding: const EdgeInsets.symmetric(vertical: 15), 
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10), 
+                                side: BorderSide(color: widget.partido.localTexto.withOpacity(0.3))
+                              ),
+                              elevation: 0,
+                            ), 
                             onPressed: () => _abrirRegistro('Local'), 
-                            child: Column(children: [Text(Traductor.get('registrar_mayus'), style: TextStyle(color: widget.partido.localTexto, fontSize: 10)), Text(widget.partido.local, style: TextStyle(color: widget.partido.localTexto, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis)])
+                            child: Column(children: [Text(Traductor.get('registrar_mayus'), style: TextStyle(color: widget.partido.localTexto.withOpacity(0.7), fontSize: 9, letterSpacing: 1)), Text(widget.partido.local, style: TextStyle(color: widget.partido.localTexto, fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis)])
                           )
                         ), 
                         const SizedBox(width: 10), 
                         Expanded(
                           child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(backgroundColor: widget.partido.visitaFondo == Colors.black ? const Color(0xFF1A1A1A) : widget.partido.visitaFondo, padding: const EdgeInsets.symmetric(vertical: 15), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8), side: BorderSide(color: widget.partido.visitaTexto.withOpacity(0.5)))), 
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: widget.partido.visitaFondo.withOpacity(0.15), 
+                              padding: const EdgeInsets.symmetric(vertical: 15), 
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10), 
+                                side: BorderSide(color: widget.partido.visitaTexto.withOpacity(0.3))
+                              ),
+                              elevation: 0,
+                            ), 
                             onPressed: () => _abrirRegistro('Visita'), 
-                            child: Column(children: [Text(Traductor.get('registrar_mayus'), style: TextStyle(color: widget.partido.visitaTexto, fontSize: 10)), Text(widget.partido.visita, style: TextStyle(color: widget.partido.visitaTexto, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis)])
+                            child: Column(children: [Text(Traductor.get('registrar_mayus'), style: TextStyle(color: widget.partido.visitaTexto.withOpacity(0.7), fontSize: 9, letterSpacing: 1)), Text(widget.partido.visita, style: TextStyle(color: widget.partido.visitaTexto, fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis)])
                           )
                         ), 
                       ], 
@@ -972,41 +1021,93 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       animation: _blinkController,
       builder: (context, child) {
         bool sinSeleccion = _equipoPosesion == null;
-        return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05), 
-            borderRadius: BorderRadius.circular(30),
-            // CORRECCIÓN DEL BORDE: El borde parpadea si NO hay selección.
-            border: Border.all(
-              color: sinSeleccion 
-                ? kVerdeNeon.withOpacity(_blinkController.value * 0.6) // Parpadeo suave
-                : Colors.transparent, // Desaparece si hay selección
-              width: 1.5
-            ),
-          ),
-          child: Row(
-            children: [
-              _buildItemPosesion('Local', widget.partido.local, pLocal, colorL, widget.partido.localTexto),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text(
-                  'POSESIÓN', 
-                  style: TextStyle(
-                    // CORRECCIÓN DEL TEXTO: Parpadea fuerte si NO hay selección.
-                    // Si hay selección, se vuelve un gris muy sutil.
-                    color: sinSeleccion 
-                        ? kVerdeNeon.withOpacity(_blinkController.value) 
-                        : Colors.white.withOpacity(0.15), 
-                    fontSize: 8, 
-                    fontWeight: FontWeight.bold, 
-                    letterSpacing: 1
-                  )
-                ),
+        
+        return GestureDetector(
+          onTap: () {
+            HapticFeedback.selectionClick();
+            setState(() {
+              // Toggle Directo Local <-> Visita
+              if (_equipoPosesion == 'Local') _equipoPosesion = 'Visita';
+              else if (_equipoPosesion == 'Visita') _equipoPosesion = 'Local';
+              else _equipoPosesion = 'Local'; // Por defecto si estaba en pausa
+            });
+          },
+          onHorizontalDragEnd: (details) {
+            if (details.primaryVelocity == null) return;
+            HapticFeedback.lightImpact();
+            setState(() {
+              if (details.primaryVelocity! > 0) _equipoPosesion = 'Visita';
+              else if (details.primaryVelocity! < 0) _equipoPosesion = 'Local';
+            });
+          },
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5), // Menos margen = más ancho
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.05), 
+              borderRadius: BorderRadius.circular(30),
+              // GLOW EFECTO QUANTUM SIEMPRE VISIBLE SI NO ES PAUSA
+              boxShadow: !sinSeleccion ? [
+                BoxShadow(
+                  color: (_equipoPosesion == 'Local' ? colorL : colorV).withOpacity(0.3),
+                  blurRadius: 12,
+                  spreadRadius: 2
+                )
+              ] : [],
+              border: Border.all(
+                color: sinSeleccion 
+                  ? kVerdeNeon.withOpacity(_blinkController.value * 0.7) 
+                  : (_equipoPosesion == 'Local' ? colorL : colorV).withOpacity(0.5),
+                width: 1.5
               ),
-              _buildItemPosesion('Visita', widget.partido.visita, pVisita, colorV, widget.partido.visitaTexto),
-            ],
+            ),
+            child: Row(
+              children: [
+                _buildItemPosesion('Local', widget.partido.local, pLocal, colorL, widget.partido.localTexto),
+                
+                // BOTÓN DE PAUSA CENTRAL
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.vibrate();
+                    setState(() {
+                      _equipoPosesion = null; // Activa la pausa
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: sinSeleccion ? kVerdeNeon.withOpacity(0.1) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          sinSeleccion ? Icons.play_arrow : Icons.pause, 
+                          color: sinSeleccion 
+                              ? kVerdeNeon.withOpacity(_blinkController.value) 
+                              : Colors.white.withOpacity(0.3), 
+                          size: 14
+                        ),
+                        Text(
+                          'POSESIÓN', 
+                          style: TextStyle(
+                            color: sinSeleccion 
+                                ? kVerdeNeon.withOpacity(_blinkController.value) 
+                                : Colors.white.withOpacity(0.15), 
+                            fontSize: 7, 
+                            fontWeight: FontWeight.bold, 
+                            letterSpacing: 0.5
+                          )
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                _buildItemPosesion('Visita', widget.partido.visita, pVisita, colorV, widget.partido.visitaTexto),
+              ],
+            ),
           ),
         );
       }
@@ -1018,11 +1119,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     bool esLocal = equipo == 'Local';
 
     return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() => _equipoPosesion = activo ? null : equipo);
-          HapticFeedback.lightImpact();
-        },
+      child: IgnorePointer( // El toque lo maneja el padre
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
