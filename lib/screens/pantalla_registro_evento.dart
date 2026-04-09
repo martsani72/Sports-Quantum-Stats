@@ -7,6 +7,7 @@ import 'package:mi_nueva_app/core/traductor.dart';
 import 'package:mi_nueva_app/core/quantum_storage.dart';
 import 'package:mi_nueva_app/models/partido.dart';
 import 'package:mi_nueva_app/models/deporte_config.dart';
+import 'package:mi_nueva_app/widgets/widget_icono_quantum.dart';
 
 class PantallaRegistroEvento extends StatefulWidget {
   final Partido partido;
@@ -20,19 +21,38 @@ class PantallaRegistroEvento extends StatefulWidget {
 
 class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
   
-  // Mapeo rápido de iconos por palabra clave para que el periodista identifique visualmente
+  // Mapper de Arte Quantum (Vectorial o Emoticon)
+  dynamic _obtenerArteEvento(String evento) {
+    String ev = evento.toLowerCase();
+    
+    // Fútbol y Deportes de Arco
+    if (ev.contains('gol')) return 'goal';
+    if (ev.contains('remate')) return 'soccer';
+    if (ev.contains('corner')) return 'flag';
+    if (ev.contains('asistencia')) return '👟';
+    if (ev.contains('falta') || ev.contains('penal')) return 'whistle';
+    
+    // Rugby
+    if (ev.contains('try')) return 'rugby';
+    if (ev.contains('conversi')) return 'goal';
+    if (ev.contains('drop')) return 'rugby';
+    if (ev.contains('scrum')) return '💪';
+    if (ev.contains('line out')) return '🙋‍♂️';
+
+    // Basketball
+    if (ev.contains('tiro libre') || ev.contains('doble') || ev.contains('triple') || ev.contains('rebote') || ev.contains('tapón')) return 'basketball';
+    
+    // Genéricos
+    if (ev.contains('cambio')) return '🔄';
+    
+    return null;
+  }
+
   IconData _obtenerIconoEvento(String evento) {
     String ev = evento.toLowerCase();
-    if (ev.contains('gol') || ev.contains('remate') || ev.contains('tiro')) return Icons.sports_soccer;
     if (ev.contains('tarjeta')) return Icons.style;
     if (ev.contains('cambio')) return Icons.sync;
-    if (ev.contains('falta') || ev.contains('penal')) return Icons.gavel;
-    if (ev.contains('corner')) return Icons.flag;
-    if (ev.contains('rebote')) return Icons.sports_basketball;
-    if (ev.contains('try') || ev.contains('conversi')) return Icons.sports_rugby;
-    if (ev.contains('ace') || ev.contains('punto')) return Icons.sports_tennis;
-    if (ev.contains('asistencia')) return Icons.handshake;
-    return Icons.ads_click; // Icono por defecto
+    return Icons.ads_click; 
   }
 
   void _pedirJugador(BuildContext context, String eventoNombre, Color fondoEq, Color textoEq, String nombreEq) {
@@ -165,27 +185,50 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
   }
 
   Widget _buildCajaEvento(String evento, Color fondoEq, Color textoEq, bool isDragging) {
+    bool esTarjeta = evento.toLowerCase().contains('tarjeta');
+    dynamic arte = _obtenerArteEvento(evento);
+    
     return Container(
       decoration: BoxDecoration(
-        color: fondoEq.withOpacity(isDragging ? 0.3 : 0.08),
-        border: Border.all(color: isDragging ? textoEq : (fondoEq == Colors.black ? Colors.white12 : fondoEq.withOpacity(0.3))),
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: isDragging ? [BoxShadow(color: textoEq.withOpacity(0.3), blurRadius: 10)] : [],
+        color: fondoEq.withOpacity(isDragging ? 0.4 : 0.05),
+        border: Border.all(
+          color: isDragging ? textoEq : (fondoEq == Colors.black ? Colors.white12 : fondoEq.withOpacity(0.2)), 
+          width: isDragging ? 2 : 0.8
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: isDragging ? [BoxShadow(color: textoEq.withOpacity(0.4), blurRadius: 15, spreadRadius: 2)] : [],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(_obtenerIconoEvento(evento), color: textoEq.withOpacity(0.8), size: 22),
-          const SizedBox(height: 6),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6.0),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                Traductor.get(evento).toUpperCase(), 
-                textAlign: TextAlign.center, 
-                style: TextStyle(color: textoEq, fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 0.5)
+          esTarjeta 
+            ? WidgetTarjetaFisicaQuantum(
+                color: evento.toLowerCase().contains('amarilla') ? Colors.yellowAccent : (evento.toLowerCase().contains('roja') ? Colors.redAccent : Colors.greenAccent),
+                numero: '', 
+                height: 26,
+              )
+            : WidgetIconoQuantum(
+                tipoArte: arte is String && ['goal', 'whistle', 'soccer', 'rugby', 'flag', 'basketball'].contains(arte) ? arte : null,
+                emoticon: arte is String && !['goal', 'whistle', 'soccer', 'rugby', 'flag', 'basketball'].contains(arte) ? arte : null,
+                icono: arte == null ? _obtenerIconoEvento(evento) : null,
+                color: textoEq, 
+                size: 38,
+                iconSize: 22
               ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: Text(
+              Traductor.get(evento).toUpperCase(), 
+              textAlign: TextAlign.center, 
+              style: TextStyle(
+                color: isDragging ? textoEq : textoEq.withOpacity(0.9), 
+                fontWeight: isDragging ? FontWeight.bold : FontWeight.w600, 
+                fontSize: 9.5, 
+                letterSpacing: 0.8
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],

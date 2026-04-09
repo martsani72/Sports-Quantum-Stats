@@ -15,6 +15,7 @@ import 'package:mi_nueva_app/core/traductor.dart';
 import 'package:mi_nueva_app/models/partido.dart';
 import 'package:mi_nueva_app/models/deporte_config.dart';
 import 'package:mi_nueva_app/widgets/widget_camiseta.dart';
+import 'package:mi_nueva_app/widgets/widget_icono_quantum.dart';
 import 'package:mi_nueva_app/screens/pantalla_registro_evento.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
@@ -850,7 +851,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     if (esRugby && esAmarilla && tarjeta.containsKey('segundosRestantes')) {
       mostrarTimer = true;
       int restante = int.parse(tarjeta['segundosRestantes']!);
-      
       if (restante > 0) {
         int m = restante ~/ 60;
         int s = restante % 60;
@@ -863,27 +863,14 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: 16, height: 22, 
-          decoration: BoxDecoration(
-            color: colorTarjeta,
-            borderRadius: BorderRadius.circular(2),
-            border: Border.all(color: Colors.white.withOpacity(0.5), width: 0.5),
-            boxShadow: [ BoxShadow(color: colorTarjeta.withOpacity(0.3), blurRadius: 2, spreadRadius: 1) ]
-          ),
-          child: Center(
-            child: Text(
-              numJugador,
-              style: TextStyle(
-                color: colorTarjeta == kAmarilloTarjeta ? kNegro : Colors.white,
-                fontSize: 10, fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+        WidgetTarjetaFisicaQuantum(
+          color: colorTarjeta, 
+          numero: numJugador,
+          height: 24,
         ),
         if (mostrarTimer) ...[
           const SizedBox(height: 2),
-          Text(textoTimer, style: const TextStyle(color: kAmarilloTarjeta, fontSize: 8, fontWeight: FontWeight.bold))
+          Text(textoTimer, style: TextStyle(color: colorTarjeta, fontSize: 8, fontWeight: FontWeight.bold))
         ]
       ],
     );
@@ -1041,7 +1028,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
             });
           },
           child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5), // Menos margen = más ancho
+            margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 5), // Ancho total
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.05), 

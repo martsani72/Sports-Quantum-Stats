@@ -71,9 +71,34 @@ class _CamisetaPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paintPrincipal = Paint()..color = colorPrincipal..style = PaintingStyle.fill;
-    final paintSecundario = Paint()..color = colorSecundario..style = PaintingStyle.fill;
-    final paintBorde = Paint()..color = Colors.white24..style = PaintingStyle.stroke..strokeWidth = 1.5;
+    // GRADIENTE DE PROFUNDIDAD PARA EL CUERPO
+    final Paint paintPrincipal = Paint()
+      ..shader = LinearGradient(
+        colors: [
+          colorPrincipal.withOpacity(0.8),
+          colorPrincipal,
+          colorPrincipal.withOpacity(0.85),
+        ],
+        stops: const [0.0, 0.5, 1.0],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..style = PaintingStyle.fill;
+
+    final Paint paintSecundario = Paint()..color = colorSecundario..style = PaintingStyle.fill;
+    final Paint paintBorde = Paint()..color = Colors.white.withOpacity(0.3)..style = PaintingStyle.stroke..strokeWidth = 1.2;
+    
+    // PINTURA PARA EL BRILLO "QUANTUM" (SATINADO)
+    final Paint paintBrillo = Paint()
+      ..shader = LinearGradient(
+        colors: [
+          Colors.white.withOpacity(0.15),
+          Colors.white.withOpacity(0.0),
+        ],
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ).createShader(Rect.fromLTWH(0, 0, size.width, size.height))
+      ..style = PaintingStyle.fill;
 
     double w = size.width;
     double h = size.height;
@@ -94,36 +119,31 @@ class _CamisetaPainter extends CustomPainter {
     canvas.save();
     canvas.clipPath(path);
     
+    // Dibujar base con gradiente
     canvas.drawRect(Rect.fromLTWH(0, 0, w, h), paintPrincipal);
     
+    // Dibujar patrones
     switch (patron) {
       case PatronCamiseta.liso:
         break;
-        
       case PatronCamiseta.franjaHorizontal:
         canvas.drawRect(Rect.fromLTWH(0, h * 0.42, w, h * 0.25), paintSecundario);
         break;
-        
       case PatronCamiseta.bandaDiagonal:
         Path banda = Path();
-        banda.moveTo(w * 0.1, 0);
-        banda.lineTo(w * 0.4, 0);
-        banda.lineTo(w * 0.9, h);
-        banda.lineTo(w * 0.6, h);
+        banda.moveTo(w * 0.1, 0); banda.lineTo(w * 0.4, 0);
+        banda.lineTo(w * 1.0, h); banda.lineTo(w * 0.7, h);
         banda.close();
         canvas.drawPath(banda, paintSecundario);
         break;
-        
       case PatronCamiseta.mitades:
         canvas.drawRect(Rect.fromLTWH(w / 2, 0, w / 2, h), paintSecundario);
         break;
-        
       case PatronCamiseta.rayasVerticales:
         for (double i = 0; i < w; i += w / 5) {
           canvas.drawRect(Rect.fromLTWH(i, 0, w / 10, h), paintSecundario);
         }
         break;
-        
       case PatronCamiseta.rayasHorizontales:
         for (double i = 0; i < h; i += h / 6) {
           canvas.drawRect(Rect.fromLTWH(0, i, w, h / 12), paintSecundario);
@@ -131,10 +151,31 @@ class _CamisetaPainter extends CustomPainter {
         break;
     }
 
+    // AÑADIR SOMBRA SUTIL CENTRAL (PLIEGUE)
+    final Paint paintSombra = Paint()..color = Colors.black.withOpacity(0.1)..style = PaintingStyle.stroke..strokeWidth = 1.0;
+    canvas.drawLine(Offset(w * 0.5, h * 0.3), Offset(w * 0.5, h * 0.9), paintSombra);
+
+    // DIBUJAR BRILLO QUANTUM (SATINADO)
+    Path pathBrillo = Path();
+    pathBrillo.moveTo(0, 0);
+    pathBrillo.lineTo(w * 0.6, 0);
+    pathBrillo.lineTo(0, h * 0.6);
+    pathBrillo.close();
+    canvas.drawPath(pathBrillo, paintBrillo);
+
     canvas.restore(); 
+
+    // Borde final más definido
     canvas.drawPath(path, paintBorde);
+    
+    // DETALLE DE CUELLO (NECK LINE)
+    final Paint paintCuello = Paint()..color = Colors.white.withOpacity(0.2)..style = PaintingStyle.stroke..strokeWidth = 2.0;
+    Path cuelloPath = Path();
+    cuelloPath.moveTo(w * 0.35, h * 0.1);
+    cuelloPath.quadraticBezierTo(w * 0.5, h * 0.25, w * 0.65, h * 0.1);
+    canvas.drawPath(cuelloPath, paintCuello);
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false; 
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true; 
 }
