@@ -68,7 +68,7 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                             kVerdeNeon, 
                             BlendMode.modulate,
                           ),
-                          child: Image.memory(getLogoBytes(), height: 60),
+                          child: Image.asset('assets/logo.png', height: 60),
                         ),
                         const SizedBox(width: 12),
                         Text(

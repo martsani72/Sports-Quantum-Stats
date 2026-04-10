@@ -17,18 +17,13 @@ class _PantallaSplashState extends State<PantallaSplash> with SingleTickerProvid
   late AnimationController _pulseController;
   late Animation<double> _scaleAnimation;
   late Animation<double> _opacityAnimation;
-  Uint8List? _logoBytes;
+
 
   @override
   void initState() {
     super.initState();
     
-    // Cargar bytes del logo una sola vez para evitar decodificación en cada frame del builder
-    try {
-      _logoBytes = getLogoBytes();
-    } catch (e) {
-      debugPrint('Error decodificando logo: $e');
-    }
+
 
     // Configuración del Pulso Lento (Respiración)
     _pulseController = AnimationController(
@@ -82,21 +77,19 @@ class _PantallaSplashState extends State<PantallaSplash> with SingleTickerProvid
                   scale: _scaleAnimation.value,
                   child: Opacity(
                     opacity: _opacityAnimation.value,
-                    child: _logoBytes != null 
-                      ? ColorFiltered(
+                    child: ColorFiltered(
                         colorFilter: const ColorFilter.mode(
                           kVerdeNeon,
                           BlendMode.modulate,
                         ),
-                        child: Image.memory(
-                          _logoBytes!,
+                        child: Image.asset(
+                          'assets/logo.png',
                           height: 140, // Ajustado de 180 a 140 para mayor seguridad
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) => 
                             const Icon(Icons.lightbulb_outline, color: kVerdeNeon, size: 80),
                         ),
-                      )
-                      : const Icon(Icons.lightbulb_outline, color: kVerdeNeon, size: 80),
+                      ),
                   ),
                 ),
                 const SizedBox(height: 40),
