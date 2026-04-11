@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sports Quantum Stats | Sitio Oficial</title>
+
+    <meta name="description"
+        content="La plataforma definitiva diseñada para potenciar el análisis deportivo. Orientada a periodistas, entrenadores, analistas de rendimiento y fanáticos apasionados.">
+    <meta property="og:title" content="Sports Quantum Stats | Sitio Oficial">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="logo.png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet">
+
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <style>
+        :root {
+            --neon: #39FF14;
+            --bg: #050505;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: #fff;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        /* FILTRO MÁGICO PARA EL LOGO (Verde Neón Exacto) */
+        .logo-filter {
+            filter: invert(72%) sepia(81%) saturate(1005%) hue-rotate(62deg) brightness(109%) contrast(116%) drop-shadow(0 0 5px rgba(57, 255, 20, 0.5));
+        }
+
+        .font-quantum {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        @keyframes pulse-neon {
+
+            0%,
+            100% {
+                text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+            }
+
+            50% {
+                text-shadow: 0 0 20px rgba(57, 255, 20, 0.8), 0 0 30px rgba(57, 255, 20, 0.4);
+            }
+        }
+
+        .neon-text {
+            color: var(--neon);
+            animation: pulse-neon 3s infinite;
+        }
+
+        .btn-quantum {
+            background: var(--neon);
+            color: #000;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(57, 255, 20, 0.3);
+        }
+
+        .btn-quantum:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--neon);
+            background: #fff;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .app-icon {
+            border-radius: 20%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            background-color: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screenshot-card {
+            transition: all 0.5s ease;
+            filter: grayscale(20%);
+        }
+
+        .screenshot-card:hover {
+            filter: grayscale(0%);
+            transform: translateY(-8px);
+            border-color: var(--neon);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="fixed w-full z-50 py-4 px-4 md:px-12 flex justify-between items-center glass border-b border-white/5">
+        <div class="flex items-center gap-2 md:gap-3">
+            <div class="w-9 h-9 md:w-10 md:h-10 app-icon border border-green-500/30">
+                <img src="logo.png" alt="Logo SQS" class="w-full h-full object-contain logo-filter p-1">
+            </div>
+            <span class="neon-text">
+                SPORTS QUANTUM <span class="neon-text">STATS</span>
+            </span>
+        </div>
+        <div class="flex gap-4 items-center">
+            <div class="hidden md:flex gap-6 text-[10px] font-bold uppercase tracking-widest mr-4">
+                <a href="#inicio" class="hover:text-green-400 transition">Inicio</a>
+                <a href="#privacidad" class="hover:text-green-400 transition">Privacidad</a>
+                <a href="#contacto" class="text-green-400 hover:text-white transition">Contacto</a>
+            </div>
+            <a href="https://play.google.com/store/apps/details?id=com.martin.sportquantumstats" target="_blank"
+                class="btn-quantum px-5 py-2 rounded-full text-[9px] md:text-[10px] uppercase">
+                Play Store
+            </a>
+        </div>
+    </nav>
+
+    <header id="inicio" class="reveal pt-48 pb-20 px-6 text-center">
+        <div class="mb-10 flex justify-center">
+            <div class="w-32 h-32 app-icon border-2 border-green-500/50 shadow-[0_0_30px_rgba(57,255,20,0.2)]">
+                <img src="logo.png" alt="Logo Quantum" class="w-full h-full object-contain logo-filter p-3">
+            </div>
+        </div>
+        <h1 class="text-4xl md:text-7xl font-quantum font-bold mb-6 uppercase leading-tight tracking-tighter">
+            Registrá el deporte <br> <span class="neon-text italic">en tiempo real</span>
+        </h1>
+
+        <p class="text-zinc-400 text-lg md:text-xl max-w-4xl mx-auto mb-12 leading-relaxed">
+            "La plataforma definitiva para el registro de estadísticas deportivas. Registrá cada acción del juego desde
+            tu celular y obtené informes al instante.
+            Diseñada para potenciar el trabajo de periodistas deportivos, entrenadores y fanáticos de las estadísticas."
+        </p>
+
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+            <a href="https://play.google.com/store/apps/details?id=com.martin.sportquantumstats" target="_blank"
+                class="btn-quantum px-12 py-5 rounded-xl text-sm uppercase tracking-widest inline-block w-full sm:w-auto">
+                Descargar en Play Store
+            </a>
+            <div class="glass px-8 py-5 rounded-xl border border-white/10 font-quantum text-zinc-500 w-full sm:w-auto">
+                PRECIO: <span class="text-white ml-2 text-xl font-bold">$001</span>
+            </div>
+        </div>
+    </header>
+
+    <section id="screenshots" class="reveal py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+            <h2
+                class="font-quantum text-center text-2xl mb-16 uppercase tracking-widest border-b border-green-500/20 pb-4 inline-block mx-auto flex justify-center">
+                Interfaz Profesional</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="screenshot-card glass p-2 rounded-[2.5rem] border border-white/5">
+                    <img src="assets/screen1.png" alt="Registro" class="rounded-[2rem] w-full">
+                </div>
+                <div class="screenshot-card glass p-2 rounded-[2.5rem] border border-white/5">
+                    <img src="assets/screen2.png" alt="Métricas" class="rounded-[2rem] w-full">
+                </div>
+                <div class="screenshot-card glass p-2 rounded-[2.5rem] border border-white/5">
+                    <img src="assets/screen3.png" alt="Informes" class="rounded-[2rem] w-full">
+                </div>
+                <div class="screenshot-card glass p-2 rounded-[2.5rem] border border-white/5">
+                    <img src="assets/screen4.png" alt="Análisis" class="rounded-[2rem] w-full">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="privacidad" class="reveal py-20 px-6 max-w-5xl mx-auto">
+        <div class="glass p-8 md:p-16 rounded-[40px]">
+            <h2 class="font-quantum text-2xl mb-12 border-l-4 border-green-500 pl-4 uppercase">Política de Privacidad
+            </h2>
+
+            <div class="space-y-10 text-zinc-300 text-sm leading-relaxed">
+                <p class="text-zinc-500"><strong>Última actualización:</strong> 3 de abril de 2026</p>
+                <p>La Empresa opera la aplicación móvil Sports Quantum Stats (en adelante, el "Servicio"). Esta página
+                    le informa sobre nuestras políticas relativas a la recopilación, uso y divulgación de datos
+                    personales cuando utiliza nuestro servicio.</p>
+
+                <div class="space-y-8">
+                    <div>
+                        <h3 class="text-white font-bold text-lg mb-2">1. Recopilación y Uso de la Información</h3>
+                        <p>Para una mejor experiencia al utilizar nuestro Servicio, la aplicación funciona
+                            principalmente de manera local para el registro de datos y estadísticas deportivas en tiempo
+                            real. Es posible que recopilemos o utilicemos la siguiente información:</p>
+                        <ul class="list-disc pl-6 mt-2 space-y-2">
+                            <li><strong>Datos de Identificación:</strong> Actualmente, la aplicación no requiere
+                                registro de cuentas de usuario, por lo que no recopilamos nombres, contraseñas ni
+                                correos electrónicos de forma directa.</li>
+                            <li><strong>Datos de Uso:</strong> Información de diagnóstico básica generada
+                                automáticamente, como la dirección IP, el modelo del dispositivo o la versión del
+                                sistema operativo.</li>
+                            <li><strong>Permisos de Dispositivo:</strong> Utilizamos almacenamiento local para guardar
+                                estadísticas y funciones de compartir para exportar informes.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold text-lg mb-2">2. Proveedores de Servicios (Terceros)</h3>
+                        <p>Podemos emplear a terceras empresas para facilitar nuestro Servicio o analizar su uso. Esta
+                            aplicación utiliza los siguientes servicios que pueden recopilar información:</p>
+                        <ul class="list-disc pl-6 mt-2">
+                            <li><strong class="text-green-400">Google Play Services</strong></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold text-lg mb-2">3. Seguridad</h3>
+                        <p>Valoramos su confianza al utilizar nuestra aplicación. Nos esforzamos por proteger sus datos
+                            mediante medios comercialmente aceptables. Pero recuerde que ningún método de transmisión
+                            por Internet o método de almacenamiento electrónico es 100% seguro y fiable.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold text-lg mb-2">4. Privacidad de los Niños</h3>
+                        <p>Estos Servicios no se dirigen a menores de 13 años, ya que están diseñados como una
+                            herramienta para periodistas deportivos y profesionales. No recopilamos a sabiendas
+                            información de identificación personal de niños menores de 13 años. Si descubrimos que un
+                            menor nos ha proporcionado información, la eliminamos inmediatamente.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-white font-bold text-lg mb-2">5. Cambios en esta Política</h3>
+                        <p>Es posible que actualicemos nuestra Política de Privacidad periódicamente. Se le recomienda
+                            revisar esta página con frecuencia para ver si hay cambios. Las modificaciones entrarán en
+                            vigor inmediatamente después de su publicación.</p>
+                    </div>
+
+                    <div id="contacto" class="pt-10 border-t border-white/10 text-center md:text-left">
+                        <h3 class="text-white font-bold text-lg mb-4">6. Soporte Técnico y Contacto</h3>
+                        <p class="mb-8 text-zinc-400">Si tiene alguna pregunta o sugerencia sobre nuestra aplicación o
+                            Política de Privacidad, contáctenos directamente.</p>
+
+                        <div class="mb-6 font-bold text-green-400 text-lg tracking-wider font-quantum">
+                            quantumsportstats@gmail.com</div>
+
+                        <a href="mailto:quantumsportstats@gmail.com?subject=Soporte%20Sports%20Quantum%20Stats"
+                            class="btn-quantum px-8 py-5 rounded-2xl inline-flex items-center gap-4 transition-transform active:scale-95 uppercase text-xs tracking-widest">
+                            <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                <path d="m22 6-10 7L2 6" />
+                            </svg>
+                            Enviar Correo Directo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-20 text-center border-t border-white/5 opacity-80">
+        <div class="mb-4 flex justify-center items-center gap-4">
+            <div class="w-8 h-8 app-icon border border-green-500/20">
+                <img src="logo.png" alt="Logo" class="w-full h-full object-contain logo-filter p-1">
+            </div>
+            <span class="font-quantum text-sm uppercase">SPORTS QUANTUM <span class="text-green-500">STATS</span></span>
+        </div>
+        <p class="text-zinc-600 text-[10px] tracking-widest font-bold uppercase">
+            © 2026 | Desarrollado por Martin | Buenos Aires, Argentina
+        </p>
+    </footer>
+
+    <script>
+        const observerOptions = { threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    </script>
+
+</body>
+
+</html>
