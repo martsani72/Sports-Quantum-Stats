@@ -1029,7 +1029,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           },
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 0, vertical: 5), // Ancho total
-            padding: const EdgeInsets.all(4),
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.05), 
               borderRadius: BorderRadius.circular(30),
@@ -1109,7 +1109,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       child: IgnorePointer( // El toque lo maneja el padre
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
           decoration: BoxDecoration(
             color: activo ? colorFondo.withOpacity(0.8) : Colors.transparent,
             borderRadius: BorderRadius.circular(20),
