@@ -83,7 +83,7 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 1),
                     Text(
                       'QUANTUM STATS', 
                       style: TextStyle(
