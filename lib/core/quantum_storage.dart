@@ -55,4 +55,27 @@ class QuantumStorage {
   static Future<void> borrarPartidoActivo() async {
     await prefs.remove('partido_activo');
   }
+
+  // PERSISTENCIA DE HISTORIAL Y PARÁMETROS
+  static Future<void> guardarPartidos(List<Partido> partidos) async {
+    List<String> data = partidos.map((p) => jsonEncode(p.toMap())).toList();
+    await prefs.setStringList('historial_partidos', data);
+  }
+
+  static List<Partido> cargarPartidos() {
+    List<String>? data = prefs.getStringList('historial_partidos');
+    if (data == null) return [];
+    return data.map((item) => Partido.fromMap(jsonDecode(item))).toList();
+  }
+
+  static Future<void> guardarParametros(List<Partido> parametros) async {
+    List<String> data = parametros.map((p) => jsonEncode(p.toMap())).toList();
+    await prefs.setStringList('parametros_guardados', data);
+  }
+
+  static List<Partido> cargarParametros() {
+    List<String>? data = prefs.getStringList('parametros_guardados');
+    if (data == null) return [];
+    return data.map((item) => Partido.fromMap(jsonDecode(item))).toList();
+  }
 }

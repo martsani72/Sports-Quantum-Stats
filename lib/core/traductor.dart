@@ -181,6 +181,10 @@ class Traductor {
       'buscar_equipo_hint': 'Buscar equipo o torneo...',
       'top_equipos': 'EQUIPOS MÁS FRECUENTES',
       'sin_datos_filtro': 'No hay datos para este filtro',
+      'actualizacion_requerida': 'ACTUALIZACIÓN REQUERIDA',
+      'msj_actualizacion': 'Hay una versión crítica disponible. Por favor, actualiza la aplicación para continuar registrando estadísticas con seguridad.',
+      'actualizar_ahora': 'ACTUALIZAR AHORA',
+      'descargar_en_playstore': 'VER EN GOOGLE PLAY',
     },
     'English': {
       'menu_1': '1 - Start a match',
@@ -343,6 +347,10 @@ class Traductor {
       'buscar_equipo_hint': 'Search team or tournament...',
       'top_equipos': 'MOST FREQUENT TEAMS',
       'sin_datos_filtro': 'No data for this filter',
+      'actualizacion_requerida': 'UPDATE REQUIRED',
+      'msj_actualizacion': 'A critical update is available. Please update the application to continue recording statistics securely.',
+      'actualizar_ahora': 'UPDATE NOW',
+      'descargar_en_playstore': 'VIEW ON GOOGLE PLAY',
     },
     'Português': {
       'menu_1': '1 - Iniciar uma partida',
@@ -496,6 +504,10 @@ class Traductor {
       'limite_cambios_msj_1': 'A equipe não tem mais substituições disponíveis (',
       'limite_cambios_msj_2': '). Continuar mesmo assim?',
       'nota_hint': 'Escreva ou dite o comentário da partida aqui...',
+      'actualizacion_requerida': 'ATUALIZAÇÃO NECESSÁRIA',
+      'msj_actualizacion': 'Uma atualização crítica está disponível. Por favor, atualize o aplicativo para continuar registrando estatísticas com segurança.',
+      'actualizar_ahora': 'ATUALIZAR AGORA',
+      'descargar_en_playstore': 'VER NA GOOGLE PLAY',
     }
   };
 

@@ -30,9 +30,13 @@ import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
-class PantallaEncuentrosPersonalizados extends StatelessWidget {
+class PantallaEncuentrosPersonalizados extends StatefulWidget {
   const PantallaEncuentrosPersonalizados({super.key});
 
+  @override State<PantallaEncuentrosPersonalizados> createState() => _PantallaEncuentrosPersonalizadosState();
+}
+
+class _PantallaEncuentrosPersonalizadosState extends State<PantallaEncuentrosPersonalizados> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,20 +49,37 @@ class PantallaEncuentrosPersonalizados extends StatelessWidget {
               itemCount: parametrosGuardados.length,
               itemBuilder: (context, index) {
                 Partido p = parametrosGuardados[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 15.0),
-                  child: Card(
-                    color: const Color(0xFF111111),
-                    shape: RoundedRectangleBorder(side: const BorderSide(color: kCelestePlay), borderRadius: BorderRadius.circular(8)),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      leading: Icon(DeporteConfig.datos[p.deporte]!['icono'], color: kCelestePlay, size: 30),
-                      title: Text('${p.local.toUpperCase()} vs ${p.visita.toUpperCase()}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                      subtitle: Text('Plantilla de ${Traductor.get(p.deporte)}', style: const TextStyle(color: kCelestePlay, fontSize: 14)),
-                      trailing: const Icon(Icons.play_arrow, color: kVerdeNeon),
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => PantallaPreInicio(partido: p)));
-                      },
+                return Dismissible(
+                  key: Key(p.hashCode.toString() + index.toString()),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20),
+                    decoration: BoxDecoration(color: Colors.red.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
+                    child: const Icon(Icons.delete, color: Colors.redAccent),
+                  ),
+                  onDismissed: (direction) {
+                    setState(() {
+                      parametrosGuardados.removeAt(index);
+                      QuantumStorage.guardarParametros(parametrosGuardados);
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('borrar').toUpperCase(), style: const TextStyle(color: Colors.white)), backgroundColor: Colors.redAccent));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 15.0),
+                    child: Card(
+                      color: const Color(0xFF111111),
+                      shape: RoundedRectangleBorder(side: const BorderSide(color: kCelestePlay), borderRadius: BorderRadius.circular(8)),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                        leading: Icon(DeporteConfig.datos[p.deporte]!['icono'], color: kCelestePlay, size: 30),
+                        title: Text('${p.local.toUpperCase()} vs ${p.visita.toUpperCase()}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                        subtitle: Text('Plantilla de ${Traductor.get(p.deporte)}', style: const TextStyle(color: kCelestePlay, fontSize: 14)),
+                        trailing: const Icon(Icons.play_arrow, color: kVerdeNeon),
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => PantallaPreInicio(partido: p)));
+                        },
+                      ),
                     ),
                   ),
                 );

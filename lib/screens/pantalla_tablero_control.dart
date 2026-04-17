@@ -131,6 +131,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           widget.partido.logEventos.add('--- FIN DEL PARTIDO ---');
           if (!partidosGuardados.contains(widget.partido)) {
             partidosGuardados.add(widget.partido);
+            QuantumStorage.guardarPartidos(partidosGuardados);
           }
         });
         QuantumStorage.borrarPartidoActivo();

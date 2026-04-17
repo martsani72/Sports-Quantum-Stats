@@ -5,6 +5,7 @@ import 'package:mi_nueva_app/core/constants.dart';
 import 'package:mi_nueva_app/core/traductor.dart';
 import 'package:mi_nueva_app/assets_data.dart';
 import 'package:mi_nueva_app/screens/pantalla_principal.dart';
+import 'package:mi_nueva_app/core/version_checker.dart';
 
 class PantallaSplash extends StatefulWidget {
   const PantallaSplash({super.key});
@@ -39,18 +40,24 @@ class _PantallaSplashState extends State<PantallaSplash> with SingleTickerProvid
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
-    // Navegar automáticamente después de 3 segundos
-    Timer(const Duration(milliseconds: 3500), () {
+    // Chequeo de Versión y Navegación
+    Future.delayed(const Duration(milliseconds: 3000), () async {
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const PantallaPrincipal(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            transitionDuration: const Duration(milliseconds: 800),
-          ),
-        );
+        // Consultar si hay una actualización obligatoria
+        await VersionChecker.checkVersion(context);
+        
+        // Si después de chequear no se abrió un diálogo (no bloqueó), procedemos
+        if (mounted && Navigator.of(context).canPop() == false) {
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const PantallaPrincipal(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              transitionDuration: const Duration(milliseconds: 800),
+            ),
+          );
+        }
       }
     });
   }

@@ -36,6 +36,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await QuantumStorage.init();
   perfilUsuario = QuantumStorage.cargarPerfil();
+  partidosGuardados = QuantumStorage.cargarPartidos();
+  parametrosGuardados = QuantumStorage.cargarParametros();
 
   runApp(const MaterialApp(
     debugShowCheckedModeBanner: false,

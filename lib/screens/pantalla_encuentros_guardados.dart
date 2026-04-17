@@ -30,9 +30,13 @@ import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
-class PantallaEncuentrosGuardados extends StatelessWidget {
+class PantallaEncuentrosGuardados extends StatefulWidget {
   const PantallaEncuentrosGuardados({super.key});
 
+  @override State<PantallaEncuentrosGuardados> createState() => _PantallaEncuentrosGuardadosState();
+}
+
+class _PantallaEncuentrosGuardadosState extends State<PantallaEncuentrosGuardados> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,18 +49,35 @@ class PantallaEncuentrosGuardados extends StatelessWidget {
               itemCount: partidosGuardados.length,
               itemBuilder: (context, index) {
                 Partido p = partidosGuardados[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 15.0),
-                  child: Card(
-                    color: const Color(0xFF111111),
-                    shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeOscuro), borderRadius: BorderRadius.circular(8)),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                      leading: Icon(DeporteConfig.datos[p.deporte]!['icono'], color: kVerdeNeon, size: 30),
-                      title: Text('${p.local.toUpperCase()} vs ${p.visita.toUpperCase()}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                      subtitle: Text('Resultado: ${p.obtenerPuntaje('Local')} - ${p.obtenerPuntaje('Visita')}', style: const TextStyle(color: kVerdeNeon, fontSize: 14)),
-                      trailing: const Icon(Icons.description, color: Colors.white54),
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PantallaResumenPartido(partido: p))),
+                return Dismissible(
+                  key: Key(p.hashCode.toString() + index.toString()),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20),
+                    decoration: BoxDecoration(color: Colors.red.withOpacity(0.2), borderRadius: BorderRadius.circular(8)),
+                    child: const Icon(Icons.delete, color: Colors.redAccent),
+                  ),
+                  onDismissed: (direction) {
+                    setState(() {
+                      partidosGuardados.removeAt(index);
+                      QuantumStorage.guardarPartidos(partidosGuardados);
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('borrar').toUpperCase(), style: const TextStyle(color: Colors.white)), backgroundColor: Colors.redAccent));
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 15.0),
+                    child: Card(
+                      color: const Color(0xFF111111),
+                      shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeOscuro), borderRadius: BorderRadius.circular(8)),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                        leading: Icon(DeporteConfig.datos[p.deporte]!['icono'], color: kVerdeNeon, size: 30),
+                        title: Text('${(p.titulo != null && p.titulo!.isNotEmpty) ? p.titulo!.toUpperCase() : (p.local.toUpperCase() + " vs " + p.visita.toUpperCase())}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                        subtitle: Text('Resultado: ${p.obtenerPuntaje('Local')} - ${p.obtenerPuntaje('Visita')}', style: const TextStyle(color: kVerdeNeon, fontSize: 14)),
+                        trailing: const Icon(Icons.description, color: Colors.white54),
+                        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PantallaResumenPartido(partido: p))),
+                      ),
                     ),
                   ),
                 );

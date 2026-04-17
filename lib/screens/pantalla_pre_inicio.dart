@@ -105,7 +105,10 @@ class PantallaPreInicio extends StatelessWidget {
                 icon: const Icon(Icons.bookmark_add, color: kVerdeNeon),
                 label: Text(Traductor.get('guardar_parametros'), style: TextStyle(color: kVerdeNeon, fontSize: 16)),
                 onPressed: () {
-                  if (!parametrosGuardados.contains(partido)) parametrosGuardados.add(partido);
+                  if (!parametrosGuardados.contains(partido)) {
+                    parametrosGuardados.add(partido);
+                    QuantumStorage.guardarParametros(parametrosGuardados);
+                  }
                   Navigator.popUntil(context, (route) => route.isFirst);
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('parametros_plantilla'), style: TextStyle(color: kVerdeNeon)), backgroundColor: kNegro));
                 },
