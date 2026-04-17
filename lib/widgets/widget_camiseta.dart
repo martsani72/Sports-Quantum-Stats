@@ -86,7 +86,7 @@ class _CamisetaPainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final Paint paintSecundario = Paint()..color = colorSecundario..style = PaintingStyle.fill;
-    final Paint paintBorde = Paint()..color = Colors.white.withOpacity(0.3)..style = PaintingStyle.stroke..strokeWidth = 1.2;
+    final Paint paintBorde = Paint()..color = colorSecundario.withOpacity(0.8)..style = PaintingStyle.stroke..strokeWidth = 1.5;
     
     // PINTURA PARA EL BRILLO "QUANTUM" (SATINADO)
     final Paint paintBrillo = Paint()
@@ -169,7 +169,7 @@ class _CamisetaPainter extends CustomPainter {
     canvas.drawPath(path, paintBorde);
     
     // DETALLE DE CUELLO (NECK LINE)
-    final Paint paintCuello = Paint()..color = Colors.white.withOpacity(0.2)..style = PaintingStyle.stroke..strokeWidth = 2.0;
+    final Paint paintCuello = Paint()..color = colorSecundario..style = PaintingStyle.stroke..strokeWidth = 2.5;
     Path cuelloPath = Path();
     cuelloPath.moveTo(w * 0.35, h * 0.1);
     cuelloPath.quadraticBezierTo(w * 0.5, h * 0.25, w * 0.65, h * 0.1);

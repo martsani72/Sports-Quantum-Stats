@@ -607,8 +607,8 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     String nombrePeriodo = Traductor.get(clavePeriodo).toUpperCase(); 
 
     if (!_notaInicializada) {
-      _notaX = MediaQuery.of(context).size.width - 80; 
-      _notaY = 15; 
+      _notaX = (MediaQuery.of(context).size.width / 2) - 30; 
+      _notaY = 135; 
       _notaInicializada = true;
     }
 
@@ -780,13 +780,13 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: widget.partido.localFondo.withOpacity(0.15), 
+                              backgroundColor: widget.partido.localFondo.withOpacity(0.35), 
                               padding: const EdgeInsets.symmetric(vertical: 15), 
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10), 
-                                side: BorderSide(color: widget.partido.localTexto.withOpacity(0.3))
+                                side: BorderSide(color: widget.partido.localTexto, width: 2)
                               ),
-                              elevation: 0,
+                              elevation: 5,
                             ), 
                             onPressed: () => _abrirRegistro('Local'), 
                             child: Column(children: [Text(Traductor.get('registrar_mayus'), style: TextStyle(color: widget.partido.localTexto.withOpacity(0.7), fontSize: 9, letterSpacing: 1)), Text(widget.partido.local, style: TextStyle(color: widget.partido.localTexto, fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis)])
@@ -796,13 +796,13 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                         Expanded(
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: widget.partido.visitaFondo.withOpacity(0.15), 
+                              backgroundColor: widget.partido.visitaFondo.withOpacity(0.35), 
                               padding: const EdgeInsets.symmetric(vertical: 15), 
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10), 
-                                side: BorderSide(color: widget.partido.visitaTexto.withOpacity(0.3))
+                                side: BorderSide(color: widget.partido.visitaTexto, width: 2)
                               ),
-                              elevation: 0,
+                              elevation: 5,
                             ), 
                             onPressed: () => _abrirRegistro('Visita'), 
                             child: Column(children: [Text(Traductor.get('registrar_mayus'), style: TextStyle(color: widget.partido.visitaTexto.withOpacity(0.7), fontSize: 9, letterSpacing: 1)), Text(widget.partido.visita, style: TextStyle(color: widget.partido.visitaTexto, fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis)])

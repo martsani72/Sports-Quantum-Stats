@@ -49,11 +49,12 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
   final TextEditingController _jugadoresLocalController = TextEditingController();
   final TextEditingController _nombreVisitaController = TextEditingController();
   final TextEditingController _jugadoresVisitaController = TextEditingController();
+  final TextEditingController _tituloController = TextEditingController();
 
-  Color _localFondo = const Color(0xFF111111);
-  Color _localTexto = kVerdeNeon;
-  Color _visitaFondo = const Color(0xFF111111);
-  Color _visitaTexto = Colors.redAccent;
+  Color _localFondo = Colors.blue;
+  Color _localTexto = Colors.white;
+  Color _visitaFondo = Colors.red;
+  Color _visitaTexto = Colors.white;
 
   PatronCamiseta _patronLocal = PatronCamiseta.liso;
   PatronCamiseta _patronVisita = PatronCamiseta.liso;
@@ -113,31 +114,30 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
     );
   }
 
-  Future<PatronCamiseta?> _seleccionarPatron(BuildContext context) {
-    final Map<PatronCamiseta, String> opciones = {
-      PatronCamiseta.liso: 'Liso (Ej: All Blacks)',
-      PatronCamiseta.franjaHorizontal: 'Franja (Ej: Boca)',
-      PatronCamiseta.bandaDiagonal: 'Diagonal (Ej: River)',
-      PatronCamiseta.mitades: 'Mitades (Ej: Newell\'s)',
-      PatronCamiseta.rayasVerticales: 'Bastones (Ej: Estudiantes)',
-      PatronCamiseta.rayasHorizontales: 'Rayas Horiz. (Ej: Pumas)',
-    };
-    
+  Future<PatronCamiseta?> _seleccionarPatron(BuildContext context, Color fondo, Color texto) {
     return showDialog<PatronCamiseta>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: kNegro,
+        backgroundColor: const Color(0xFF1A1A1A),
         shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon), borderRadius: BorderRadius.circular(10)),
-        title: Text(Traductor.get('elegir_diseno'), style: TextStyle(color: kVerdeNeon, fontSize: 14)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: opciones.entries.map((e) => ListTile(
-            leading: const Icon(Icons.checkroom, color: Colors.white54),
-            title: Text(e.value, style: const TextStyle(color: Colors.white, fontSize: 13)),
-            onTap: () => Navigator.pop(ctx, e.key),
-          )).toList()
-        )
-      )
+        title: Text(Traductor.get('elegir_diseno').toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 13, letterSpacing: 2)),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: SingleChildScrollView(
+            child: Wrap(
+              spacing: 15, runSpacing: 15, alignment: WrapAlignment.center,
+              children: PatronCamiseta.values.map((patron) => InkWell(
+                onTap: () => Navigator.pop(ctx, patron),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white10)),
+                  child: WidgetCamiseta(fondo: fondo, detalle: texto, patron: patron),
+                ),
+              )).toList(),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -185,7 +185,7 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
                         children: [
                           _buildSelectorColor(Traductor.get('fondo_mayus'), _localFondo, () async { Color? c = await _seleccionarColor(context); if (c != null) setStateDialog(() => _localFondo = c); }),
                           _buildSelectorColor(Traductor.get('detalle_mayus'), _localTexto, () async { Color? c = await _seleccionarColor(context); if (c != null) setStateDialog(() => _localTexto = c); }),
-                          _buildSelectorPatron(Traductor.get('diseno_mayus'), () async { PatronCamiseta? p = await _seleccionarPatron(context); if (p != null) setStateDialog(() => _patronLocal = p); }),
+                          _buildSelectorPatron(Traductor.get('diseno_mayus'), () async { PatronCamiseta? p = await _seleccionarPatron(context, _localFondo, _localTexto); if (p != null) setStateDialog(() => _patronLocal = p); }),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -204,7 +204,7 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
                         children: [
                           _buildSelectorColor(Traductor.get('fondo_mayus'), _visitaFondo, () async { Color? c = await _seleccionarColor(context); if (c != null) setStateDialog(() => _visitaFondo = c); }),
                           _buildSelectorColor(Traductor.get('detalle_mayus'), _visitaTexto, () async { Color? c = await _seleccionarColor(context); if (c != null) setStateDialog(() => _visitaTexto = c); }),
-                          _buildSelectorPatron(Traductor.get('diseno_mayus'), () async { PatronCamiseta? p = await _seleccionarPatron(context); if (p != null) setStateDialog(() => _patronVisita = p); }),
+                          _buildSelectorPatron(Traductor.get('diseno_mayus'), () async { PatronCamiseta? p = await _seleccionarPatron(context, _visitaFondo, _visitaTexto); if (p != null) setStateDialog(() => _patronVisita = p); }),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -262,6 +262,52 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
 
   bool _hayEquiposCargados() => _nombreLocalController.text.isNotEmpty || _nombreVisitaController.text.isNotEmpty;
 
+  Widget _buildFilaTituloPartido() {
+    bool vacio = _tituloController.text.isEmpty;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6.0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+        decoration: BoxDecoration(
+          color: vacio ? kVerdeNeon.withOpacity(0.05) : Colors.white.withOpacity(0.03), 
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: vacio ? kVerdeNeon : Colors.white.withOpacity(0.05), width: 1.5),
+          boxShadow: vacio ? [BoxShadow(color: kVerdeNeon.withOpacity(0.1), blurRadius: 10, spreadRadius: 2)] : null,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(Traductor.get('titulo_partido'), style: const TextStyle(color: kVerdeOscuro, fontSize: 10, letterSpacing: 2, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 8),
+            if (modoEdicion)
+              TextField(
+                controller: _tituloController,
+                style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                textCapitalization: TextCapitalization.words,
+                decoration: _inputDecoration(Traductor.get('titulo_partido_hint'), Colors.transparent),
+              )
+            else
+              Row(
+                children: [
+                  Icon(Icons.drive_file_rename_outline, color: vacio ? Colors.white10 : kVerdeNeon, size: 16),
+                  const SizedBox(width: 10),
+                  Text(
+                    vacio ? 'PULSA "EDITAR" PARA ASIGNAR EL TÍTULO' : _tituloController.text.toUpperCase(), 
+                    style: TextStyle(
+                      color: vacio ? kVerdeNeon : Colors.white, 
+                      fontSize: 13, 
+                      fontWeight: FontWeight.bold,
+                      fontStyle: vacio ? FontStyle.italic : FontStyle.normal
+                    )
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     String tituloTraducido = "${Traductor.get('parametros')} ${Traductor.get(widget.nombreDeporte)}";
@@ -282,6 +328,8 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
             child: ListView(
               padding: const EdgeInsets.all(20),
               children: [
+                _buildFilaTituloPartido(),
+                const SizedBox(height: 10),
                 _buildFilaEspecialJugadores(),
                 ...contadores.keys.map((key) {
                   if (key == 'Min. Amarilla') return _buildFilaMinutosAmarilla(key);
@@ -323,7 +371,7 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
           children: [
             Text(Traductor.get('jugadores_colores'), style: const TextStyle(color: kVerdeNeon, fontSize: 13, fontWeight: FontWeight.w400)),
             if (modoEdicion)
-              ElevatedButton.icon(style: ElevatedButton.styleFrom(backgroundColor: kVerdeOscuro, foregroundColor: kVerdeNeon, minimumSize: const Size(100, 35)), icon: const Icon(Icons.palette, size: 16), label: Text(Traductor.get('planilla'), style: const TextStyle(fontSize: 10)), onPressed: _mostrarPopUpJugadores)
+              ElevatedButton.icon(style: ElevatedButton.styleFrom(backgroundColor: kVerdeOscuro, foregroundColor: kVerdeNeon, minimumSize: const Size(200, 45)), icon: const Icon(Icons.palette, size: 16), label: Text(Traductor.get('planilla'), style: const TextStyle(fontSize: 10)), onPressed: _mostrarPopUpJugadores)
             else
               Text(_hayEquiposCargados() ? Traductor.get('listas_cargadas') : Traductor.get('no_definidos'), style: TextStyle(color: _hayEquiposCargados() ? kVerdeNeon : Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
           ],
@@ -483,6 +531,7 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
 
                   Partido nuevoPartido = Partido(
                     deporte: widget.nombreDeporte, local: nombreLoc, visita: nombreVis,
+                    titulo: _tituloController.text.trim(),
                     contadores: contadores, switches: switches,
                     localFondo: _localFondo, localTexto: _localTexto,
                     visitaFondo: _visitaFondo, visitaTexto: _visitaTexto,

@@ -55,7 +55,7 @@ class PantallaResumenPartido extends StatelessWidget {
     try {
       StringBuffer csv = StringBuffer();
       
-      csv.writeln('TORNEO/APP,Sports Quantum Stats');
+      csv.writeln('TORNEO/APP,${partido.titulo.isNotEmpty ? partido.titulo : "Sports Quantum Stats"}');
       csv.writeln('DEPORTE,${partido.deporte.toUpperCase()}');
       csv.writeln('LOCAL,${partido.local.toUpperCase()},PUNTOS:,${partido.obtenerPuntaje("Local")}');
       csv.writeln('VISITA,${partido.visita.toUpperCase()},PUNTOS:,${partido.obtenerPuntaje("Visita")}');
@@ -138,7 +138,10 @@ class PantallaResumenPartido extends StatelessWidget {
       posTxt += "\n--- BITÁCORA ---\n";
     }
 
-    String textoResumen = posTxt + partido.logEventos.join('\n\n') + _generarFirma();
+    String headerInfo = (partido.titulo.isNotEmpty ? "${partido.titulo.toUpperCase()}\n" : "");
+    headerInfo += '${partido.local.toUpperCase()} ${partido.obtenerPuntaje("Local")} - ${partido.obtenerPuntaje("Visita")} ${partido.visita.toUpperCase()}\n\n';
+
+    String textoResumen = headerInfo + posTxt + partido.logEventos.join('\n\n') + _generarFirma();
 
     return Scaffold(
       backgroundColor: kNegro,
@@ -167,6 +170,10 @@ class PantallaResumenPartido extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            if (partido.titulo.isNotEmpty) ...[
+              Text(partido.titulo.toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.5), textAlign: TextAlign.center),
+              const SizedBox(height: 10),
+            ],
             Text('${partido.local.toUpperCase()} ${partido.obtenerPuntaje('Local')} - ${partido.obtenerPuntaje('Visita')} ${partido.visita.toUpperCase()}', style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
             const SizedBox(height: 5),
             Text(Traductor.get(partido.deporte).toUpperCase(), style: const TextStyle(color: Colors.white54, fontSize: 12, letterSpacing: 3)),

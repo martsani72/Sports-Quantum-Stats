@@ -24,6 +24,7 @@ class Partido {
   final String deporte;
   final String local;
   final String visita;
+  final String titulo;
   final Map<String, int> contadores;
   final Map<String, bool> switches;
   
@@ -71,6 +72,7 @@ class Partido {
 
   Partido({
     required this.deporte, required this.local, required this.visita,
+    this.titulo = '',
     required this.contadores, required this.switches,
     this.localFondo = kNegro, this.localTexto = kVerdeNeon,
     this.visitaFondo = kNegro, this.visitaTexto = Colors.redAccent,
@@ -124,6 +126,7 @@ class Partido {
       'deporte': deporte,
       'local': local,
       'visita': visita,
+      'titulo': titulo,
       'contadores': contadores,
       'switches': switches,
       'localFondo': localFondo.value,
@@ -151,6 +154,7 @@ class Partido {
       deporte: map['deporte'],
       local: map['local'],
       visita: map['visita'],
+      titulo: map['titulo'] ?? '',
       contadores: Map<String, int>.from(map['contadores']),
       switches: Map<String, bool>.from(map['switches']),
       localFondo: Color(map['localFondo']),
