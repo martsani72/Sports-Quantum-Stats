@@ -36,6 +36,11 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   double _notaY = 0;
   bool _notaInicializada = false;
   String? _equipoPosesion; // 'Local' o 'Visita'
+  
+  // CONTROLADORES BASEBALL
+  TextEditingController _ctrlBateador = TextEditingController();
+  TextEditingController _ctrlLanzador = TextEditingController();
+  bool _inicializadoBaseball = false;
 
   @override
   void initState() {
@@ -49,6 +54,17 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
       _guardarEstado();
     }
+  }
+
+  void _incrementarOrdenBateo(String equipo) {
+    setState(() {
+      if (equipo == 'Local') {
+        widget.partido.ordenBateoLocal = (widget.partido.ordenBateoLocal % 9) + 1;
+      } else {
+        widget.partido.ordenBateoVisita = (widget.partido.ordenBateoVisita % 9) + 1;
+      }
+    });
+    _guardarEstado();
   }
 
   void _guardarEstado() {
@@ -592,6 +608,8 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     WidgetsBinding.instance.removeObserver(this);
     _timer?.cancel(); 
     _blinkController.dispose();
+    _ctrlBateador.dispose();
+    _ctrlLanzador.dispose();
     super.dispose(); 
   }
 
@@ -600,6 +618,12 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     if (tipo.toLowerCase().contains('amarilla')) return kAmarilloTarjeta;
     if (tipo.toLowerCase().contains('verde')) return Colors.green;
     return Colors.white;
+  }
+
+  // Corregir Bateador/Lanzador según equipo y rol central de Partido
+  String _obtenerRolEquipo(String equipo) {
+    bool esLocal = equipo == 'Local';
+    return esLocal ? widget.partido.rolLocal : (widget.partido.rolLocal == 'Bateador' ? 'Lanzador' : 'Bateador');
   }
 
   @override 
@@ -655,6 +679,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                       WidgetCamiseta(fondo: widget.partido.localFondo, detalle: widget.partido.localTexto, patron: widget.partido.patronLocal),
                                       const SizedBox(height: 12),
                                       Text(widget.partido.local.toUpperCase(), textAlign: TextAlign.center, style: TextStyle(color: widget.partido.localTexto, fontSize: 16, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                      if (widget.partido.deporte.toLowerCase() == 'baseball') _buildInfoJugadorBaseball('Local'),
                                       const SizedBox(height: 5),
                                       Text('${widget.partido.obtenerPuntaje('Local')}', style: TextStyle(color: widget.partido.localTexto, fontSize: 50, fontWeight: FontWeight.bold, height: 1.0)),
                                     ],
@@ -702,10 +727,15 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                     child: IconButton(icon: Icon(_estaCorriendo ? Icons.pause_circle_filled : Icons.play_circle_fill, color: kCelestePlay, size: 30), onPressed: _estaCorriendo ? _pausarTimer : _iniciarTimer, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
                                   )
                                 ),
-                                const SizedBox(width: 15),
+                                const SizedBox(width: 8),
                                 IconButton(icon: const Icon(Icons.stop_circle, color: kRojoStop, size: 30), onPressed: _manejarFinPeriodo, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
                               ],
-                            )
+                            ),
+                            if (widget.partido.deporte.toLowerCase() == 'baseball') ...[
+                              const SizedBox(height: 10),
+                              _buildDiamantesBases(),
+                              _buildContadorBaseballSimplificado(),
+                            ]
                           ],
                         ),
                         
@@ -728,6 +758,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                       WidgetCamiseta(fondo: widget.partido.visitaFondo, detalle: widget.partido.visitaTexto, patron: widget.partido.patronVisita),
                                       const SizedBox(height: 12),
                                       Text(widget.partido.visita.toUpperCase(), textAlign: TextAlign.center, style: TextStyle(color: widget.partido.visitaTexto, fontSize: 16, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                      if (widget.partido.deporte.toLowerCase() == 'baseball') _buildInfoJugadorBaseball('Visita'),
                                       const SizedBox(height: 5),
                                       Text('${widget.partido.obtenerPuntaje('Visita')}', style: TextStyle(color: widget.partido.visitaTexto, fontSize: 50, fontWeight: FontWeight.bold, height: 1.0)),
                                     ],
@@ -772,7 +803,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     ), 
                   ),
                   
-                  _buildSelectorPosesion(),
+                  if (widget.partido.deporte.toLowerCase() != 'baseball') _buildSelectorPosesion(),
 
                   Container( 
                     padding: const EdgeInsets.all(10), color: const Color(0xFF050505), 
@@ -981,6 +1012,17 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           String tiempoActual = _formatearTiempo();
           String nombreReal = equipo == 'Local' ? widget.partido.local : widget.partido.visita;
           widget.partido.logEventos.add('MIN $tiempoActual | ${nombreReal.toUpperCase()}: $evento (EQUIPO)');
+          
+          // LÓGICA AUTOMÁTICA BASEBALL
+          if (widget.partido.deporte.toLowerCase() == 'baseball') {
+            if (evento == 'Hit' || evento == 'Home Run' || evento == 'Error') {
+              widget.partido.balls = 0;
+              widget.partido.strikes = 0;
+              _incrementarOrdenBateo(widget.partido.rolLocal == 'Bateador' ? 'Local' : 'Visita');
+            } else if (evento == 'Out' || evento == 'Ponche') {
+              _incrementarOut();
+            }
+          }
         });
         _guardarEstado();
         HapticFeedback.lightImpact();
@@ -1137,5 +1179,317 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         ),
       ),
     );
+  }
+
+  Widget _buildDiamantesYContadoresBaseball() {
+    return const SizedBox.shrink(); // Obsoleto, se movió al header
+  }
+
+  Widget _buildContadorBaseballSimplificado() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // GRUPO BALLS - STRIKES
+        _buildItemContadorTactil('balls', '${widget.partido.balls}', kCelestePlay, _incrementarBall),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          child: Text('-', style: TextStyle(color: Colors.white24, fontSize: 20)),
+        ),
+        _buildItemContadorTactil('strikes', '${widget.partido.strikes}', kRojoStop, _incrementarStrike),
+        
+        // DIVISOR
+        Container(margin: const EdgeInsets.symmetric(horizontal: 15), width: 1, height: 25, color: Colors.white12),
+
+        // CONTADOR OUTS
+        _buildItemContadorTactil('outs', '${widget.partido.outs}', kDorado, _incrementarOut),
+      ],
+    );
+  }
+
+  Widget _buildItemContadorTactil(String etiqueta, String valor, Color color, VoidCallback accion) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        accion();
+      },
+      child: Column(
+        children: [
+          Text(Traductor.get(etiqueta), style: const TextStyle(color: Colors.white24, fontSize: 7, fontWeight: FontWeight.bold)),
+          Text(valor, style: TextStyle(color: color, fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContadorIndividual(String etiqueta, int valor, int max, VoidCallback accion) {
+    return Column(
+      children: [
+        Text(Traductor.get(etiqueta.toLowerCase()), style: const TextStyle(color: Colors.white54, fontSize: 8, letterSpacing: 1)),
+        const SizedBox(height: 4),
+        GestureDetector(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            accion();
+          },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: kVerdeNeon.withOpacity(0.3))
+            ),
+            child: Row(
+              children: [
+                Text('$valor', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                Text('/$max', style: const TextStyle(color: Colors.white24, fontSize: 12)),
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildDiamantesBases() {
+    return SizedBox(
+      width: 100,
+      height: 70,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // 2da Base (Arriba)
+          Positioned(top: 0, child: _buildBaseDiamond(2)),
+          // 3era Base (Izquierda)
+          Positioned(left: 10, top: 25, child: _buildBaseDiamond(3)),
+          // 1era Base (Derecha)
+          Positioned(right: 10, top: 25, child: _buildBaseDiamond(1)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBaseDiamond(int num) {
+    bool ocupada = widget.partido.bases[num] ?? false;
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        setState(() {
+          widget.partido.bases[num] = !ocupada;
+        });
+        _guardarEstado();
+      },
+      child: Transform.rotate(
+        angle: 45 * 3.1415927 / 180,
+        child: Container(
+          width: 22,
+          height: 22,
+          decoration: BoxDecoration(
+            color: ocupada ? kDorado : Colors.black,
+            border: Border.all(color: ocupada ? Colors.white : Colors.white24, width: 1.5),
+            boxShadow: ocupada ? [BoxShadow(color: kDorado.withOpacity(0.5), blurRadius: 8)] : []
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoJugadorBaseball(String equipo) {
+    bool esLocal = equipo == 'Local';
+    String rolActual = esLocal ? widget.partido.rolLocal : (widget.partido.rolLocal == 'Bateador' ? 'Lanzador' : 'Bateador');
+    String idActual = rolActual == 'Bateador' ? widget.partido.idBateadorActual : widget.partido.idLanzadorActual;
+    
+    // Inicializar controladores una sola vez con el valor del modelo
+    if (widget.partido.deporte.toLowerCase() == 'baseball' && !_inicializadoBaseball) {
+      _ctrlBateador.text = widget.partido.idBateadorActual;
+      _ctrlLanzador.text = widget.partido.idLanzadorActual;
+      _inicializadoBaseball = true;
+    }
+
+    TextEditingController ctrl = rolActual == 'Bateador' ? _ctrlBateador : _ctrlLanzador;
+
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(5)
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(Traductor.get(rolActual.toLowerCase()), style: const TextStyle(color: Colors.white38, fontSize: 8, fontWeight: FontWeight.bold)),
+              if (rolActual == 'Lanzador') ...[
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    setState(() {
+                      if (esLocal) widget.partido.lanzamientosLocal++;
+                      else widget.partido.lanzamientosVisita++;
+                    });
+                    _guardarEstado();
+                  },
+                  child: Row(
+                    children: [
+                      const Icon(Icons.sports_baseball, color: Colors.white38, size: 14),
+                      const SizedBox(width: 3),
+                      Text('${esLocal ? widget.partido.lanzamientosLocal : widget.partido.lanzamientosVisita}', style: const TextStyle(color: kVerdeNeon, fontSize: 13, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                )
+              ],
+              if (rolActual == 'Bateador') ...[
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.selectionClick();
+                    _incrementarOrdenBateo(equipo);
+                  },
+                  child: Row(
+                    children: [
+                      Text(Traductor.get('orden'), style: const TextStyle(color: Colors.white38, fontSize: 8, fontWeight: FontWeight.bold)),
+                      const SizedBox(width: 3),
+                      Text('${esLocal ? widget.partido.ordenBateoLocal : widget.partido.ordenBateoVisita}', style: const TextStyle(color: kVerdeNeon, fontSize: 13, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                )
+              ]
+            ],
+          ),
+          const SizedBox(height: 2),
+          SizedBox(
+            width: 60,
+            child: TextField(
+              controller: ctrl,
+              style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(vertical: 2),
+                border: InputBorder.none,
+                hintText: '#',
+                hintStyle: TextStyle(color: Colors.white10)
+              ),
+              onChanged: (val) {
+                setState(() {
+                  if (rolActual == 'Bateador') widget.partido.idBateadorActual = val;
+                  else widget.partido.idLanzadorActual = val;
+                });
+                _guardarEstado();
+              },
+            ),
+          ),
+          Text(
+            widget.partido.obtenerNombreJugador(equipo, idActual).split(' ').skip(1).join(' '),
+            maxLines: 1, 
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: Colors.white70, fontSize: 9)
+          )
+        ],
+      ),
+    );
+  }
+
+  void _incrementarStrike() {
+    setState(() {
+      widget.partido.strikes++;
+      // Aumentar lanzamientos automáticamente con un Strike
+      if (widget.partido.rolLocal == 'Lanzador') widget.partido.lanzamientosLocal++;
+      else widget.partido.lanzamientosVisita++;
+      
+      if (widget.partido.strikes >= 3) {
+        // AUTOMACIÓN: PONCHE (Delegamos a _incrementarOut)
+        _incrementarOut();
+        String eqDefensa = widget.partido.rolLocal == 'Lanzador' ? 'Local' : 'Visita';
+        String nombreReal = eqDefensa == 'Local' ? widget.partido.local : widget.partido.visita;
+        String tiempoAct = _formatearTiempo();
+        String log = 'MIN $tiempoAct | ${nombreReal.toUpperCase()}: Ponche (Out)';
+        
+        widget.partido.registrarAccion(
+          equipo: eqDefensa,
+          tipo: 'stat',
+          evento: 'Ponche',
+          log: log
+        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('¡OUT! PONCHE REGISTRADO', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), backgroundColor: kRojoStop));
+      }
+    });
+    _guardarEstado();
+  }
+
+  void _incrementarBall() {
+    setState(() {
+      widget.partido.balls++;
+      // Aumentar lanzamientos automáticamente con una Ball
+      if (widget.partido.rolLocal == 'Lanzador') widget.partido.lanzamientosLocal++;
+      else widget.partido.lanzamientosVisita++;
+
+      if (widget.partido.balls >= 4) {
+        // AUTOMACIÓN: BASE POR BOLAS
+        _incrementarOrdenBateo(widget.partido.rolLocal == 'Bateador' ? 'Local' : 'Visita');
+        widget.partido.balls = 0;
+        widget.partido.strikes = 0;
+        String eqBateo = widget.partido.rolLocal == 'Bateador' ? 'Local' : 'Visita';
+        String nombreReal = eqBateo == 'Local' ? widget.partido.local : widget.partido.visita;
+        String tiempoAct = _formatearTiempo();
+        String log = 'MIN $tiempoAct | ${nombreReal.toUpperCase()}: Base por Bolas (Walk)';
+        
+        widget.partido.registrarAccion(
+          equipo: eqBateo,
+          tipo: 'stat',
+          evento: 'Base por Bolas',
+          log: log
+        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('¡BASE POR BOLAS REGISTRADA!', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)), backgroundColor: kCelestePlay));
+      }
+    });
+    _guardarEstado();
+  }
+
+  void _incrementarOut() {
+    setState(() {
+      widget.partido.outs++;
+      widget.partido.balls = 0;
+      widget.partido.strikes = 0;
+      _incrementarOrdenBateo(widget.partido.rolLocal == 'Bateador' ? 'Local' : 'Visita');
+      if (widget.partido.outs >= 3) {
+        _confirmarCambioRoles();
+      }
+    });
+    _guardarEstado();
+  }
+
+  void _confirmarCambioRoles() async {
+    bool? confirmar = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: kNegro,
+        shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon), borderRadius: BorderRadius.circular(10)),
+        title: Text(Traductor.get('confirmar_cambio_roles'), style: const TextStyle(color: kVerdeNeon, fontSize: 16, fontWeight: FontWeight.bold)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text(Traductor.get('no_mayus'), style: const TextStyle(color: Colors.grey))),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: kVerdeNeon),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(Traductor.get('si_mayus'), style: const TextStyle(color: kNegro, fontWeight: FontWeight.bold)),
+          )
+        ],
+      )
+    );
+
+    if (confirmar == true) {
+      setState(() {
+        widget.partido.rolLocal = (widget.partido.rolLocal == 'Bateador' ? 'Lanzador' : 'Bateador');
+        widget.partido.balls = 0;
+        widget.partido.strikes = 0;
+        widget.partido.outs = 0;
+        widget.partido.bases = {1: false, 2: false, 3: false};
+        widget.partido.logEventos.add('--- CAMBIO DE ROLES: EL EQUIPO BATEADOR CAMBIA ---');
+      });
+      _guardarEstado();
+    }
   }
 }

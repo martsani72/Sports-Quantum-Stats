@@ -70,6 +70,13 @@ class PantallaResumenPartido extends StatelessWidget {
       }
       csv.writeln('');
       
+      if (partido.deporte.toLowerCase() == 'baseball') {
+        csv.writeln('--- ESTADISTICAS BASEBALL ---');
+        csv.writeln('LOCAL,PITCHES,${partido.lanzamientosLocal}');
+        csv.writeln('VISITA,PITCHES,${partido.lanzamientosVisita}');
+        csv.writeln('');
+      }
+      
       if (partido.posesionSegundos['Local']! + partido.posesionSegundos['Visita']! > 0) {
         csv.writeln('--- POSESION ---');
         int tl = partido.posesionSegundos['Local']!;
@@ -141,7 +148,14 @@ class PantallaResumenPartido extends StatelessWidget {
     String headerInfo = (partido.titulo.isNotEmpty ? "${partido.titulo.toUpperCase()}\n" : "");
     headerInfo += '${partido.local.toUpperCase()} ${partido.obtenerPuntaje("Local")} - ${partido.obtenerPuntaje("Visita")} ${partido.visita.toUpperCase()}\n\n';
 
-    String textoResumen = headerInfo + posTxt + partido.logEventos.join('\n\n') + _generarFirma();
+    String baseballStats = "";
+    if (partido.deporte.toLowerCase() == 'baseball') {
+      baseballStats = "--- LANZAMIENTOS TOTALES ---\n";
+      baseballStats += "${partido.local.toUpperCase()}: ${partido.lanzamientosLocal}\n";
+      baseballStats += "${partido.visita.toUpperCase()}: ${partido.lanzamientosVisita}\n\n";
+    }
+
+    String textoResumen = headerInfo + baseballStats + posTxt + partido.logEventos.join('\n\n') + _generarFirma();
 
     return Scaffold(
       backgroundColor: kNegro,

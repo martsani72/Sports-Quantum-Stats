@@ -54,7 +54,7 @@ class DeporteConfig {
       'icono': Icons.sports_baseball,
       'contadores': {'Entradas': 9},
       'limites': {'Entradas': 99},
-      'switches': {'Carrera': true, 'Hit': true, 'Error': true, 'Ponche': true, 'Home Run': true, 'Cambio': true},
+      'switches': {'Carrera': true, 'Hit': true, 'Error': true, 'Out': true, 'Home Run': true, 'Base por Bolas': true, 'Cambio': true},
     },
     'Football Americano': {
       'icono': Icons.sports_football,

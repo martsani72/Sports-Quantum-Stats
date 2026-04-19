@@ -69,6 +69,19 @@ class Partido {
   };
   
   Map<String, Map<String, int>> posesionPorPeriodo = {};
+  
+  // ESTADO BASEBALL
+  Map<int, bool> bases = {1: false, 2: false, 3: false};
+  int strikes = 0;
+  int balls = 0;
+  String rolLocal = 'Lanzador'; 
+  String idBateadorActual = '';
+  String idLanzadorActual = '';
+  int outs = 0;
+  int lanzamientosLocal = 0;
+  int lanzamientosVisita = 0;
+  int ordenBateoLocal = 1;
+  int ordenBateoVisita = 1;
 
   Partido({
     required this.deporte, required this.local, required this.visita,
@@ -146,6 +159,17 @@ class Partido {
       'posesionSegundos': posesionSegundos,
       'posesionPorPeriodo': posesionPorPeriodo,
       'historialAcciones': historialAcciones,
+      'bases': bases.map((k, v) => MapEntry(k.toString(), v)),
+      'strikes': strikes,
+      'balls': balls,
+      'rolLocal': rolLocal,
+      'idBateadorActual': idBateadorActual,
+      'idLanzadorActual': idLanzadorActual,
+      'outs': outs,
+      'lanzamientosLocal': lanzamientosLocal,
+      'lanzamientosVisita': lanzamientosVisita,
+      'ordenBateoLocal': ordenBateoLocal,
+      'ordenBateoVisita': ordenBateoVisita,
     };
   }
 
@@ -182,6 +206,20 @@ class Partido {
     if (map.containsKey('historialAcciones')) {
       p.historialAcciones = List<Map<String, dynamic>>.from(map['historialAcciones']);
     }
+    if (map.containsKey('bases')) {
+      p.bases = (map['bases'] as Map).map((k, v) => MapEntry(int.parse(k.toString()), v as bool));
+    }
+    if (map.containsKey('strikes')) p.strikes = map['strikes'];
+    if (map.containsKey('balls')) p.balls = map['balls'];
+    if (map.containsKey('rolLocal')) p.rolLocal = map['rolLocal'];
+    if (map.containsKey('idBateadorActual')) p.idBateadorActual = map['idBateadorActual'];
+    if (map.containsKey('idLanzadorActual')) p.idLanzadorActual = map['idLanzadorActual'];
+    if (map.containsKey('outs')) p.outs = map['outs'];
+    if (map.containsKey('lanzamientosLocal')) p.lanzamientosLocal = map['lanzamientosLocal'];
+    if (map.containsKey('lanzamientosVisita')) p.lanzamientosVisita = map['lanzamientosVisita'];
+    if (map.containsKey('ordenBateoLocal')) p.ordenBateoLocal = map['ordenBateoLocal'];
+    if (map.containsKey('ordenBateoVisita')) p.ordenBateoVisita = map['ordenBateoVisita'];
+
     return p;
   }
 
