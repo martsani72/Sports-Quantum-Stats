@@ -155,7 +155,37 @@ class PantallaResumenPartido extends StatelessWidget {
       baseballStats += "${partido.visita.toUpperCase()}: ${partido.lanzamientosVisita}\n\n";
     }
 
-    String textoResumen = headerInfo + baseballStats + posTxt + partido.logEventos.join('\n\n') + _generarFirma();
+    String footballStats = "";
+    if (partido.deporte.toLowerCase() == 'football americano') {
+      int ptLocal = partido.obtenerPuntaje('Local');
+      int ptVisita = partido.obtenerPuntaje('Visita');
+      String ganador = ptLocal > ptVisita
+          ? partido.local.toUpperCase()
+          : ptVisita > ptLocal
+              ? partido.visita.toUpperCase()
+              : 'EMPATE';
+
+      footballStats += "=== RESULTADO FINAL ===\n";
+      footballStats += "${partido.local.toUpperCase()}  $ptLocal  -  $ptVisita  ${partido.visita.toUpperCase()}\n";
+      footballStats += ganador != 'EMPATE' ? "GANADOR: $ganador\n" : "RESULTADO: EMPATE\n";
+      footballStats += "\n--- RESUMEN OFENSIVO Y DEFENSIVO ---\n";
+
+      final List<String> statsClave = [
+        'Touchdown (6 pts)', 'Two-Point Conv. (2 pts)', 'Extra Point (1 pt)',
+        'Field Goal (3 pts)', 'Safety (2 pts)', 'Sack', 'Intercepci\u00f3n',
+        'Fumble Recuperado', 'Punt', 'Castigo',
+      ];
+      for (String stat in statsClave) {
+        int vL = partido.stats['Local']?[stat] ?? 0;
+        int vV = partido.stats['Visita']?[stat] ?? 0;
+        if (vL > 0 || vV > 0) {
+          footballStats += "$stat: ${partido.local.toUpperCase()} $vL - $vV ${partido.visita.toUpperCase()}\n";
+        }
+      }
+      footballStats += "\n";
+    }
+
+    String textoResumen = headerInfo + footballStats + baseballStats + posTxt + partido.logEventos.join('\n\n') + _generarFirma();
 
     return Scaffold(
       backgroundColor: kNegro,

@@ -370,6 +370,16 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
             });
           }
 
+          // LÓGICA AUTOMÁTICA FOOTBALL AMERICANO: resetear down al anotar
+          if (widget.partido.deporte.toLowerCase() == 'football americano') {
+            if (eventoMin.contains('touchdown') || eventoMin.contains('field goal') || eventoMin.contains('safety')) {
+              widget.partido.downActual = 1;
+              widget.partido.yardsParaPrimer = 10;
+              // Cambia posesión al equipo que recibe tras el score
+              widget.partido.posesionLocal = equipoNombre != 'Local';
+            }
+          }
+
           String nombreReal = equipoNombre == 'Local' ? widget.partido.local : widget.partido.visita;
           String log = 'MIN $tiempoActual | ${nombreReal.toUpperCase()}: $eventoRegistrado ($nombreActor)';
           
@@ -656,129 +666,141 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                     decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12, width: 1)), color: Color(0xFF0A0A0A)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.start, 
+                    child: Column(
                       children: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              GestureDetector(
-                                onTap: () => _mostrarDetallePopUp('ANOTACIONES - ${widget.partido.local.toUpperCase()}', widget.partido.anotaciones['Local']!, 'anotacion'),
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                                  padding: const EdgeInsets.symmetric(vertical: 15),
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.02),
-                                    borderRadius: BorderRadius.circular(12), 
-                                    border: Border.all(color: Colors.white12, width: 1)
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      WidgetCamiseta(fondo: widget.partido.localFondo, detalle: widget.partido.localTexto, patron: widget.partido.patronLocal),
-                                      const SizedBox(height: 12),
-                                      Text(widget.partido.local.toUpperCase(), textAlign: TextAlign.center, style: TextStyle(color: widget.partido.localTexto, fontSize: 16, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
-                                      if (widget.partido.deporte.toLowerCase() == 'baseball') _buildInfoJugadorBaseball('Local'),
-                                      const SizedBox(height: 5),
-                                      Text('${widget.partido.obtenerPuntaje('Local')}', style: TextStyle(color: widget.partido.localTexto, fontSize: 50, fontWeight: FontWeight.bold, height: 1.0)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              GestureDetector(
-                                onTap: () => _mostrarDetallePopUp('TARJETAS - ${widget.partido.local.toUpperCase()}', widget.partido.tarjetas['Local']!, 'tarjeta'),
-                                child: SizedBox(
-                                  height: 52, 
-                                  child: Wrap(
-                                    alignment: WrapAlignment.center, spacing: 4, runSpacing: 4,
-                                    children: widget.partido.tarjetas['Local']!.take(6).map((t) => _buildMiniTarjetaFisica(t)).toList(),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        
-                        Column(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start, 
                           children: [
-                            const Text('VS', style: TextStyle(color: Colors.white24, fontSize: 18, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 10),
-                            Text('$nombrePeriodo $_periodoActual', style: const TextStyle(color: Colors.white54, fontSize: 12, letterSpacing: 2)),
-                            Text(_formatearTiempo(), style: const TextStyle(color: Colors.white, fontSize: 28, fontFamily: 'monospace', fontWeight: FontWeight.bold)),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () => _mostrarDetallePopUp('ANOTACIONES - ${widget.partido.local.toUpperCase()}', widget.partido.anotaciones['Local']!, 'anotacion'),
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                                      padding: const EdgeInsets.symmetric(vertical: 15),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.02),
+                                        borderRadius: BorderRadius.circular(12), 
+                                        border: Border.all(color: Colors.white12, width: 1)
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          WidgetCamiseta(fondo: widget.partido.localFondo, detalle: widget.partido.localTexto, patron: widget.partido.patronLocal),
+                                          const SizedBox(height: 12),
+                                          Text(widget.partido.local.toUpperCase(), textAlign: TextAlign.center, style: TextStyle(color: widget.partido.localTexto, fontSize: 16, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                          if (widget.partido.deporte.toLowerCase() == 'baseball') _buildInfoJugadorBaseball('Local'),
+                                          const SizedBox(height: 5),
+                                          Text('${widget.partido.obtenerPuntaje('Local')}', style: TextStyle(color: widget.partido.localTexto, fontSize: 50, fontWeight: FontWeight.bold, height: 1.0)),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  if (widget.partido.deporte.toLowerCase() != 'football americano') ...[
+                                    const SizedBox(height: 8),
+                                    GestureDetector(
+                                      onTap: () => _mostrarDetallePopUp('TARJETAS - ${widget.partido.local.toUpperCase()}', widget.partido.tarjetas['Local']!, 'tarjeta'),
+                                      child: SizedBox(
+                                        height: 52, 
+                                        child: Wrap(
+                                          alignment: WrapAlignment.center, spacing: 4, runSpacing: 4,
+                                          children: widget.partido.tarjetas['Local']!.take(6).map((t) => _buildMiniTarjetaFisica(t)).toList(),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            
+                            Column(
                               children: [
-                                // BOTÓN UNDO (QUANTUM)
-                                IconButton(
-                                  icon: Icon(Icons.undo, color: widget.partido.historialAcciones.isEmpty ? Colors.white10 : Colors.white38, size: 22),
-                                  onPressed: widget.partido.historialAcciones.isEmpty ? null : () {
-                                    HapticFeedback.vibrate();
-                                    setState(() => widget.partido.deshacerUltimaAccion());
-                                    _guardarEstado();
-                                  },
+                                const Text('VS', style: TextStyle(color: Colors.white24, fontSize: 18, fontWeight: FontWeight.bold)),
+                                const SizedBox(height: 10),
+                                Text('$nombrePeriodo $_periodoActual', style: const TextStyle(color: Colors.white54, fontSize: 12, letterSpacing: 2)),
+                                Text(_formatearTiempo(), style: const TextStyle(color: Colors.white, fontSize: 28, fontFamily: 'monospace', fontWeight: FontWeight.bold)),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    // BOTÓN UNDO (QUANTUM)
+                                    IconButton(
+                                      icon: Icon(Icons.undo, color: widget.partido.historialAcciones.isEmpty ? Colors.white10 : Colors.white38, size: 22),
+                                      onPressed: widget.partido.historialAcciones.isEmpty ? null : () {
+                                        HapticFeedback.vibrate();
+                                        setState(() => widget.partido.deshacerUltimaAccion());
+                                        _guardarEstado();
+                                      },
+                                    ),
+                                    const SizedBox(width: 8),
+                                    AnimatedBuilder(
+                                      animation: _blinkController,
+                                      builder: (context, child) => Opacity(
+                                        opacity: _estaCorriendo ? 1.0 : _blinkController.value,
+                                        child: IconButton(icon: Icon(_estaCorriendo ? Icons.pause_circle_filled : Icons.play_circle_fill, color: kCelestePlay, size: 30), onPressed: _estaCorriendo ? _pausarTimer : _iniciarTimer, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+                                      )
+                                    ),
+                                    const SizedBox(width: 8),
+                                    IconButton(icon: const Icon(Icons.stop_circle, color: kRojoStop, size: 30), onPressed: _manejarFinPeriodo, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+                                  ],
                                 ),
-                                const SizedBox(width: 8),
-                                AnimatedBuilder(
-                                  animation: _blinkController,
-                                  builder: (context, child) => Opacity(
-                                    opacity: _estaCorriendo ? 1.0 : _blinkController.value,
-                                    child: IconButton(icon: Icon(_estaCorriendo ? Icons.pause_circle_filled : Icons.play_circle_fill, color: kCelestePlay, size: 30), onPressed: _estaCorriendo ? _pausarTimer : _iniciarTimer, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
-                                  )
-                                ),
-                                const SizedBox(width: 8),
-                                IconButton(icon: const Icon(Icons.stop_circle, color: kRojoStop, size: 30), onPressed: _manejarFinPeriodo, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+                                if (widget.partido.deporte.toLowerCase() == 'baseball') ...[
+                                  const SizedBox(height: 10),
+                                  _buildDiamantesBases(),
+                                  _buildContadorBaseballSimplificado(),
+                                ],
                               ],
                             ),
-                            if (widget.partido.deporte.toLowerCase() == 'baseball') ...[
-                              const SizedBox(height: 10),
-                              _buildDiamantesBases(),
-                              _buildContadorBaseballSimplificado(),
-                            ]
+                            
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () => _mostrarDetallePopUp('ANOTACIONES - ${widget.partido.visita.toUpperCase()}', widget.partido.anotaciones['Visita']!, 'anotacion'),
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                                      padding: const EdgeInsets.symmetric(vertical: 15),
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.02),
+                                        borderRadius: BorderRadius.circular(12), 
+                                        border: Border.all(color: Colors.white12, width: 1)
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          WidgetCamiseta(fondo: widget.partido.visitaFondo, detalle: widget.partido.visitaTexto, patron: widget.partido.patronVisita),
+                                          const SizedBox(height: 12),
+                                          Text(widget.partido.visita.toUpperCase(), textAlign: TextAlign.center, style: TextStyle(color: widget.partido.visitaTexto, fontSize: 16, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                          if (widget.partido.deporte.toLowerCase() == 'baseball') _buildInfoJugadorBaseball('Visita'),
+                                          const SizedBox(height: 5),
+                                          Text('${widget.partido.obtenerPuntaje('Visita')}', style: TextStyle(color: widget.partido.visitaTexto, fontSize: 50, fontWeight: FontWeight.bold, height: 1.0)),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  if (widget.partido.deporte.toLowerCase() != 'football americano') ...[
+                                    const SizedBox(height: 8),
+                                    GestureDetector(
+                                      onTap: () => _mostrarDetallePopUp('TARJETAS - ${widget.partido.visita.toUpperCase()}', widget.partido.tarjetas['Visita']!, 'tarjeta'),
+                                      child: SizedBox(
+                                        height: 52,
+                                        child: Wrap(
+                                          alignment: WrapAlignment.center, spacing: 4, runSpacing: 4,
+                                          children: widget.partido.tarjetas['Visita']!.take(6).map((t) => _buildMiniTarjetaFisica(t)).toList(),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
                           ],
                         ),
-                        
-                        Expanded(
-                          child: Column(
-                            children: [
-                              GestureDetector(
-                                onTap: () => _mostrarDetallePopUp('ANOTACIONES - ${widget.partido.visita.toUpperCase()}', widget.partido.anotaciones['Visita']!, 'anotacion'),
-                                child: Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                                  padding: const EdgeInsets.symmetric(vertical: 15),
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white.withOpacity(0.02),
-                                    borderRadius: BorderRadius.circular(12), 
-                                    border: Border.all(color: Colors.white12, width: 1)
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      WidgetCamiseta(fondo: widget.partido.visitaFondo, detalle: widget.partido.visitaTexto, patron: widget.partido.patronVisita),
-                                      const SizedBox(height: 12),
-                                      Text(widget.partido.visita.toUpperCase(), textAlign: TextAlign.center, style: TextStyle(color: widget.partido.visitaTexto, fontSize: 16, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
-                                      if (widget.partido.deporte.toLowerCase() == 'baseball') _buildInfoJugadorBaseball('Visita'),
-                                      const SizedBox(height: 5),
-                                      Text('${widget.partido.obtenerPuntaje('Visita')}', style: TextStyle(color: widget.partido.visitaTexto, fontSize: 50, fontWeight: FontWeight.bold, height: 1.0)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              GestureDetector(
-                                onTap: () => _mostrarDetallePopUp('TARJETAS - ${widget.partido.visita.toUpperCase()}', widget.partido.tarjetas['Visita']!, 'tarjeta'),
-                                child: SizedBox(
-                                  height: 52,
-                                  child: Wrap(
-                                    alignment: WrapAlignment.center, spacing: 4, runSpacing: 4,
-                                    children: widget.partido.tarjetas['Visita']!.take(6).map((t) => _buildMiniTarjetaFisica(t)).toList(),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        if (widget.partido.deporte.toLowerCase() == 'football americano') ...[
+                          const SizedBox(height: 12),
+                          _buildPanelFootballAmericano(),
+                        ],
                       ],
                     ),
                   ),
@@ -803,7 +825,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     ), 
                   ),
                   
-                  if (widget.partido.deporte.toLowerCase() != 'baseball') _buildSelectorPosesion(),
+                  if (widget.partido.deporte.toLowerCase() != 'baseball' && widget.partido.deporte.toLowerCase() != 'football americano') _buildSelectorPosesion(),
 
                   Container( 
                     padding: const EdgeInsets.all(10), color: const Color(0xFF050505), 
@@ -1491,5 +1513,150 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       });
       _guardarEstado();
     }
+  }
+  // ─────────────────────────────────────────────────────────────
+  //  PANEL EXCLUSIVO FOOTBALL AMERICANO — DOWN & DISTANCE
+  // ─────────────────────────────────────────────────────────────
+
+  static const List<String> _downLabels = ['1ro', '2do', '3ro', '4to'];
+
+  Widget _buildPanelFootballAmericano() {
+    final p = widget.partido;
+    Color colorPosesion = p.posesionLocal
+        ? ((p.localFondo.computeLuminance() < 0.1) ? p.localTexto : p.localFondo)
+        : ((p.visitaFondo.computeLuminance() < 0.1) ? p.visitaTexto : p.visitaFondo);
+
+    String equipoBalonNombre = p.posesionLocal ? p.local : p.visita;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.04),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: colorPosesion.withOpacity(0.3), width: 1),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // FILA 1: POSESIÓN Y DOWN/DISTANCIA (TODO EN UNA FILA PARA AHORRAR ESPACIO)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Local button
+              Flexible(
+                flex: 2,
+                child: GestureDetector(
+                  onTap: () { if (!p.posesionLocal) { setState(() => p.posesionLocal = true); _guardarEstado(); } },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                      color: p.posesionLocal ? colorPosesion.withOpacity(0.8) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: p.posesionLocal ? colorPosesion : Colors.white12),
+                    ),
+                    child: Center(child: Text(p.local.toUpperCase(), style: TextStyle(color: p.posesionLocal ? Colors.white : Colors.white38, fontSize: 8, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis)),
+                  ),
+                ),
+              ),
+              
+              const SizedBox(width: 8),
+
+              // Down Display
+              GestureDetector(
+                onTap: () { setState(() { p.downActual = (p.downActual % 4) + 1; if (p.downActual == 1) p.yardsParaPrimer = 10; }); _guardarEstado(); },
+                child: Column(
+                  children: [
+                    Text(_downLabels[p.downActual - 1], style: TextStyle(color: colorPosesion, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
+                    const Text('DOWN', style: TextStyle(color: Colors.white24, fontSize: 6, letterSpacing: 1)),
+                  ],
+                ),
+              ),
+
+              const Text(' & ', style: TextStyle(color: Colors.white12, fontSize: 14)),
+
+              // Yards Display
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(onTap: () { if (p.yardsParaPrimer > 1) setState(() => p.yardsParaPrimer--); _guardarEstado(); }, child: const Icon(Icons.remove, color: Colors.white24, size: 14)),
+                  const SizedBox(width: 4),
+                  Column(
+                    children: [
+                      Text('${p.yardsParaPrimer}', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
+                      const Text('YDS', style: TextStyle(color: Colors.white24, fontSize: 6)),
+                    ],
+                  ),
+                  const SizedBox(width: 4),
+                  GestureDetector(onTap: () { if (p.yardsParaPrimer < 99) setState(() => p.yardsParaPrimer++); _guardarEstado(); }, child: const Icon(Icons.add, color: Colors.white24, size: 14)),
+                ],
+              ),
+
+              const SizedBox(width: 8),
+
+              // Visita button
+              Flexible(
+                flex: 2,
+                child: GestureDetector(
+                  onTap: () { if (p.posesionLocal) { setState(() => p.posesionLocal = false); _guardarEstado(); } },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                      color: !p.posesionLocal ? colorPosesion.withOpacity(0.8) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(6),
+                      border: Border.all(color: !p.posesionLocal ? colorPosesion : Colors.white12),
+                    ),
+                    child: Center(child: Text(p.visita.toUpperCase(), style: TextStyle(color: !p.posesionLocal ? Colors.white : Colors.white38, fontSize: 8, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 6),
+
+          // FILA 2: BARRA DE CAMPO Y YARDA ACTUAL
+          Row(
+            children: [
+              const Text('🏈', style: TextStyle(fontSize: 10)),
+              const SizedBox(width: 6),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return GestureDetector(
+                      onPanUpdate: (details) {
+                        double yard = (details.localPosition.dx / constraints.maxWidth) * 100;
+                        setState(() => p.posicionCampo = yard.clamp(1, 99).toInt());
+                        _guardarEstado();
+                      },
+                      onTapDown: (details) {
+                        double yard = (details.localPosition.dx / constraints.maxWidth) * 100;
+                        setState(() => p.posicionCampo = yard.clamp(1, 99).toInt());
+                        _guardarEstado();
+                      },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(3),
+                        child: LinearProgressIndicator(
+                          value: (p.posicionCampo.clamp(1, 99)) / 100, // Ajustado a 100 para coincidir con el touch
+                          minHeight: 12, // Un poco más alta para que sea más fácil de tocar
+                          backgroundColor: Colors.white.withOpacity(0.05),
+                          valueColor: AlwaysStoppedAnimation<Color>(colorPosesion.withOpacity(0.6)),
+                        ),
+                      ),
+                    );
+                  }
+                ),
+              ),
+              const SizedBox(width: 8),
+              GestureDetector(onTap: () { if (p.posicionCampo > 1) setState(() => p.posicionCampo--); _guardarEstado(); }, child: const Icon(Icons.chevron_left, color: Colors.white38, size: 16)),
+              Text('Yd ${p.posicionCampo}', style: const TextStyle(color: Colors.white70, fontSize: 10, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
+              GestureDetector(onTap: () { if (p.posicionCampo < 99) setState(() => p.posicionCampo++); _guardarEstado(); }, child: const Icon(Icons.chevron_right, color: Colors.white38, size: 16)),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

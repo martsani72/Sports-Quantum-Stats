@@ -83,6 +83,12 @@ class Partido {
   int ordenBateoLocal = 1;
   int ordenBateoVisita = 1;
 
+  // ESTADO FOOTBALL AMERICANO
+  int downActual = 1;           // 1ro → 4to down
+  int yardsParaPrimer = 10;     // Yardas restantes para el 1er down
+  int posicionCampo = 20;       // Yarda del campo donde está el balón (1–99)
+  bool posesionLocal = true;    // true = balón en poder del Local
+
   Partido({
     required this.deporte, required this.local, required this.visita,
     this.titulo = '',
@@ -170,6 +176,11 @@ class Partido {
       'lanzamientosVisita': lanzamientosVisita,
       'ordenBateoLocal': ordenBateoLocal,
       'ordenBateoVisita': ordenBateoVisita,
+      // Football Americano
+      'downActual': downActual,
+      'yardsParaPrimer': yardsParaPrimer,
+      'posicionCampo': posicionCampo,
+      'posesionLocal': posesionLocal,
     };
   }
 
@@ -219,6 +230,11 @@ class Partido {
     if (map.containsKey('lanzamientosVisita')) p.lanzamientosVisita = map['lanzamientosVisita'];
     if (map.containsKey('ordenBateoLocal')) p.ordenBateoLocal = map['ordenBateoLocal'];
     if (map.containsKey('ordenBateoVisita')) p.ordenBateoVisita = map['ordenBateoVisita'];
+    // Football Americano
+    if (map.containsKey('downActual')) p.downActual = map['downActual'];
+    if (map.containsKey('yardsParaPrimer')) p.yardsParaPrimer = map['yardsParaPrimer'];
+    if (map.containsKey('posicionCampo')) p.posicionCampo = map['posicionCampo'];
+    if (map.containsKey('posesionLocal')) p.posesionLocal = map['posesionLocal'];
 
     return p;
   }

@@ -60,7 +60,19 @@ class DeporteConfig {
       'icono': Icons.sports_football,
       'contadores': {'Cuartos': 4, 'Minutos': 15, 'Tiempos Muertos': 6},
       'limites': {'Cuartos': 9, 'Minutos': 99, 'Tiempos Muertos': 9},
-      'switches': {'Touchdown (6 pts)': true, 'Field Goal (3 pts)': true, 'Extra Point (1 pt)': true, 'Safety (2 pts)': true, 'Castigo': true, 'Cambio': true},
+      'switches': {
+        'Touchdown (6 pts)': true,
+        'Two-Point Conv. (2 pts)': true,
+        'Extra Point (1 pt)': true,
+        'Field Goal (3 pts)': true,
+        'Safety (2 pts)': true,
+        'Sack': true,
+        'Intercepción': true,
+        'Fumble Recuperado': true,
+        'Punt': true,
+        'Castigo': true,
+        'Cambio': true,
+      },
     },
   };
 }
