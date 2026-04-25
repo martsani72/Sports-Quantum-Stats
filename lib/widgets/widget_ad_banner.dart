@@ -14,10 +14,12 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
   BannerAd? _bannerAd;
   bool _isAdLoaded = false;
 
-  // Usa los IDs de prueba proporcionados por Google
-  final String _adUnitId = Platform.isAndroid
+  String get _adUnitId {
+    if (kIsWeb) return "";
+    return Platform.isAndroid
       ? 'ca-app-pub-3940256099942544/6300978111'
       : 'ca-app-pub-3940256099942544/2934735716';
+  }
 
   @override
   void initState() {
