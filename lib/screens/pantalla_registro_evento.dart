@@ -8,6 +8,7 @@ import 'package:mi_nueva_app/core/quantum_storage.dart';
 import 'package:mi_nueva_app/models/partido.dart';
 import 'package:mi_nueva_app/models/deporte_config.dart';
 import 'package:mi_nueva_app/widgets/widget_icono_quantum.dart';
+import 'package:mi_nueva_app/widgets/widget_ad_banner.dart';
 
 class PantallaRegistroEvento extends StatefulWidget {
   final Partido partido;
@@ -254,6 +255,10 @@ class _PantallaRegistroEventoState extends State<PantallaRegistroEvento> {
         backgroundColor: appBarColor,
         leading: BackButton(color: textoEq), 
         elevation: 0,
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(50),
+          child: AdBannerWidget(),
+        ),
       ),
       body: Column(
         children: [

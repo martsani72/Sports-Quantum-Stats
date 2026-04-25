@@ -18,6 +18,7 @@ import 'package:mi_nueva_app/widgets/widget_camiseta.dart';
 import 'package:mi_nueva_app/widgets/widget_icono_quantum.dart';
 import 'package:mi_nueva_app/screens/pantalla_registro_evento.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
+import 'package:mi_nueva_app/core/ad_helper.dart';
 
 class PantallaTableroControl extends StatefulWidget {
   final Partido partido;
@@ -47,6 +48,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _blinkController = AnimationController(vsync: this, duration: const Duration(milliseconds: 600))..repeat(reverse: true);
+    AdHelper.cargarInterstitialAd();
   }
 
   @override
@@ -151,7 +153,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           }
         });
         QuantumStorage.borrarPartidoActivo();
-        Navigator.popUntil(context, (route) => route.isFirst); 
+        AdHelper.mostrarInterstitialAd(onAdClosed: () { Navigator.popUntil(context, (route) => route.isFirst); }); 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('encuentro_finalizado_bitacora'), style: TextStyle(color: kVerdeNeon)), backgroundColor: kNegro));
       }
     }

@@ -29,6 +29,7 @@ import 'package:mi_nueva_app/screens/pantalla_encuentros_personalizados.dart';
 import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
+import 'package:mi_nueva_app/widgets/widget_ad_banner.dart';
 
 class PantallaSeleccionDeporte extends StatelessWidget {
   const PantallaSeleccionDeporte({super.key});
@@ -36,8 +37,10 @@ class PantallaSeleccionDeporte extends StatelessWidget {
     final List<String> deportesKeys = DeporteConfig.datos.keys.toList();
     return Scaffold(
       backgroundColor: kNegro,
+      bottomNavigationBar: const AdBannerWidget(),
       appBar: AppBar(backgroundColor: kNegro, leading: IconButton(icon: const Icon(Icons.arrow_back, color: kVerdeNeon), onPressed: () => Navigator.pop(context))),
-      body: ListView.builder(
+      body: SafeArea(
+        child: ListView.builder(
         padding: const EdgeInsets.all(20),
         itemCount: deportesKeys.length,
         itemBuilder: (context, index) {
@@ -55,6 +58,7 @@ class PantallaSeleccionDeporte extends StatelessWidget {
             ),
           );
         },
+        ),
       ),
     );
   }

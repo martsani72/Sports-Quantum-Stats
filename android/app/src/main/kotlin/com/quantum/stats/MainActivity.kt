@@ -1,4 +1,4 @@
-package com.example.mi_nueva_app
+package com.quantum.stats
 
 import io.flutter.embedding.android.FlutterActivity
 

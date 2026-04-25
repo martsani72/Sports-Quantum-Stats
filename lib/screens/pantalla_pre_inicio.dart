@@ -29,6 +29,7 @@ import 'package:mi_nueva_app/screens/pantalla_encuentros_personalizados.dart';
 import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
+import 'package:mi_nueva_app/widgets/widget_ad_banner.dart';
 
 class PantallaPreInicio extends StatelessWidget {
   final Partido partido;
@@ -37,9 +38,17 @@ class PantallaPreInicio extends StatelessWidget {
   @override Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kNegro,
-      appBar: AppBar(backgroundColor: kNegro, leading: const BackButton(color: kVerdeNeon)),
-      body: Center(
-        child: Padding(
+      appBar: AppBar(
+        backgroundColor: kNegro, 
+        leading: const BackButton(color: kVerdeNeon),
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(50),
+          child: AdBannerWidget(),
+        ),
+      ),
+      body: SafeArea(
+        child: Center(
+          child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -116,6 +125,7 @@ class PantallaPreInicio extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

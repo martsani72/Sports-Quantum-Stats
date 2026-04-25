@@ -31,9 +31,11 @@ import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
 import 'package:mi_nueva_app/screens/pantalla_splash.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await MobileAds.instance.initialize();
   await QuantumStorage.init();
   perfilUsuario = QuantumStorage.cargarPerfil();
   partidosGuardados = QuantumStorage.cargarPartidos();

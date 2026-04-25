@@ -29,6 +29,7 @@ import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 import 'package:mi_nueva_app/assets_data.dart';
+import 'package:mi_nueva_app/widgets/widget_ad_banner.dart';
 
 class PantallaPrincipal extends StatefulWidget {
   const PantallaPrincipal({super.key});
@@ -47,6 +48,7 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
 
     return Scaffold(
       backgroundColor: kNegro,
+      bottomNavigationBar: const AdBannerWidget(),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20.0),

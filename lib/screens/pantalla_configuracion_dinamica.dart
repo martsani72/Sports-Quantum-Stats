@@ -319,9 +319,10 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
         leading: IconButton(icon: const Icon(Icons.arrow_back, color: kVerdeNeon), onPressed: () => Navigator.pop(context)),
         title: Text(tituloTraducido.toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 14, letterSpacing: 2)),
       ),
-      body: Column(
-        children: [
-          if (modoEdicion)
+      body: SafeArea(
+        child: Column(
+          children: [
+            if (modoEdicion)
             Container(width: double.infinity, color: kVerdeOscuro.withOpacity(0.5), padding: const EdgeInsets.symmetric(vertical: 5), child: Text(Traductor.get('modo_edicion'), textAlign: TextAlign.center, style: const TextStyle(color: kVerdeNeon, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 2))),
           
           Expanded(
@@ -356,6 +357,7 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
           
           _buildBotonesAccion(),
         ],
+      ),
       ),
     );
   }
