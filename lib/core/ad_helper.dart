@@ -1,5 +1,6 @@
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart';
 
 class AdHelper {
   static InterstitialAd? _interstitialAd;
@@ -18,6 +19,7 @@ class AdHelper {
 
   /// Carga el anuncio en segundo plano para que esté listo cuando se necesite
   static void cargarInterstitialAd() {
+    if (kIsWeb) return;
     InterstitialAd.load(
       adUnitId: interstitialAdUnitId,
       request: const AdRequest(),
@@ -50,7 +52,7 @@ class AdHelper {
 
   /// Muestra el anuncio si está cargado, y ejecuta una acción (onAdClosed) cuando el usuario lo cierra
   static void mostrarInterstitialAd({required Function() onAdClosed}) {
-    if (_isInterstitialAdLoaded && _interstitialAd != null) {
+    if (!kIsWeb && _isInterstitialAdLoaded && _interstitialAd != null) {
       // Reemplazamos el callback de cierre temporalmente para ejecutar la acción de navegación de la app
       _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
         onAdDismissedFullScreenContent: (ad) {

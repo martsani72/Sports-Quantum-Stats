@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,7 +36,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await MobileAds.instance.initialize();
+  if (!kIsWeb) {
+    await MobileAds.instance.initialize();
+  }
   await QuantumStorage.init();
   perfilUsuario = QuantumStorage.cargarPerfil();
   partidosGuardados = QuantumStorage.cargarPartidos();

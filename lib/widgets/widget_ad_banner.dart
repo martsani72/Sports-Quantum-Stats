@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart';
 
 class AdBannerWidget extends StatefulWidget {
   const AdBannerWidget({Key? key}) : super(key: key);
@@ -21,7 +22,9 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
   @override
   void initState() {
     super.initState();
-    _loadAd();
+    if (!kIsWeb) {
+      _loadAd();
+    }
   }
 
   void _loadAd() {
