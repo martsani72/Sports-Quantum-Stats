@@ -92,6 +92,8 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/logotipo.png"
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: "assets/logotipo.png"
   min_sdk_android: 21
   #
   # For details regarding fonts from package dependencies,
