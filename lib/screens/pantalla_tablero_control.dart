@@ -815,9 +815,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     ),
                   ),
 
-                    ),
-                  ),
-                  
                   Container( 
                     margin: const EdgeInsets.only(top: 15), padding: const EdgeInsets.symmetric(vertical: 8), 
                     decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: kVerdeOscuro, width: 2))), 
@@ -837,7 +834,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                       children: _generarListaEstadisticasUnificada()
                     ), 
                   ),
-                  
                   if (widget.partido.deporte.toLowerCase() != 'baseball' && widget.partido.deporte.toLowerCase() != 'football americano') _buildSelectorPosesion(),
 
                   Container( 
