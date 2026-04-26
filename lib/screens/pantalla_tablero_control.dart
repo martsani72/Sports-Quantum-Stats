@@ -332,7 +332,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
               backgroundColor: kNegro,
               shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon), borderRadius: BorderRadius.circular(10)),
               title: Text(Traductor.get('cambio_registrado'), style: TextStyle(color: kVerdeNeon, fontSize: 16, fontWeight: FontWeight.bold)),
-              content: const Text('¿Quiere realizar otro cambio en esta mesma ventana?', style: TextStyle(color: Colors.white, fontSize: 14)),
+              content: Text(Traductor.get('quiere_otro_cambio'), style: const TextStyle(color: Colors.white, fontSize: 14)),
               actions: [
                 TextButton(onPressed: () => Navigator.pop(context, false), child: Text(Traductor.get('no_mayus'), style: TextStyle(color: Colors.grey))),
                 ElevatedButton(
