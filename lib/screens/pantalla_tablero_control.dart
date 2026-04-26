@@ -816,7 +816,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                   ),
 
                   Container( 
-                    margin: const EdgeInsets.only(top: 15), padding: const EdgeInsets.symmetric(vertical: 8), 
+                    margin: const EdgeInsets.only(top: 5), padding: const EdgeInsets.symmetric(vertical: 4), 
                     decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: kVerdeOscuro, width: 2))), 
                     child: Row( 
                       mainAxisAlignment: MainAxisAlignment.spaceAround, 
@@ -904,6 +904,21 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           ),
         ),
       ),
+    );
+  }
+
+  Widget _infoCambios(String equipo) {
+    int hechos = widget.partido.stats[equipo]?['CambiosHechos'] ?? 0;
+    int max = widget.partido.contadores['Cambios'] ?? 0;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.swap_horizontal_circle, color: kVerdeNeon.withOpacity(0.5), size: 14),
+        const SizedBox(width: 4),
+        Text('$hechos/$max', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+        const SizedBox(width: 6),
+        const Icon(Icons.remove_red_eye, color: Colors.white24, size: 12),
+      ],
     );
   }
 
