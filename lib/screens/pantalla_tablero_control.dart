@@ -815,24 +815,22 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     ),
                   ),
 
-                  // BOTÓN DE NOTA FIJO Y DESCRIPTIVO
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                    child: ElevatedButton.icon(
+                  // BOTÓN DE NOTA FLOTANTE CENTRADO Y COMPACTO
+                  Center(
+                    child: FloatingActionButton.extended(
                       onPressed: _abrirAnotadorLibre,
-                      icon: const Icon(Icons.edit_note, color: kNegro, size: 24),
-                      label: Text(Traductor.get('anotar_nota'), style: const TextStyle(color: kNegro, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: kVerdeNeon,
-                        minimumSize: const Size(double.infinity, 45),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        elevation: 4,
+                      backgroundColor: kVerdeNeon,
+                      elevation: 4,
+                      icon: const Icon(Icons.edit_note, color: kNegro, size: 20),
+                      label: Text(
+                        Traductor.get('anotar_nota'), 
+                        style: const TextStyle(color: kNegro, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5)
                       ),
                     ),
                   ),
                   
                   Container( 
-                    margin: const EdgeInsets.only(top: 10), padding: const EdgeInsets.symmetric(vertical: 8), 
+                    margin: const EdgeInsets.only(top: 15), padding: const EdgeInsets.symmetric(vertical: 8), 
                     decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: kVerdeOscuro, width: 2))), 
                     child: Row( 
                       mainAxisAlignment: MainAxisAlignment.spaceAround, 
