@@ -53,7 +53,7 @@ class PantallaPreInicio extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.sports, size: 80, color: kVerdeNeon.withOpacity(0.5)),
+              Icon(DeporteConfig.datos[partido.deporte]?['icono'] ?? Icons.sports, size: 80, color: kVerdeNeon.withOpacity(0.5)),
               const SizedBox(height: 30),
               
               Row(

@@ -124,6 +124,14 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     _guardarEstado();
   }
 
+  String _formatearOrdinal(int num) {
+    if (num == 1) return '1er';
+    if (num == 2) return '2do';
+    if (num == 3) return '3ro';
+    if (num == 4) return '4to';
+    return '$num';
+  }
+
   Future<void> _manejarFinPeriodo() async {
     _pausarTimer();
     String clavePeriodo = widget.partido.contadores.containsKey('Cuartos') ? 'Cuartos' : (widget.partido.contadores.containsKey('Entradas') ? 'Entradas' : 'Tiempos');
@@ -131,10 +139,10 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     String nombreRef = Traductor.get(clavePeriodo).toUpperCase(); 
 
     if (_periodoActual < maxPeriodos) {
-      bool confirmar = await _mostrarDialogo(Traductor.get('finalizar_periodo_titulo') + nombreRef + ' $_periodoActual?', Traductor.get('finalizar_periodo_msj'), Traductor.get('siguiente_mayus'));
+      bool confirmar = await _mostrarDialogo('${Traductor.get('finalizar_periodo_titulo')} ${_formatearOrdinal(_periodoActual)} $nombreRef?', Traductor.get('finalizar_periodo_msj'), Traductor.get('siguiente_mayus'));
       if (confirmar) {
         setState(() {
-          widget.partido.logEventos.add('--- FIN DEL $nombreRef $_periodoActual ---');
+          widget.partido.logEventos.add('--- FIN DEL ${_formatearOrdinal(_periodoActual)} $nombreRef ---');
           _periodoActual++;
           _equipoPosesion = null; 
           _segundosAcumulados = 0;
@@ -719,9 +727,9 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                             
                             Column(
                               children: [
-                                const Text('VS', style: TextStyle(color: Colors.white24, fontSize: 18, fontWeight: FontWeight.bold)),
+                                Text('VS', style: const TextStyle(color: Colors.white24, fontSize: 18, fontWeight: FontWeight.bold)),
                                 const SizedBox(height: 10),
-                                Text('$nombrePeriodo $_periodoActual', style: const TextStyle(color: Colors.white54, fontSize: 12, letterSpacing: 2)),
+                                Text('${_formatearOrdinal(_periodoActual)} $nombrePeriodo', style: const TextStyle(color: Colors.white54, fontSize: 12, letterSpacing: 2)),
                                 Text(_formatearTiempo(), style: const TextStyle(color: Colors.white, fontSize: 28, fontFamily: 'monospace', fontWeight: FontWeight.bold)),
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
