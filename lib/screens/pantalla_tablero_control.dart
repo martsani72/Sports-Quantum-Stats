@@ -652,8 +652,8 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     String nombrePeriodo = Traductor.get(clavePeriodo).toUpperCase(); 
 
     if (!_notaInicializada) {
-      _notaX = (MediaQuery.of(context).size.width / 2) - 30; 
-      _notaY = 135; 
+      _notaX = (MediaQuery.of(context).size.width / 2) - 80; // Centrado horizontal para el botón ancho
+      _notaY = 260; // Bajado para que quede sobre Reservas
       _notaInicializada = true;
     }
 
@@ -815,17 +815,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     ),
                   ),
 
-                  // BOTÓN DE NOTA FLOTANTE CENTRADO Y COMPACTO
-                  Center(
-                    child: FloatingActionButton.extended(
-                      onPressed: _abrirAnotadorLibre,
-                      backgroundColor: kVerdeNeon,
-                      elevation: 4,
-                      icon: const Icon(Icons.edit_note, color: kNegro, size: 20),
-                      label: Text(
-                        Traductor.get('anotar_nota'), 
-                        style: const TextStyle(color: kNegro, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5)
-                      ),
                     ),
                   ),
                   
@@ -890,6 +879,30 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     ), 
                   )
                 ],
+              ),
+
+              // BOTÓN DE NOTA FLOTANTE ARRASTRABLE
+              Positioned(
+                left: _notaX,
+                top: _notaY,
+                child: GestureDetector(
+                  onPanUpdate: (details) {
+                    setState(() {
+                      _notaX += details.delta.dx;
+                      _notaY += details.delta.dy;
+                    });
+                  },
+                  child: FloatingActionButton.extended(
+                    onPressed: _abrirAnotadorLibre,
+                    backgroundColor: kVerdeNeon,
+                    elevation: 6,
+                    icon: const Icon(Icons.edit_note, color: kNegro, size: 20),
+                    label: Text(
+                      Traductor.get('anotar_nota'), 
+                      style: const TextStyle(color: kNegro, fontSize: 9, fontWeight: FontWeight.bold)
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
