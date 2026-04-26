@@ -814,9 +814,25 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                       ],
                     ),
                   ),
+
+                  // BOTÓN DE NOTA FIJO Y DESCRIPTIVO
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    child: ElevatedButton.icon(
+                      onPressed: _abrirAnotadorLibre,
+                      icon: const Icon(Icons.edit_note, color: kNegro, size: 24),
+                      label: Text(Traductor.get('anotar_nota'), style: const TextStyle(color: kNegro, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: kVerdeNeon,
+                        minimumSize: const Size(double.infinity, 45),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        elevation: 4,
+                      ),
+                    ),
+                  ),
                   
                   Container( 
-                    margin: const EdgeInsets.only(top: 15), padding: const EdgeInsets.symmetric(vertical: 8), 
+                    margin: const EdgeInsets.only(top: 10), padding: const EdgeInsets.symmetric(vertical: 8), 
                     decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: kVerdeOscuro, width: 2))), 
                     child: Row( 
                       mainAxisAlignment: MainAxisAlignment.spaceAround, 
@@ -876,25 +892,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     ), 
                   )
                 ],
-              ),
-
-              Positioned(
-                left: _notaX,
-                top: _notaY,
-                child: GestureDetector(
-                  onPanUpdate: (details) {
-                    setState(() {
-                      _notaX += details.delta.dx;
-                      _notaY += details.delta.dy;
-                    });
-                  },
-                  child: FloatingActionButton(
-                    backgroundColor: kVerdeNeon,
-                    elevation: 5,
-                    onPressed: _abrirAnotadorLibre,
-                    child: const Icon(Icons.edit_note, color: kNegro, size: 30),
-                  ),
-                ),
               ),
             ],
           ),
