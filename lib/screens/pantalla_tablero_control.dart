@@ -1322,7 +1322,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     String rolActual = esLocal ? widget.partido.rolLocal : (widget.partido.rolLocal == 'Bateador' ? 'Lanzador' : 'Bateador');
     String idActual = rolActual == 'Bateador' ? widget.partido.idBateadorActual : widget.partido.idLanzadorActual;
     
-    // Inicializar controladores una sola vez con el valor del modelo
     if (widget.partido.deporte.toLowerCase() == 'baseball' && !_inicializadoBaseball) {
       _ctrlBateador.text = widget.partido.idBateadorActual;
       _ctrlLanzador.text = widget.partido.idLanzadorActual;
@@ -1332,59 +1331,63 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     TextEditingController ctrl = rolActual == 'Bateador' ? _ctrlBateador : _ctrlLanzador;
 
     return Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: const EdgeInsets.only(top: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.05),
         borderRadius: BorderRadius.circular(5)
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(Traductor.get(rolActual.toLowerCase()), style: const TextStyle(color: Colors.white38, fontSize: 8, fontWeight: FontWeight.bold)),
-              if (rolActual == 'Lanzador') ...[
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: () {
-                    HapticFeedback.selectionClick();
-                    setState(() {
-                      if (esLocal) widget.partido.lanzamientosLocal++;
-                      else widget.partido.lanzamientosVisita++;
-                    });
-                    _guardarEstado();
-                  },
-                  child: Row(
-                    children: [
-                      const Icon(Icons.sports_baseball, color: Colors.white38, size: 14),
-                      const SizedBox(width: 3),
-                      Text('${esLocal ? widget.partido.lanzamientosLocal : widget.partido.lanzamientosVisita}', style: const TextStyle(color: kVerdeNeon, fontSize: 13, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                )
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(Traductor.get(rolActual.toLowerCase()), style: const TextStyle(color: Colors.white38, fontSize: 8, fontWeight: FontWeight.bold)),
+                if (rolActual == 'Lanzador') ...[
+                  const SizedBox(width: 5),
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      setState(() {
+                        if (esLocal) widget.partido.lanzamientosLocal++;
+                        else widget.partido.lanzamientosVisita++;
+                      });
+                      _guardarEstado();
+                    },
+                    child: Row(
+                      children: [
+                        const Icon(Icons.sports_baseball, color: Colors.white38, size: 12),
+                        const SizedBox(width: 2),
+                        Text('${esLocal ? widget.partido.lanzamientosLocal : widget.partido.lanzamientosVisita}', style: const TextStyle(color: kVerdeNeon, fontSize: 11, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  )
+                ],
+                if (rolActual == 'Bateador') ...[
+                  const SizedBox(width: 5),
+                  GestureDetector(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      _incrementarOrdenBateo(equipo);
+                    },
+                    child: Row(
+                      children: [
+                        Text(Traductor.get('orden'), style: const TextStyle(color: Colors.white38, fontSize: 8, fontWeight: FontWeight.bold)),
+                        const SizedBox(width: 2),
+                        Text('${esLocal ? widget.partido.ordenBateoLocal : widget.partido.ordenBateoVisita}', style: const TextStyle(color: kVerdeNeon, fontSize: 11, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  )
+                ]
               ],
-              if (rolActual == 'Bateador') ...[
-                const SizedBox(width: 8),
-                GestureDetector(
-                  onTap: () {
-                    HapticFeedback.selectionClick();
-                    _incrementarOrdenBateo(equipo);
-                  },
-                  child: Row(
-                    children: [
-                      Text(Traductor.get('orden'), style: const TextStyle(color: Colors.white38, fontSize: 8, fontWeight: FontWeight.bold)),
-                      const SizedBox(width: 3),
-                      Text('${esLocal ? widget.partido.ordenBateoLocal : widget.partido.ordenBateoVisita}', style: const TextStyle(color: kVerdeNeon, fontSize: 13, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                )
-              ]
-            ],
+            ),
           ),
           const SizedBox(height: 2),
           SizedBox(
-            width: 60,
+            width: 45, // Reducido de 60 a 45
             child: TextField(
               controller: ctrl,
               style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold),
@@ -1392,7 +1395,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
               keyboardType: TextInputType.number,
               decoration: const InputDecoration(
                 isDense: true,
-                contentPadding: EdgeInsets.symmetric(vertical: 2),
+                contentPadding: EdgeInsets.symmetric(vertical: 0),
                 border: InputBorder.none,
                 hintText: '#',
                 hintStyle: TextStyle(color: Colors.white10)
@@ -1410,7 +1413,8 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
             widget.partido.obtenerNombreJugador(equipo, idActual).split(' ').skip(1).join(' '),
             maxLines: 1, 
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: Colors.white70, fontSize: 9)
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white70, fontSize: 8) // Reducido de 9 a 8
           )
         ],
       ),

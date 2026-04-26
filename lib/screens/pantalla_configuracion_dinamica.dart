@@ -366,16 +366,29 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8), // Reducido vertical de 12 a 8
         decoration: BoxDecoration(color: Colors.white.withOpacity(0.03), borderRadius: BorderRadius.circular(8)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(Traductor.get('jugadores_colores'), style: const TextStyle(color: kVerdeNeon, fontSize: 13, fontWeight: FontWeight.w400)),
+            Expanded(
+              child: Text(Traductor.get('jugadores_colores'), style: const TextStyle(color: kVerdeNeon, fontSize: 12, fontWeight: FontWeight.w400)),
+            ),
+            const SizedBox(width: 10),
             if (modoEdicion)
-              ElevatedButton.icon(style: ElevatedButton.styleFrom(backgroundColor: kVerdeOscuro, foregroundColor: kVerdeNeon, minimumSize: const Size(200, 45)), icon: const Icon(Icons.palette, size: 16), label: Text(Traductor.get('planilla'), style: const TextStyle(fontSize: 10)), onPressed: _mostrarPopUpJugadores)
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kVerdeOscuro, 
+                  foregroundColor: kVerdeNeon, 
+                  minimumSize: const Size(140, 40), // Reducido de 200x45 a 140x40
+                  padding: const EdgeInsets.symmetric(horizontal: 10)
+                ), 
+                icon: const Icon(Icons.palette, size: 14), 
+                label: Text(Traductor.get('planilla'), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)), 
+                onPressed: _mostrarPopUpJugadores
+              )
             else
-              Text(_hayEquiposCargados() ? Traductor.get('listas_cargadas') : Traductor.get('no_definidos'), style: TextStyle(color: _hayEquiposCargados() ? kVerdeNeon : Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+              Text(_hayEquiposCargados() ? Traductor.get('listas_cargadas') : Traductor.get('no_definidos'), style: TextStyle(color: _hayEquiposCargados() ? kVerdeNeon : Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
