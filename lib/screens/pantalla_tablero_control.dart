@@ -908,14 +908,21 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   }
 
   Widget _infoCambios(String equipo) {
-    int hechos = widget.partido.stats[equipo]?['CambiosHechos'] ?? 0;
-    int max = widget.partido.contadores['Cambios'] ?? 0;
+    int maxC = widget.partido.contadores['Cambios'] ?? 0;
+    int maxV = widget.partido.contadores['Ventanas'] ?? 0;
+    int hechosC = widget.partido.stats[equipo]?['CambiosHechos'] ?? 0;
+    int hechasV = widget.partido.stats[equipo]?['VentanasHechas'] ?? 0;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(Icons.swap_horizontal_circle, color: kVerdeNeon.withOpacity(0.5), size: 14),
         const SizedBox(width: 4),
-        Text('$hechos/$max', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+        Text('$hechosC/$maxC', style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+        if (maxV > 0) ...[
+          const SizedBox(width: 4),
+          Text('V: $hechasV/$maxV', style: const TextStyle(color: Colors.white54, fontSize: 9)),
+        ],
         const SizedBox(width: 6),
         const Icon(Icons.remove_red_eye, color: Colors.white24, size: 12),
       ],
@@ -959,8 +966,8 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     );
   }
 
-  Widget _infoCambios(String equipo) { int maxC = widget.partido.contadores['Cambios'] ?? 0; int maxV = widget.partido.contadores['Ventanas'] ?? 0; int hechosC = widget.partido.stats[equipo]!['CambiosHechos'] ?? 0; int hechasV = widget.partido.stats[equipo]!['VentanasHechas'] ?? 0; String texto = 'C: $hechosC/$maxC'; if (maxV > 0) texto += ' | V: $hechasV/$maxV'; return Text(texto, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold)); }
   
+
   List<Widget> _generarListaEstadisticasUnificada() { 
     List<Widget> filasRapidas = []; 
     List<Widget> filasPasivas = []; 
