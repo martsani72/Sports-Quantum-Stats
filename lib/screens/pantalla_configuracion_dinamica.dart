@@ -40,7 +40,6 @@ class PantallaConfiguracionDinamica extends StatefulWidget {
 }
 
 class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDinamica> {
-  bool modoEdicion = false;
   late Map<String, int> contadores;
   late Map<String, int> limites;
   late Map<String, bool> switches;
@@ -279,29 +278,12 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
           children: [
             Text(Traductor.get('titulo_partido'), style: const TextStyle(color: kVerdeOscuro, fontSize: 10, letterSpacing: 2, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            if (modoEdicion)
-              TextField(
-                controller: _tituloController,
-                style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-                textCapitalization: TextCapitalization.words,
-                decoration: _inputDecoration(Traductor.get('titulo_partido_hint'), Colors.transparent),
-              )
-            else
-              Row(
-                children: [
-                  Icon(Icons.drive_file_rename_outline, color: vacio ? Colors.white10 : kVerdeNeon, size: 16),
-                  const SizedBox(width: 10),
-                  Text(
-                    vacio ? 'PULSA "EDITAR" PARA ASIGNAR EL TÍTULO' : _tituloController.text.toUpperCase(), 
-                    style: TextStyle(
-                      color: vacio ? kVerdeNeon : Colors.white, 
-                      fontSize: 13, 
-                      fontWeight: FontWeight.bold,
-                      fontStyle: vacio ? FontStyle.italic : FontStyle.normal
-                    )
-                  ),
-                ],
-              ),
+            TextField(
+              controller: _tituloController,
+              style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+              textCapitalization: TextCapitalization.words,
+              decoration: _inputDecoration(Traductor.get('titulo_partido_hint'), Colors.transparent),
+            )
           ],
         ),
       ),
@@ -322,9 +304,6 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
       body: SafeArea(
         child: Column(
           children: [
-            if (modoEdicion)
-            Container(width: double.infinity, color: kVerdeOscuro.withOpacity(0.5), padding: const EdgeInsets.symmetric(vertical: 5), child: Text(Traductor.get('modo_edicion'), textAlign: TextAlign.center, style: const TextStyle(color: kVerdeNeon, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 2))),
-          
           Expanded(
             child: ListView(
               padding: const EdgeInsets.all(20),
@@ -341,16 +320,15 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
                 const SizedBox(height: 10),
                 ...switches.keys.map((key) => _buildFilaSwitch(key, switches[key]!, (val) => setState(() => switches[key] = val))),
                 
-                if (modoEdicion)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 15.0, bottom: 20.0),
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(side: BorderSide(color: kVerdeNeon.withOpacity(0.5), width: 1.5), minimumSize: const Size(double.infinity, 50), backgroundColor: kVerdeNeon.withOpacity(0.05)),
-                      icon: const Icon(Icons.add_circle_outline, color: kVerdeNeon),
-                      label: Text(Traductor.get('agregar_estadistica'), style: const TextStyle(color: kVerdeNeon, fontSize: 12, fontWeight: FontWeight.bold)),
-                      onPressed: _agregarEventoPersonalizado,
-                    ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 15.0, bottom: 20.0),
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(side: BorderSide(color: kVerdeNeon.withOpacity(0.5), width: 1.5), minimumSize: const Size(double.infinity, 50), backgroundColor: kVerdeNeon.withOpacity(0.05)),
+                    icon: const Icon(Icons.add_circle_outline, color: kVerdeNeon),
+                    label: Text(Traductor.get('agregar_estadistica'), style: const TextStyle(color: kVerdeNeon, fontSize: 12, fontWeight: FontWeight.bold)),
+                    onPressed: _agregarEventoPersonalizado,
                   ),
+                ),
               ],
             ),
           ),
@@ -375,20 +353,17 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
               child: Text(Traductor.get('jugadores_colores'), style: const TextStyle(color: kVerdeNeon, fontSize: 12, fontWeight: FontWeight.w400)),
             ),
             const SizedBox(width: 10),
-            if (modoEdicion)
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kVerdeOscuro, 
-                  foregroundColor: kVerdeNeon, 
-                  minimumSize: const Size(140, 40), // Reducido de 200x45 a 140x40
-                  padding: const EdgeInsets.symmetric(horizontal: 10)
-                ), 
-                icon: const Icon(Icons.palette, size: 14), 
-                label: Text(Traductor.get('planilla'), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)), 
-                onPressed: _mostrarPopUpJugadores
-              )
-            else
-              Text(_hayEquiposCargados() ? Traductor.get('listas_cargadas') : Traductor.get('no_definidos'), style: TextStyle(color: _hayEquiposCargados() ? kVerdeNeon : Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: kVerdeOscuro, 
+                foregroundColor: kVerdeNeon, 
+                minimumSize: const Size(140, 40), // Reducido de 200x45 a 140x40
+                padding: const EdgeInsets.symmetric(horizontal: 10)
+              ), 
+              icon: const Icon(Icons.palette, size: 14), 
+              label: Text(Traductor.get('planilla'), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)), 
+              onPressed: _mostrarPopUpJugadores
+            )
           ],
         ),
       ),
@@ -405,16 +380,13 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(Traductor.get(label).toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 13, fontWeight: FontWeight.w400)),
-            if (modoEdicion)
-              Row(
-                children: [
-                  IconButton(icon: const Icon(Icons.remove_circle_outline, color: kVerdeOscuro), onPressed: valorActual > min ? () => onChanged(valorActual - 1) : null),
-                  SizedBox(width: 30, child: Text('$valorActual', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))),
-                  IconButton(icon: const Icon(Icons.add_circle_outline, color: kVerdeNeon), onPressed: valorActual < max ? () => onChanged(valorActual + 1) : null),
-                ],
-              )
-            else
-              Padding(padding: const EdgeInsets.only(right: 15.0), child: Text('$valorActual', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))),
+            Row(
+              children: [
+                IconButton(icon: const Icon(Icons.remove_circle_outline, color: kVerdeNeon), onPressed: valorActual > min ? () => onChanged(valorActual - 1) : null),
+                SizedBox(width: 30, child: Text('$valorActual', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))),
+                IconButton(icon: const Icon(Icons.add_circle_outline, color: kVerdeNeon), onPressed: valorActual < max ? () => onChanged(valorActual + 1) : null),
+              ],
+            )
           ],
         ),
       ),
@@ -431,32 +403,29 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(Traductor.get('tiempo_amarilla'), style: TextStyle(color: kVerdeNeon, fontSize: 13, fontWeight: FontWeight.w400)),
-            if (modoEdicion)
-              Row(
-                children: [
-                  ChoiceChip(
-                    label: Text(Traductor.get('dos_min'), style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                    selected: valorActual == 2,
-                    selectedColor: kVerdeNeon,
-                    backgroundColor: Colors.transparent,
-                    side: const BorderSide(color: kVerdeOscuro),
-                    labelStyle: TextStyle(color: valorActual == 2 ? kNegro : Colors.white),
-                    onSelected: (val) { if (val) setState(() => contadores[label] = 2); },
-                  ),
-                  const SizedBox(width: 10),
-                  ChoiceChip(
-                    label: Text(Traductor.get('diez_min'), style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                    selected: valorActual == 10,
-                    selectedColor: kVerdeNeon,
-                    backgroundColor: Colors.transparent,
-                    side: const BorderSide(color: kVerdeOscuro),
-                    labelStyle: TextStyle(color: valorActual == 10 ? kNegro : Colors.white),
-                    onSelected: (val) { if (val) setState(() => contadores[label] = 10); },
-                  ),
-                ],
-              )
-            else
-              Padding(padding: const EdgeInsets.only(right: 15.0), child: Text('$valorActual MIN', style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))),
+            Row(
+              children: [
+                ChoiceChip(
+                  label: Text(Traductor.get('dos_min'), style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                  selected: valorActual == 2,
+                  selectedColor: kVerdeNeon,
+                  backgroundColor: Colors.transparent,
+                  side: const BorderSide(color: kVerdeOscuro),
+                  labelStyle: TextStyle(color: valorActual == 2 ? kNegro : Colors.white),
+                  onSelected: (val) { if (val) setState(() => contadores[label] = 2); },
+                ),
+                const SizedBox(width: 10),
+                ChoiceChip(
+                  label: Text(Traductor.get('diez_min'), style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                  selected: valorActual == 10,
+                  selectedColor: kVerdeNeon,
+                  backgroundColor: Colors.transparent,
+                  side: const BorderSide(color: kVerdeOscuro),
+                  labelStyle: TextStyle(color: valorActual == 10 ? kNegro : Colors.white),
+                  onSelected: (val) { if (val) setState(() => contadores[label] = 10); },
+                ),
+              ],
+            )
           ],
         ),
       ),
@@ -473,10 +442,7 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Flexible(child: Text(Traductor.get(label).toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 12, fontWeight: FontWeight.w400))),
-            if (modoEdicion)
-              Switch(value: valorActual, activeColor: kVerdeNeon, inactiveThumbColor: Colors.grey, inactiveTrackColor: Colors.white10, onChanged: onChanged)
-            else
-              Padding(padding: const EdgeInsets.only(right: 15.0, top: 10, bottom: 10), child: Text(valorActual ? Traductor.get('si_mayus') : Traductor.get('no_mayus'), style: TextStyle(color: valorActual ? Colors.white : Colors.white38, fontSize: 14, fontWeight: FontWeight.bold))),
+            Switch(value: valorActual, activeColor: kVerdeNeon, inactiveThumbColor: Colors.grey, inactiveTrackColor: Colors.white10, onChanged: onChanged)
           ],
         ),
       ),
@@ -521,45 +487,30 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(border: Border(top: BorderSide(color: kVerdeOscuro, width: 1)), color: kNegro),
-      child: Row(
-        children: [
-          Expanded(
-            child: OutlinedButton(
-              style: OutlinedButton.styleFrom(side: BorderSide(color: modoEdicion ? Colors.grey : kVerdeOscuro, width: 2), padding: const EdgeInsets.all(15)),
-              onPressed: () => setState(() => modoEdicion = !modoEdicion), 
-              child: Text(modoEdicion ? Traductor.get('cancelar') : Traductor.get('editar'), style: TextStyle(color: modoEdicion ? Colors.grey : kVerdeNeon, fontWeight: FontWeight.bold)),
-            ),
-          ),
-          const SizedBox(width: 15),
-          Expanded(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: kVerdeNeon, padding: const EdgeInsets.all(15)),
-              onPressed: () {
-                if (modoEdicion) {
-                  setState(() => modoEdicion = false);
-                } else {
-                  String nombreLoc = _nombreLocalController.text.trim().isEmpty ? "LOCAL" : _nombreLocalController.text.trim();
-                  String nombreVis = _nombreVisitaController.text.trim().isEmpty ? "VISITA" : _nombreVisitaController.text.trim();
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(backgroundColor: kVerdeNeon, padding: const EdgeInsets.all(15)),
+          onPressed: () {
+            String nombreLoc = _nombreLocalController.text.trim().isEmpty ? "LOCAL" : _nombreLocalController.text.trim();
+            String nombreVis = _nombreVisitaController.text.trim().isEmpty ? "VISITA" : _nombreVisitaController.text.trim();
 
-                  Map<String, String> planLoc = _parsearPlanilla(_jugadoresLocalController.text);
-                  Map<String, String> planVis = _parsearPlanilla(_jugadoresVisitaController.text);
+            Map<String, String> planLoc = _parsearPlanilla(_jugadoresLocalController.text);
+            Map<String, String> planVis = _parsearPlanilla(_jugadoresVisitaController.text);
 
-                  Partido nuevoPartido = Partido(
-                    deporte: widget.nombreDeporte, local: nombreLoc, visita: nombreVis,
-                    titulo: _tituloController.text.trim(),
-                    contadores: contadores, switches: switches,
-                    localFondo: _localFondo, localTexto: _localTexto,
-                    visitaFondo: _visitaFondo, visitaTexto: _visitaTexto,
-                    jugadoresLocal: planLoc, jugadoresVisita: planVis,
-                    patronLocal: _patronLocal, patronVisita: _patronVisita,
-                  );
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => PantallaPreInicio(partido: nuevoPartido)));
-                }
-              }, 
-              child: Text(Traductor.get('confirmar'), style: const TextStyle(color: kNegro, fontWeight: FontWeight.bold, fontSize: 16)),
-            ),
-          ),
-        ],
+            Partido nuevoPartido = Partido(
+              deporte: widget.nombreDeporte, local: nombreLoc, visita: nombreVis,
+              titulo: _tituloController.text.trim(),
+              contadores: contadores, switches: switches,
+              localFondo: _localFondo, localTexto: _localTexto,
+              visitaFondo: _visitaFondo, visitaTexto: _visitaTexto,
+              jugadoresLocal: planLoc, jugadoresVisita: planVis,
+              patronLocal: _patronLocal, patronVisita: _patronVisita,
+            );
+            Navigator.push(context, MaterialPageRoute(builder: (context) => PantallaPreInicio(partido: nuevoPartido)));
+          }, 
+          child: Text(Traductor.get('confirmar'), style: const TextStyle(color: kNegro, fontWeight: FontWeight.bold, fontSize: 16)),
+        ),
       ),
     );
   }
