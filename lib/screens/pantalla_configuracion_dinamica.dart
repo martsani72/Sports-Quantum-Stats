@@ -251,7 +251,7 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
 
   InputDecoration _inputDecoration(String hint, Color fillColor) {
     return InputDecoration(
-      hintText: hint, hintStyle: const TextStyle(color: Colors.white24),
+      hintText: hint, hintStyle: const TextStyle(color: Colors.white54),
       filled: true, fillColor: fillColor == Colors.transparent ? Colors.white.withOpacity(0.05) : fillColor.withOpacity(0.3),
       contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: kVerdeOscuro)),
@@ -276,7 +276,7 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(Traductor.get('titulo_partido'), style: const TextStyle(color: kVerdeOscuro, fontSize: 10, letterSpacing: 2, fontWeight: FontWeight.bold)),
+            Text(Traductor.get('titulo_partido'), style: const TextStyle(color: kVerdeNeon, fontSize: 10, letterSpacing: 2, fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             TextField(
               controller: _tituloController,

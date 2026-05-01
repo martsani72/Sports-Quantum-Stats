@@ -665,7 +665,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           backgroundColor: const Color(0xFF0A0A0A),
           elevation: 0,
           leading: IconButton(icon: const Icon(Icons.arrow_back, color: kVerdeNeon), onPressed: () async { if (await _confirmarSalida()) { if (!mounted) return; Navigator.of(context).pop(); } }),
-          title: Text('TABLERO ${widget.partido.deporte.toUpperCase()}', style: const TextStyle(color: kVerdeOscuro, fontSize: 12, letterSpacing: 2)),
+          title: Text('TABLERO ${widget.partido.deporte.toUpperCase()}', style: const TextStyle(color: kVerdeNeon, fontSize: 12, letterSpacing: 2)),
           centerTitle: true,
         ),
         body: SafeArea(
@@ -822,7 +822,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                       mainAxisAlignment: MainAxisAlignment.spaceAround, 
                       children: [ 
                         GestureDetector(onTap: () => _mostrarDetallePopUp('CAMBIOS - ${widget.partido.local}', widget.partido.cambiosList['Local']!, 'cambio'), child: _infoCambios('Local')), 
-                        Text(Traductor.get('reservas_mayus'), style: TextStyle(color: kVerdeOscuro, fontSize: 10, letterSpacing: 2)), 
+                        Text(Traductor.get('reservas_mayus'), style: TextStyle(color: kVerdeNeon, fontSize: 10, letterSpacing: 2)), 
                         GestureDetector(onTap: () => _mostrarDetallePopUp('CAMBIOS - ${widget.partido.visita}', widget.partido.cambiosList['Visita']!, 'cambio'), child: _infoCambios('Visita')), 
                       ], 
                     ), 
@@ -924,7 +924,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           Text('V: $hechasV/$maxV', style: const TextStyle(color: Colors.white54, fontSize: 9)),
         ],
         const SizedBox(width: 6),
-        const Icon(Icons.remove_red_eye, color: Colors.white24, size: 12),
+        const Icon(Icons.remove_red_eye, color: Colors.white70, size: 12),
       ],
     );
   }

@@ -120,12 +120,12 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(icono, size: 14, color: seleccionado ? kNegro : Colors.white10),
+                    Icon(icono, size: 14, color: seleccionado ? kNegro : Colors.white54),
                     const SizedBox(width: 8),
                     Text(
                       Traductor.get(dep).toUpperCase(),
                       style: TextStyle(
-                        color: seleccionado ? kNegro : Colors.white10, 
+                        color: seleccionado ? kNegro : Colors.white54, 
                         fontSize: 10, 
                         fontWeight: FontWeight.bold,
                         letterSpacing: 0.5
@@ -151,12 +151,12 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
         decoration: InputDecoration(
           hintText: Traductor.get('buscar_equipo_hint'),
           hintStyle: const TextStyle(color: Colors.white24, fontSize: 13),
-          prefixIcon: const Icon(Icons.search, color: kVerdeOscuro),
+          prefixIcon: const Icon(Icons.search, color: kVerdeNeon),
           suffixIcon: _query.isNotEmpty ? IconButton(icon: const Icon(Icons.clear, color: Colors.white24, size: 18), onPressed: () { _searchController.clear(); setState(() => _query = ''); }) : null,
           filled: true,
           fillColor: Colors.white.withOpacity(0.03),
           enabledBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.white10), borderRadius: BorderRadius.circular(10)),
-          focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: kVerdeOscuro), borderRadius: BorderRadius.circular(10)),
+          focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: kVerdeNeon), borderRadius: BorderRadius.circular(10)),
           contentPadding: const EdgeInsets.symmetric(vertical: 0),
         ),
       ),
@@ -276,7 +276,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(Traductor.get('top_equipos'), style: const TextStyle(color: kVerdeOscuro, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 2)),
+        Text(Traductor.get('top_equipos'), style: const TextStyle(color: kVerdeNeon, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 2)),
         const SizedBox(height: 15),
         if (top3.isEmpty) 
           const Text('No hay equipos suficientes', style: TextStyle(color: Colors.white24, fontSize: 12))
@@ -304,7 +304,7 @@ class _PantallaEstadisticasState extends State<PantallaEstadisticas> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('REGISTROS RECIENTES', style: const TextStyle(color: kVerdeOscuro, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 2)),
+        Text('REGISTROS RECIENTES', style: const TextStyle(color: kVerdeNeon, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 2)),
         const SizedBox(height: 15),
         ...ultimos.map((p) => ListTile(
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PantallaResumenPartido(partido: p))),
