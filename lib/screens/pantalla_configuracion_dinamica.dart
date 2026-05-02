@@ -33,8 +33,9 @@ import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 class PantallaConfiguracionDinamica extends StatefulWidget {
   final String nombreDeporte;
   final Map<String, dynamic> configInicial;
+  final Map<String, dynamic> datosEncuentro;
 
-  const PantallaConfiguracionDinamica({super.key, required this.nombreDeporte, required this.configInicial});
+  const PantallaConfiguracionDinamica({super.key, required this.nombreDeporte, required this.configInicial, required this.datosEncuentro});
 
   @override State<PantallaConfiguracionDinamica> createState() => _PantallaConfiguracionDinamicaState();
 }
@@ -44,20 +45,6 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
   late Map<String, int> limites;
   late Map<String, bool> switches;
 
-  final TextEditingController _nombreLocalController = TextEditingController();
-  final TextEditingController _jugadoresLocalController = TextEditingController();
-  final TextEditingController _nombreVisitaController = TextEditingController();
-  final TextEditingController _jugadoresVisitaController = TextEditingController();
-  final TextEditingController _tituloController = TextEditingController();
-
-  Color _localFondo = Colors.blue;
-  Color _localTexto = Colors.white;
-  Color _visitaFondo = Colors.red;
-  Color _visitaTexto = Colors.white;
-
-  PatronCamiseta _patronLocal = PatronCamiseta.liso;
-  PatronCamiseta _patronVisita = PatronCamiseta.liso;
-
   @override
   void initState() {
     super.initState();
@@ -66,229 +53,7 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
     switches = Map<String, bool>.from(widget.configInicial['switches']);
   }
 
-  Map<String, String> _parsearPlanilla(String texto) {
-    Map<String, String> resultado = {};
-    if (texto.trim().isEmpty) return resultado;
-    List<String> lineas = texto.split('\n');
-    for (String linea in lineas) {
-      linea = linea.trim();
-      if (linea.isEmpty) continue;
-      int primerEspacio = linea.indexOf(' ');
-      if (primerEspacio != -1) {
-        String numero = linea.substring(0, primerEspacio).trim();
-        String nombre = linea.substring(primerEspacio + 1).trim();
-        resultado[numero] = nombre;
-      } else {
-        resultado[linea] = ''; 
-      }
-    }
-    return resultado;
-  }
 
-  Future<Color?> _seleccionarColor(BuildContext context) {
-    final List<Color> paleta = [
-      Colors.black, const Color(0xFF111111), Colors.white, Colors.grey, 
-      Colors.red, Colors.blue, const Color(0xFF001F70), 
-      Colors.green, Colors.yellow, const Color(0xFFFFD700), 
-      Colors.orange, Colors.purple, Colors.cyan, Colors.pink
-    ];
-    
-    return showDialog<Color>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: kNegro,
-        shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon), borderRadius: BorderRadius.circular(10)),
-        title: Text(Traductor.get('elegir_color'), style: TextStyle(color: kVerdeNeon, fontSize: 14)),
-        content: Wrap(
-          spacing: 12, runSpacing: 12, alignment: WrapAlignment.center,
-          children: paleta.map((c) => InkWell(
-            onTap: () => Navigator.pop(ctx, c),
-            child: Container(
-              width: 40, height: 40,
-              decoration: BoxDecoration(color: c, border: Border.all(color: Colors.white38), shape: BoxShape.circle),
-            )
-          )).toList()
-        )
-      )
-    );
-  }
-
-  Future<PatronCamiseta?> _seleccionarPatron(BuildContext context, Color fondo, Color texto) {
-    return showDialog<PatronCamiseta>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1A1A),
-        shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon), borderRadius: BorderRadius.circular(10)),
-        title: Text(Traductor.get('elegir_diseno').toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 13, letterSpacing: 2)),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: SingleChildScrollView(
-            child: Wrap(
-              spacing: 15, runSpacing: 15, alignment: WrapAlignment.center,
-              children: PatronCamiseta.values.map((patron) => InkWell(
-                onTap: () => Navigator.pop(ctx, patron),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(8), border: Border.all(color: Colors.white10)),
-                  child: WidgetCamiseta(fondo: fondo, detalle: texto, patron: patron),
-                ),
-              )).toList(),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSelectorPatron(String titulo, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 30, height: 30,
-            decoration: BoxDecoration(color: Colors.white10, border: Border.all(color: Colors.white54), borderRadius: BorderRadius.circular(5)),
-            child: const Icon(Icons.checkroom, color: Colors.white, size: 18),
-          ),
-          const SizedBox(height: 4),
-          Text(titulo, style: const TextStyle(color: Colors.white54, fontSize: 10))
-        ],
-      ),
-    );
-  }
-
-  void _mostrarPopUpJugadores() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setStateDialog) {
-            return AlertDialog(
-              backgroundColor: kNegro,
-              shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon, width: 2), borderRadius: BorderRadius.circular(12)),
-              title: Text(Traductor.get('planilla_equipos'), textAlign: TextAlign.center, style: TextStyle(color: kVerdeNeon, fontSize: 16, fontWeight: FontWeight.bold)),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(Traductor.get('equipo_local'), style: TextStyle(color: Colors.white54, fontSize: 12, letterSpacing: 2)),
-                      const SizedBox(height: 5),
-                      TextField(controller: _nombreLocalController, style: TextStyle(color: _localTexto, fontWeight: FontWeight.bold), decoration: _inputDecoration(Traductor.get('nombre_local_hint'), _localFondo)),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildSelectorColor(Traductor.get('fondo_mayus'), _localFondo, () async { Color? c = await _seleccionarColor(context); if (c != null) setStateDialog(() => _localFondo = c); }),
-                          _buildSelectorColor(Traductor.get('detalle_mayus'), _localTexto, () async { Color? c = await _seleccionarColor(context); if (c != null) setStateDialog(() => _localTexto = c); }),
-                          _buildSelectorPatron(Traductor.get('diseno_mayus'), () async { PatronCamiseta? p = await _seleccionarPatron(context, _localFondo, _localTexto); if (p != null) setStateDialog(() => _patronLocal = p); }),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      TextField(controller: _jugadoresLocalController, maxLines: null, minLines: 3, style: const TextStyle(color: Colors.white, fontSize: 14), decoration: _inputDecoration(Traductor.get('ejemplo_jugadores_hint'), Colors.transparent)),
-                      
-                      const SizedBox(height: 25),
-                      const Divider(color: Colors.white24),
-                      const SizedBox(height: 15),
-                      
-                      Text(Traductor.get('equipo_visita'), style: TextStyle(color: Colors.white54, fontSize: 12, letterSpacing: 2)),
-                      const SizedBox(height: 5),
-                      TextField(controller: _nombreVisitaController, style: TextStyle(color: _visitaTexto, fontWeight: FontWeight.bold), decoration: _inputDecoration(Traductor.get('nombre_visita_hint'), _visitaFondo)),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildSelectorColor(Traductor.get('fondo_mayus'), _visitaFondo, () async { Color? c = await _seleccionarColor(context); if (c != null) setStateDialog(() => _visitaFondo = c); }),
-                          _buildSelectorColor(Traductor.get('detalle_mayus'), _visitaTexto, () async { Color? c = await _seleccionarColor(context); if (c != null) setStateDialog(() => _visitaTexto = c); }),
-                          _buildSelectorPatron(Traductor.get('diseno_mayus'), () async { PatronCamiseta? p = await _seleccionarPatron(context, _visitaFondo, _visitaTexto); if (p != null) setStateDialog(() => _patronVisita = p); }),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      TextField(controller: _jugadoresVisitaController, maxLines: null, minLines: 3, style: const TextStyle(color: Colors.white, fontSize: 14), decoration: _inputDecoration(Traductor.get('lista_jugadores_hint'), Colors.transparent)),
-                    ],
-                  ),
-                ),
-              ),
-              actionsAlignment: MainAxisAlignment.spaceBetween,
-              actions: [
-                TextButton(onPressed: () { _nombreLocalController.clear(); _jugadoresLocalController.clear(); _nombreVisitaController.clear(); _jugadoresVisitaController.clear(); }, child: Text(Traductor.get('borrar'), style: TextStyle(color: Colors.redAccent, fontSize: 12))),
-                Row(
-                  children: [
-                    TextButton(onPressed: () => Navigator.pop(context), child: Text(Traductor.get('atras'), style: TextStyle(color: Colors.grey, fontSize: 12))),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: kVerdeNeon),
-                      onPressed: () { Navigator.pop(context); setState(() {}); },
-                      child: Text(Traductor.get('cargar'), style: TextStyle(color: kNegro, fontWeight: FontWeight.bold, fontSize: 12)),
-                    ),
-                  ],
-                )
-              ],
-            );
-          }
-        );
-      }
-    );
-  }
-
-  Widget _buildSelectorColor(String titulo, Color colorActual, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 30, height: 30,
-            decoration: BoxDecoration(color: colorActual, border: Border.all(color: Colors.white54), borderRadius: BorderRadius.circular(5)),
-          ),
-          const SizedBox(height: 4),
-          Text(titulo, style: const TextStyle(color: Colors.white54, fontSize: 10))
-        ],
-      ),
-    );
-  }
-
-  InputDecoration _inputDecoration(String hint, Color fillColor) {
-    return InputDecoration(
-      hintText: hint, hintStyle: const TextStyle(color: Colors.white54),
-      filled: true, fillColor: fillColor == Colors.transparent ? Colors.white.withOpacity(0.05) : fillColor.withOpacity(0.3),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-      enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: kVerdeOscuro)),
-      focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: kVerdeNeon)),
-    );
-  }
-
-  bool _hayEquiposCargados() => _nombreLocalController.text.isNotEmpty || _nombreVisitaController.text.isNotEmpty;
-
-  Widget _buildFilaTituloPartido() {
-    bool vacio = _tituloController.text.isEmpty;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-        decoration: BoxDecoration(
-          color: vacio ? kVerdeNeon.withOpacity(0.05) : Colors.white.withOpacity(0.03), 
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: vacio ? kVerdeNeon : Colors.white.withOpacity(0.05), width: 1.5),
-          boxShadow: vacio ? [BoxShadow(color: kVerdeNeon.withOpacity(0.1), blurRadius: 10, spreadRadius: 2)] : null,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(Traductor.get('titulo_partido'), style: const TextStyle(color: kVerdeNeon, fontSize: 10, letterSpacing: 2, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _tituloController,
-              style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
-              textCapitalization: TextCapitalization.words,
-              decoration: _inputDecoration(Traductor.get('titulo_partido_hint'), Colors.transparent),
-            )
-          ],
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -308,9 +73,7 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
             child: ListView(
               padding: const EdgeInsets.all(20),
               children: [
-                _buildFilaTituloPartido(),
                 const SizedBox(height: 10),
-                _buildFilaEspecialJugadores(),
                 ...contadores.keys.map((key) {
                   if (key == 'Min. Amarilla') return _buildFilaMinutosAmarilla(key);
                   return _buildFilaNumero(key, contadores[key]!, 0, limites[key]!, (val) => setState(() => contadores[key] = val));
@@ -340,35 +103,7 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
     );
   }
 
-  Widget _buildFilaEspecialJugadores() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8), // Reducido vertical de 12 a 8
-        decoration: BoxDecoration(color: Colors.white.withOpacity(0.03), borderRadius: BorderRadius.circular(8)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Text(Traductor.get('jugadores_colores'), style: const TextStyle(color: kVerdeNeon, fontSize: 12, fontWeight: FontWeight.w400)),
-            ),
-            const SizedBox(width: 10),
-            ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: kVerdeOscuro, 
-                foregroundColor: kVerdeNeon, 
-                minimumSize: const Size(140, 40), // Reducido de 200x45 a 140x40
-                padding: const EdgeInsets.symmetric(horizontal: 10)
-              ), 
-              icon: const Icon(Icons.palette, size: 14), 
-              label: Text(Traductor.get('planilla'), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)), 
-              onPressed: _mostrarPopUpJugadores
-            )
-          ],
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildFilaNumero(String label, int valorActual, int min, int max, Function(int) onChanged) {
     return Padding(
@@ -449,6 +184,16 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
     );
   }
 
+  InputDecoration _inputDecoration(String hint, Color fillColor) {
+    return InputDecoration(
+      hintText: hint, hintStyle: const TextStyle(color: Colors.white54),
+      filled: true, fillColor: fillColor == Colors.transparent ? Colors.white.withOpacity(0.05) : fillColor.withOpacity(0.3),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: kVerdeOscuro)),
+      focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: kVerdeNeon)),
+    );
+  }
+
   void _agregarEventoPersonalizado() {
     TextEditingController nuevoEventoController = TextEditingController();
     showDialog(
@@ -492,20 +237,18 @@ class _PantallaConfiguracionDinamicaState extends State<PantallaConfiguracionDin
         child: ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: kVerdeNeon, padding: const EdgeInsets.all(15)),
           onPressed: () {
-            String nombreLoc = _nombreLocalController.text.trim().isEmpty ? "LOCAL" : _nombreLocalController.text.trim();
-            String nombreVis = _nombreVisitaController.text.trim().isEmpty ? "VISITA" : _nombreVisitaController.text.trim();
-
-            Map<String, String> planLoc = _parsearPlanilla(_jugadoresLocalController.text);
-            Map<String, String> planVis = _parsearPlanilla(_jugadoresVisitaController.text);
+            var d = widget.datosEncuentro;
 
             Partido nuevoPartido = Partido(
-              deporte: widget.nombreDeporte, local: nombreLoc, visita: nombreVis,
-              titulo: _tituloController.text.trim(),
+              deporte: widget.nombreDeporte, local: d['local'], visita: d['visita'],
+              titulo: d['titulo'],
+              torneo: d['torneo'],
+              fecha: d['fecha'],
               contadores: contadores, switches: switches,
-              localFondo: _localFondo, localTexto: _localTexto,
-              visitaFondo: _visitaFondo, visitaTexto: _visitaTexto,
-              jugadoresLocal: planLoc, jugadoresVisita: planVis,
-              patronLocal: _patronLocal, patronVisita: _patronVisita,
+              localFondo: d['localFondo'], localTexto: d['localTexto'],
+              visitaFondo: d['visitaFondo'], visitaTexto: d['visitaTexto'],
+              jugadoresLocal: d['jugadoresLocal'], jugadoresVisita: d['jugadoresVisita'],
+              patronLocal: d['patronLocal'], patronVisita: d['patronVisita'],
             );
             Navigator.push(context, MaterialPageRoute(builder: (context) => PantallaPreInicio(partido: nuevoPartido)));
           }, 

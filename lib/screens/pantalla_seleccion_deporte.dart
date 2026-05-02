@@ -19,7 +19,7 @@ import 'package:mi_nueva_app/widgets/widget_camiseta.dart';
 
 import 'package:mi_nueva_app/screens/pantalla_principal.dart';
 import 'package:mi_nueva_app/screens/pantalla_seleccion_deporte.dart';
-import 'package:mi_nueva_app/screens/pantalla_configuracion_dinamica.dart';
+import 'package:mi_nueva_app/screens/pantalla_datos_encuentro.dart';
 import 'package:mi_nueva_app/screens/pantalla_pre_inicio.dart';
 import 'package:mi_nueva_app/screens/pantalla_tablero_control.dart';
 import 'package:mi_nueva_app/screens/pantalla_registro_evento.dart';
@@ -54,7 +54,7 @@ class PantallaSeleccionDeporte extends StatelessWidget {
               shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeOscuro), borderRadius: BorderRadius.circular(10)),
               leading: Icon(data['icono'], color: kVerdeNeon),
               title: Text("${index + 1} - ${nombreTraducido.toUpperCase()}", style: const TextStyle(color: kVerdeNeon, fontSize: 13)),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PantallaConfiguracionDinamica(nombreDeporte: nombreInterno, configInicial: data))),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PantallaDatosEncuentro(nombreDeporte: nombreInterno, configInicial: data))),
             ),
           );
         },

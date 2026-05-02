@@ -18,7 +18,7 @@ import 'package:mi_nueva_app/models/deporte_config.dart';
 import 'package:mi_nueva_app/widgets/widget_camiseta.dart';
 
 import 'package:mi_nueva_app/screens/pantalla_seleccion_deporte.dart';
-import 'package:mi_nueva_app/screens/pantalla_configuracion_dinamica.dart';
+import 'package:mi_nueva_app/screens/pantalla_datos_encuentro.dart';
 import 'package:mi_nueva_app/screens/pantalla_pre_inicio.dart';
 import 'package:mi_nueva_app/screens/pantalla_tablero_control.dart';
 import 'package:mi_nueva_app/screens/pantalla_registro_evento.dart';
@@ -146,7 +146,7 @@ class _PantallaPrincipalState extends State<PantallaPrincipal> {
                     onTap: () {
                       var data = DeporteConfig.datos[defSport]!;
                       Navigator.push(context, MaterialPageRoute(
-                        builder: (context) => PantallaConfiguracionDinamica(nombreDeporte: defSport, configInicial: data)
+                        builder: (context) => PantallaDatosEncuentro(nombreDeporte: defSport, configInicial: data)
                       )).then((_) => setState((){}));
                     },
                     child: Padding(

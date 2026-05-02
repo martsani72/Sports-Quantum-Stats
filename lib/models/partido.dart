@@ -17,7 +17,10 @@ enum PatronCamiseta {
   bandaDiagonal,     
   mitades,           
   rayasVerticales,   
-  rayasHorizontales  
+  rayasHorizontales,
+  rayasFinasVerticales,
+  rayasAnchasVerticales,
+  rayasAnchasHorizontales
 }
 
 class Partido {
@@ -25,6 +28,8 @@ class Partido {
   final String local;
   final String visita;
   final String titulo;
+  final String torneo;
+  final String fecha;
   final Map<String, int> contadores;
   final Map<String, bool> switches;
   
@@ -91,7 +96,7 @@ class Partido {
 
   Partido({
     required this.deporte, required this.local, required this.visita,
-    this.titulo = '',
+    this.titulo = '', this.torneo = '', this.fecha = '',
     required this.contadores, required this.switches,
     this.localFondo = kNegro, this.localTexto = kVerdeNeon,
     this.visitaFondo = kNegro, this.visitaTexto = Colors.redAccent,
@@ -146,6 +151,8 @@ class Partido {
       'local': local,
       'visita': visita,
       'titulo': titulo,
+      'torneo': torneo,
+      'fecha': fecha,
       'contadores': contadores,
       'switches': switches,
       'localFondo': localFondo.value,
@@ -190,6 +197,8 @@ class Partido {
       local: map['local'],
       visita: map['visita'],
       titulo: map['titulo'] ?? '',
+      torneo: map['torneo'] ?? '',
+      fecha: map['fecha'] ?? '',
       contadores: Map<String, int>.from(map['contadores']),
       switches: Map<String, bool>.from(map['switches']),
       localFondo: Color(map['localFondo']),

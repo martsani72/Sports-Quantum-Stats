@@ -736,7 +736,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                   children: [
                                     // BOTÓN UNDO (QUANTUM)
                                     IconButton(
-                                      icon: Icon(Icons.undo, color: widget.partido.historialAcciones.isEmpty ? Colors.white10 : Colors.white38, size: 22),
+                                      icon: Icon(Icons.undo, color: widget.partido.historialAcciones.isEmpty ? Colors.white24 : kVerdeNeon, size: 22),
                                       onPressed: widget.partido.historialAcciones.isEmpty ? null : () {
                                         HapticFeedback.vibrate();
                                         setState(() => widget.partido.deshacerUltimaAccion());
@@ -1069,7 +1069,14 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           widget.partido.stats[equipo]![evento] = (widget.partido.stats[equipo]![evento] ?? 0) + 1;
           String tiempoActual = _formatearTiempo();
           String nombreReal = equipo == 'Local' ? widget.partido.local : widget.partido.visita;
-          widget.partido.logEventos.add('MIN $tiempoActual | ${nombreReal.toUpperCase()}: $evento (EQUIPO)');
+          String logText = 'MIN $tiempoActual | ${nombreReal.toUpperCase()}: $evento (EQUIPO)';
+          
+          widget.partido.registrarAccion(
+            equipo: equipo, 
+            tipo: 'stat', 
+            evento: evento, 
+            log: logText
+          );
           
           // LÓGICA AUTOMÁTICA BASEBALL
           if (widget.partido.deporte.toLowerCase() == 'baseball') {

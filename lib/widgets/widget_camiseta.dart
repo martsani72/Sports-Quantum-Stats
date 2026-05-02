@@ -34,12 +34,14 @@ class WidgetCamiseta extends StatelessWidget {
   final Color fondo;
   final Color detalle;
   final PatronCamiseta patron;
+  final String? deporte;
 
   const WidgetCamiseta({
     super.key, 
     required this.fondo, 
     required this.detalle,
     this.patron = PatronCamiseta.franjaHorizontal, 
+    this.deporte,
   });
 
   @override
@@ -51,7 +53,8 @@ class WidgetCamiseta extends StatelessWidget {
         painter: _CamisetaPainter(
           colorPrincipal: fondo, 
           colorSecundario: detalle, 
-          patron: patron
+          patron: patron,
+          deporte: deporte ?? 'Fútbol',
         ),
       ),
     );
@@ -62,11 +65,13 @@ class _CamisetaPainter extends CustomPainter {
   final Color colorPrincipal;
   final Color colorSecundario;
   final PatronCamiseta patron;
+  final String deporte;
 
   _CamisetaPainter({
     required this.colorPrincipal, 
     required this.colorSecundario, 
-    required this.patron
+    required this.patron,
+    required this.deporte,
   });
 
   @override
@@ -104,17 +109,57 @@ class _CamisetaPainter extends CustomPainter {
     double h = size.height;
 
     Path path = Path();
-    path.moveTo(w * 0.15, h * 0.1); 
-    path.lineTo(w * 0.35, h * 0.1); 
-    path.quadraticBezierTo(w * 0.5, h * 0.28, w * 0.65, h * 0.1); 
-    path.lineTo(w * 0.85, h * 0.1); 
-    path.lineTo(w * 0.95, h * 0.4); 
-    path.lineTo(w * 0.85, h * 0.45); 
-    path.lineTo(w * 0.80, h * 0.95); 
-    path.lineTo(w * 0.20, h * 0.95); 
-    path.lineTo(w * 0.15, h * 0.45); 
-    path.lineTo(w * 0.05, h * 0.4); 
-    path.close();
+    String dep = deporte.toLowerCase();
+    
+    if (dep == 'básquetbol' || dep == 'basquetbol' || dep == 'basketball') {
+      path.moveTo(w * 0.25, h * 0.1); 
+      path.lineTo(w * 0.35, h * 0.1); 
+      path.quadraticBezierTo(w * 0.5, h * 0.35, w * 0.65, h * 0.1); 
+      path.lineTo(w * 0.75, h * 0.1); 
+      path.lineTo(w * 0.85, h * 0.4); 
+      path.lineTo(w * 0.80, h * 0.95); 
+      path.lineTo(w * 0.20, h * 0.95); 
+      path.lineTo(w * 0.15, h * 0.4); 
+      path.close();
+    } else if (dep == 'football americano' || dep == 'fútbol americano') {
+      path.moveTo(w * 0.05, h * 0.15); 
+      path.lineTo(w * 0.30, h * 0.15); 
+      path.lineTo(w * 0.5, h * 0.35);
+      path.lineTo(w * 0.70, h * 0.15); 
+      path.lineTo(w * 0.95, h * 0.15); 
+      path.lineTo(w * 0.95, h * 0.4); 
+      path.lineTo(w * 0.85, h * 0.45); 
+      path.lineTo(w * 0.80, h * 0.95); 
+      path.lineTo(w * 0.20, h * 0.95); 
+      path.lineTo(w * 0.15, h * 0.45); 
+      path.lineTo(w * 0.05, h * 0.4); 
+      path.close();
+    } else if (dep == 'béisbol' || dep == 'baseball') {
+      path.moveTo(w * 0.15, h * 0.15); 
+      path.lineTo(w * 0.35, h * 0.10); 
+      path.lineTo(w * 0.50, h * 0.30);
+      path.lineTo(w * 0.65, h * 0.10); 
+      path.lineTo(w * 0.85, h * 0.15); 
+      path.lineTo(w * 0.95, h * 0.50); 
+      path.lineTo(w * 0.85, h * 0.55); 
+      path.lineTo(w * 0.80, h * 0.95); 
+      path.lineTo(w * 0.20, h * 0.95); 
+      path.lineTo(w * 0.15, h * 0.55); 
+      path.lineTo(w * 0.05, h * 0.50); 
+      path.close();
+    } else {
+      path.moveTo(w * 0.15, h * 0.1); 
+      path.lineTo(w * 0.35, h * 0.1); 
+      path.quadraticBezierTo(w * 0.5, h * 0.28, w * 0.65, h * 0.1); 
+      path.lineTo(w * 0.85, h * 0.1); 
+      path.lineTo(w * 0.95, h * 0.4); 
+      path.lineTo(w * 0.85, h * 0.45); 
+      path.lineTo(w * 0.80, h * 0.95); 
+      path.lineTo(w * 0.20, h * 0.95); 
+      path.lineTo(w * 0.15, h * 0.45); 
+      path.lineTo(w * 0.05, h * 0.4); 
+      path.close();
+    }
 
     canvas.save();
     canvas.clipPath(path);
@@ -144,9 +189,24 @@ class _CamisetaPainter extends CustomPainter {
           canvas.drawRect(Rect.fromLTWH(i, 0, w / 10, h), paintSecundario);
         }
         break;
+      case PatronCamiseta.rayasFinasVerticales:
+        for (double i = w / 16; i < w; i += w / 8) {
+          canvas.drawRect(Rect.fromLTWH(i, 0, 1.5, h), paintSecundario);
+        }
+        break;
+      case PatronCamiseta.rayasAnchasVerticales:
+        for (double i = 0; i < w; i += w / 2.5) {
+          canvas.drawRect(Rect.fromLTWH(i, 0, w / 5, h), paintSecundario);
+        }
+        break;
       case PatronCamiseta.rayasHorizontales:
         for (double i = 0; i < h; i += h / 6) {
           canvas.drawRect(Rect.fromLTWH(0, i, w, h / 12), paintSecundario);
+        }
+        break;
+      case PatronCamiseta.rayasAnchasHorizontales:
+        for (double i = 0; i < h; i += h / 3.5) {
+          canvas.drawRect(Rect.fromLTWH(0, i, w, h / 7), paintSecundario);
         }
         break;
     }
@@ -171,8 +231,22 @@ class _CamisetaPainter extends CustomPainter {
     // DETALLE DE CUELLO (NECK LINE)
     final Paint paintCuello = Paint()..color = colorSecundario..style = PaintingStyle.stroke..strokeWidth = 2.5;
     Path cuelloPath = Path();
-    cuelloPath.moveTo(w * 0.35, h * 0.1);
-    cuelloPath.quadraticBezierTo(w * 0.5, h * 0.25, w * 0.65, h * 0.1);
+    if (dep == 'básquetbol' || dep == 'basquetbol' || dep == 'basketball') {
+      cuelloPath.moveTo(w * 0.35, h * 0.1);
+      cuelloPath.quadraticBezierTo(w * 0.5, h * 0.35, w * 0.65, h * 0.1);
+    } else if (dep == 'football americano' || dep == 'fútbol americano') {
+      cuelloPath.moveTo(w * 0.30, h * 0.15);
+      cuelloPath.lineTo(w * 0.5, h * 0.35);
+      cuelloPath.lineTo(w * 0.70, h * 0.15);
+    } else if (dep == 'béisbol' || dep == 'baseball') {
+      cuelloPath.moveTo(w * 0.35, h * 0.10);
+      cuelloPath.lineTo(w * 0.50, h * 0.30);
+      cuelloPath.lineTo(w * 0.65, h * 0.10);
+      canvas.drawLine(Offset(w * 0.5, h * 0.30), Offset(w * 0.5, h * 0.95), paintCuello);
+    } else {
+      cuelloPath.moveTo(w * 0.35, h * 0.1);
+      cuelloPath.quadraticBezierTo(w * 0.5, h * 0.25, w * 0.65, h * 0.1);
+    }
     canvas.drawPath(cuelloPath, paintCuello);
   }
 
