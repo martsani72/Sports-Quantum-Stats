@@ -151,20 +151,74 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         _guardarEstado();
       }
     } else {
-      bool confirmar = await _mostrarDialogo(Traductor.get('finalizar_encuentro_titulo'), Traductor.get('finalizar_encuentro_msj'), Traductor.get('terminar_mayus'));
-      if (confirmar) {
-        setState(() {
-          widget.partido.logEventos.add('--- FIN DEL PARTIDO ---');
-          if (!partidosGuardados.contains(widget.partido)) {
-            partidosGuardados.add(widget.partido);
-            QuantumStorage.guardarPartidos(partidosGuardados);
-          }
-        });
-        QuantumStorage.borrarPartidoActivo();
-        AdHelper.mostrarInterstitialAd(onAdClosed: () { Navigator.popUntil(context, (route) => route.isFirst); }); 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('encuentro_finalizado_bitacora'), style: TextStyle(color: kVerdeNeon)), backgroundColor: kNegro));
-      }
+      await _mostrarDialogoOpcionesFinales();
     }
+  }
+
+  Future<void> _mostrarDialogoOpcionesFinales() async {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: kNegro,
+        shape: RoundedRectangleBorder(side: const BorderSide(color: kRojoStop), borderRadius: BorderRadius.circular(10)),
+        title: Text(Traductor.get('finalizar_encuentro_titulo'), style: const TextStyle(color: kRojoStop, fontSize: 16, fontWeight: FontWeight.bold)),
+        content: const Text("¿Deseas finalizar el encuentro o ir a tiempo extra?", style: TextStyle(color: Colors.white, fontSize: 14)),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(Traductor.get('cancelar_mayus'), style: const TextStyle(color: Colors.grey))),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: kVerdeNeon),
+            onPressed: () {
+              Navigator.of(context).pop();
+              _avanzarTiempoExtra();
+            },
+            child: const Text("TIEMPO EXTRA", style: TextStyle(color: kNegro, fontWeight: FontWeight.bold)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: kRojoStop),
+            onPressed: () {
+              Navigator.of(context).pop();
+              _ejecutarFinalizarPartido();
+            },
+            child: Text(Traductor.get('terminar_mayus'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          )
+        ],
+      )
+    );
+  }
+
+  void _avanzarTiempoExtra() {
+    String clavePeriodo = widget.partido.contadores.containsKey('Cuartos') ? 'Cuartos' : (widget.partido.contadores.containsKey('Entradas') ? 'Entradas' : 'Tiempos');
+    String nombreRef = Traductor.get(clavePeriodo).toUpperCase(); 
+    setState(() {
+      widget.partido.contadores[clavePeriodo] = (widget.partido.contadores[clavePeriodo] ?? 1) + 1;
+      widget.partido.logEventos.add('--- FIN DEL ${_formatearOrdinal(_periodoActual)} $nombreRef ---');
+      _periodoActual++;
+      _equipoPosesion = null; 
+      _segundosAcumulados = 0;
+      _momentoInicioActual = null;
+    });
+    _guardarEstado();
+  }
+
+  Future<void> _confirmarFinalizarDirecto() async {
+    _pausarTimer();
+    bool confirmar = await _mostrarDialogo(Traductor.get('finalizar_encuentro_titulo'), "¿Seguro que deseas finalizar el encuentro ahora mismo?", Traductor.get('terminar_mayus'));
+    if (confirmar) {
+      _ejecutarFinalizarPartido();
+    }
+  }
+
+  void _ejecutarFinalizarPartido() {
+    setState(() {
+      widget.partido.logEventos.add('--- FIN DEL PARTIDO ---');
+      if (!partidosGuardados.contains(widget.partido)) {
+        partidosGuardados.add(widget.partido);
+        QuantumStorage.guardarPartidos(partidosGuardados);
+      }
+    });
+    QuantumStorage.borrarPartidoActivo();
+    AdHelper.mostrarInterstitialAd(onAdClosed: () { Navigator.popUntil(context, (route) => route.isFirst); }); 
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(Traductor.get('encuentro_finalizado_bitacora'), style: TextStyle(color: kVerdeNeon)), backgroundColor: kNegro));
   }
 
   Future<bool> _mostrarDialogo(String titulo, String mensaje, String btnAccion) async {
@@ -667,6 +721,13 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           leading: IconButton(icon: const Icon(Icons.arrow_back, color: kVerdeNeon), onPressed: () async { if (await _confirmarSalida()) { if (!mounted) return; Navigator.of(context).pop(); } }),
           title: Text('TABLERO ${widget.partido.deporte.toUpperCase()}', style: const TextStyle(color: kVerdeNeon, fontSize: 12, letterSpacing: 2)),
           centerTitle: true,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.sports_score, color: kRojoStop),
+              onPressed: _confirmarFinalizarDirecto,
+              tooltip: 'Finalizar Encuentro',
+            )
+          ],
         ),
         body: SafeArea(
           child: Stack(
@@ -752,7 +813,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                       )
                                     ),
                                     const SizedBox(width: 8),
-                                    IconButton(icon: const Icon(Icons.stop_circle, color: kRojoStop, size: 30), onPressed: _manejarFinPeriodo, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+                                    IconButton(icon: const Icon(Icons.skip_next, color: Colors.orangeAccent, size: 30), onPressed: _manejarFinPeriodo, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
                                   ],
                                 ),
                                 if (widget.partido.deporte.toLowerCase() == 'baseball') ...[
@@ -886,16 +947,31 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     setState(() {
                       _notaX += details.delta.dx;
                       _notaY += details.delta.dy;
+
+                      // Limitar límites de la pantalla
+                      double maxWidth = MediaQuery.of(context).size.width - 60;
+                      double maxHeight = MediaQuery.of(context).size.height - 100;
+                      if (_notaX < 0) _notaX = 0;
+                      if (_notaY < 80) _notaY = 80; // No subir más allá del header
+                      if (_notaX > maxWidth) _notaX = maxWidth;
+                      if (_notaY > maxHeight) _notaY = maxHeight;
                     });
                   },
-                  child: FloatingActionButton.extended(
-                    onPressed: _abrirAnotadorLibre,
-                    backgroundColor: kVerdeNeon,
-                    elevation: 6,
-                    icon: const Icon(Icons.edit_note, color: kNegro, size: 20),
-                    label: Text(
-                      Traductor.get('anotar_nota'), 
-                      style: const TextStyle(color: kNegro, fontSize: 9, fontWeight: FontWeight.bold)
+                  onTap: _abrirAnotadorLibre,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: kVerdeNeon,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 6, offset: Offset(0, 2))],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [
+                        Icon(Icons.edit_note, color: kNegro, size: 18),
+                        SizedBox(width: 4),
+                        Text("NOTA", style: TextStyle(color: kNegro, fontSize: 10, fontWeight: FontWeight.bold)),
+                      ],
                     ),
                   ),
                 ),
