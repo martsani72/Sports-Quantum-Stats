@@ -162,7 +162,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         backgroundColor: kNegro,
         shape: RoundedRectangleBorder(side: const BorderSide(color: kRojoStop), borderRadius: BorderRadius.circular(10)),
         title: Text(Traductor.get('finalizar_encuentro_titulo'), style: const TextStyle(color: kRojoStop, fontSize: 16, fontWeight: FontWeight.bold)),
-        content: const Text("¿Deseas finalizar el encuentro o ir a tiempo extra?", style: TextStyle(color: Colors.white, fontSize: 14)),
+        content: Text(Traductor.get('opciones_finalizar_encuentro'), style: const TextStyle(color: Colors.white, fontSize: 14)),
         actions: [
           TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(Traductor.get('cancelar_mayus'), style: const TextStyle(color: Colors.grey))),
           ElevatedButton(
@@ -171,7 +171,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
               Navigator.of(context).pop();
               _avanzarTiempoExtra();
             },
-            child: const Text("TIEMPO EXTRA", style: TextStyle(color: kNegro, fontWeight: FontWeight.bold)),
+            child: Text(Traductor.get('tiempo_extra_mayus'), style: const TextStyle(color: kNegro, fontWeight: FontWeight.bold)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: kRojoStop),
@@ -202,7 +202,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
 
   Future<void> _confirmarFinalizarDirecto() async {
     _pausarTimer();
-    bool confirmar = await _mostrarDialogo(Traductor.get('finalizar_encuentro_titulo'), "¿Seguro que deseas finalizar el encuentro ahora mismo?", Traductor.get('terminar_mayus'));
+    bool confirmar = await _mostrarDialogo(Traductor.get('finalizar_encuentro_titulo'), Traductor.get('confirmar_finalizar_directo'), Traductor.get('terminar_mayus'));
     if (confirmar) {
       _ejecutarFinalizarPartido();
     }
@@ -967,10 +967,10 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        Icon(Icons.edit_note, color: kNegro, size: 18),
-                        SizedBox(width: 4),
-                        Text("NOTA", style: TextStyle(color: kNegro, fontSize: 10, fontWeight: FontWeight.bold)),
+                      children: [
+                        const Icon(Icons.edit_note, color: kNegro, size: 18),
+                        const SizedBox(width: 4),
+                        Text(Traductor.get('nota_mayus'), style: const TextStyle(color: kNegro, fontSize: 10, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),

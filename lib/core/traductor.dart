@@ -196,6 +196,10 @@ class Traductor {
       'msj_actualizacion': 'Hay una versión crítica disponible. Por favor, actualiza la aplicación para continuar registrando estadísticas con seguridad.',
       'actualizar_ahora': 'ACTUALIZAR AHORA',
       'descargar_en_playstore': 'VER EN GOOGLE PLAY',
+      'opciones_finalizar_encuentro': '¿Deseas finalizar el encuentro o ir a tiempo extra?',
+      'tiempo_extra_mayus': 'TIEMPO EXTRA',
+      'confirmar_finalizar_directo': '¿Seguro que deseas finalizar el encuentro ahora mismo?',
+      'nota_mayus': 'NOTA',
     },
     'English': {
       'menu_1': '1 - Start a match',
@@ -380,6 +384,10 @@ class Traductor {
       'msj_actualizacion': 'A critical update is available. Please update the application to continue recording statistics securely.',
       'actualizar_ahora': 'UPDATE NOW',
       'descargar_en_playstore': 'VIEW ON GOOGLE PLAY',
+      'opciones_finalizar_encuentro': 'Do you want to end the match or go to extra time?',
+      'tiempo_extra_mayus': 'EXTRA TIME',
+      'confirmar_finalizar_directo': 'Are you sure you want to end the match right now?',
+      'nota_mayus': 'NOTE',
     },
     'Português': {
       'menu_1': '1 - Iniciar uma partida',
@@ -555,6 +563,10 @@ class Traductor {
       'outs': 'OUTS',
       'lanzamientos': 'ARREMESSOS',
       'orden': 'ORDEM',
+      'opciones_finalizar_encuentro': 'Deseja encerrar a partida ou ir para a prorrogação?',
+      'tiempo_extra_mayus': 'TEMPO EXTRA',
+      'confirmar_finalizar_directo': 'Tem certeza de que deseja encerrar a partida agora mesmo?',
+      'nota_mayus': 'NOTA',
     }
   };
 
