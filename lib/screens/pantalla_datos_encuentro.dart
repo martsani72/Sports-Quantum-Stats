@@ -215,7 +215,7 @@ class _PantallaDatosEncuentroState extends State<PantallaDatosEncuentro> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("DATOS DEL ENCUENTRO", style: TextStyle(color: kVerdeNeon, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 2)),
+          Text(Traductor.get('datos_encuentro'), style: const TextStyle(color: kVerdeNeon, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 2)),
           const SizedBox(height: 15),
           Row(
             children: [
@@ -224,7 +224,7 @@ class _PantallaDatosEncuentroState extends State<PantallaDatosEncuentro> {
                   controller: _torneoController,
                   style: const TextStyle(color: Colors.white, fontSize: 13),
                   textCapitalization: TextCapitalization.words,
-                  decoration: _inputDecoration("Torneo (Opcional)", Colors.transparent),
+                  decoration: _inputDecoration(Traductor.get('torneo_opcional_hint'), Colors.transparent),
                 ),
               ),
               const SizedBox(width: 10),
@@ -232,7 +232,7 @@ class _PantallaDatosEncuentroState extends State<PantallaDatosEncuentro> {
                 child: TextField(
                   controller: _fechaController,
                   style: const TextStyle(color: Colors.white, fontSize: 13),
-                  decoration: _inputDecoration("Fecha", Colors.transparent),
+                  decoration: _inputDecoration(Traductor.get('fecha_hint'), Colors.transparent),
                 ),
               ),
             ],
@@ -242,7 +242,7 @@ class _PantallaDatosEncuentroState extends State<PantallaDatosEncuentro> {
             controller: _tituloController,
             style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
             textCapitalization: TextCapitalization.words,
-            decoration: _inputDecoration("Título del Partido (Ej. Final Copa)", Colors.transparent),
+            decoration: _inputDecoration(Traductor.get('titulo_partido_ej_hint'), Colors.transparent),
           )
         ],
       ),
@@ -261,7 +261,7 @@ class _PantallaDatosEncuentroState extends State<PantallaDatosEncuentro> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("EQUIPO $tipo", style: TextStyle(color: Colors.white54, fontSize: 12, letterSpacing: 2)),
+          Text("${Traductor.get('equipo_mayus')}$tipo", style: const TextStyle(color: Colors.white54, fontSize: 12, letterSpacing: 2)),
           const SizedBox(height: 10),
           Row(
             children: [
@@ -295,7 +295,7 @@ class _PantallaDatosEncuentroState extends State<PantallaDatosEncuentro> {
                 maxLines: null,
                 minLines: 4,
                 style: const TextStyle(color: Colors.white, fontSize: 14),
-                decoration: _inputDecoration("Pega aquí tu lista... (Ej: 10 Messi)", Colors.transparent)
+                decoration: _inputDecoration(Traductor.get('pega_lista_hint'), Colors.transparent)
               ),
               Positioned(
                 top: -35,
@@ -311,10 +311,10 @@ class _PantallaDatosEncuentroState extends State<PantallaDatosEncuentro> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
-                        children: const [
-                          Icon(Icons.lightbulb, color: kNegro, size: 14),
-                          SizedBox(width: 5),
-                          Text("¡Copia tu lista de WhatsApp y pégala aquí!", style: TextStyle(color: kNegro, fontSize: 10, fontWeight: FontWeight.bold)),
+                        children: [
+                          const Icon(Icons.lightbulb, color: kNegro, size: 14),
+                          const SizedBox(width: 5),
+                          Text(Traductor.get('copia_lista_whatsapp'), style: const TextStyle(color: kNegro, fontSize: 10, fontWeight: FontWeight.bold)),
                         ],
                       ),
                     ),
@@ -364,7 +364,7 @@ class _PantallaDatosEncuentroState extends State<PantallaDatosEncuentro> {
       appBar: AppBar(
         backgroundColor: kNegro, elevation: 0,
         leading: IconButton(icon: const Icon(Icons.arrow_back, color: kVerdeNeon), onPressed: () => Navigator.pop(context)),
-        title: Text("NUEVO PARTIDO DE ${widget.nombreDeporte.toUpperCase()}", style: const TextStyle(color: kVerdeNeon, fontSize: 14, letterSpacing: 2)),
+        title: Text("${Traductor.get('nuevo_partido_de')}${widget.nombreDeporte.toUpperCase()}", style: const TextStyle(color: kVerdeNeon, fontSize: 14, letterSpacing: 2)),
       ),
       body: SafeArea(
         child: Column(
@@ -390,7 +390,7 @@ class _PantallaDatosEncuentroState extends State<PantallaDatosEncuentro> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("SIGUIENTE (REGLAS)", style: const TextStyle(color: kNegro, fontWeight: FontWeight.bold, fontSize: 16)),
+                      Text(Traductor.get('siguiente_reglas'), style: const TextStyle(color: kNegro, fontWeight: FontWeight.bold, fontSize: 16)),
                       const SizedBox(width: 10),
                       const Icon(Icons.arrow_forward, color: kNegro, size: 20)
                     ],
