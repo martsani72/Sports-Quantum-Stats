@@ -1422,16 +1422,31 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                   border: Border.symmetric(vertical: BorderSide(color: Colors.white10, width: 1))
                 ),
                 child: Center(
-                  child: Text(
-                    '$_shotClock',
-                    style: TextStyle(
-                      color: agotado 
-                        ? kRojoStop.withOpacity(_blinkController.value) 
-                        : (critico ? Colors.orange : kVerdeNeon),
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'monospace'
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '$_shotClock',
+                        style: TextStyle(
+                          color: agotado 
+                            ? kRojoStop.withOpacity(_blinkController.value) 
+                            : (critico ? Colors.orange : kVerdeNeon),
+                          fontSize: 32,
+                          height: 1.1,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'monospace'
+                        ),
+                      ),
+                      Text(
+                        Traductor.get('reloj_tiro').toUpperCase(),
+                        style: TextStyle(
+                          color: agotado ? kRojoStop : (critico ? Colors.orange : Colors.white24),
+                          fontSize: 7,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.5
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

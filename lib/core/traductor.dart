@@ -229,6 +229,7 @@ class Traductor {
       'tut_toca_continuar': 'TOCA PARA CONTINUAR',
       'tut_saltar': 'SALTAR',
       'tut_siguiente': 'SIGUIENTE',
+      'reloj_tiro': 'Reloj de Tiro',
     },
     'English': {
       'menu_1': '1 - Start a match',
@@ -446,6 +447,7 @@ class Traductor {
       'tut_toca_continuar': 'TAP TO CONTINUE',
       'tut_saltar': 'SKIP',
       'tut_siguiente': 'NEXT',
+      'reloj_tiro': 'Shot Clock',
     },
     'Português': {
       'menu_1': '1 - Iniciar uma partida',
@@ -654,6 +656,7 @@ class Traductor {
       'tut_toca_continuar': 'TOQUE PARA CONTINUAR',
       'tut_saltar': 'PULAR',
       'tut_siguiente': 'PRÓXIMO',
+      'reloj_tiro': 'Relógio de Posse',
     }
   };
 
