@@ -195,6 +195,16 @@ class PantallaResumenPartido extends StatelessWidget {
         leading: const BackButton(color: kVerdeNeon),
         actions: [
           IconButton(
+            icon: const Icon(Icons.edit, color: kVerdeNeon),
+            tooltip: 'Editar Bitácora',
+            onPressed: () {
+              Navigator.push(
+                context, 
+                MaterialPageRoute(builder: (context) => PantallaTableroControl(partido: partido))
+              );
+            },
+          ),
+          IconButton(
             icon: const Icon(Icons.table_chart, color: Colors.greenAccent),
             tooltip: 'Exportar Excel (.CSV)',
             onPressed: () => _exportarCSV(context),
@@ -225,7 +235,7 @@ class PantallaResumenPartido extends StatelessWidget {
             
             _buildSeccionPosesion(),
 
-            Align(alignment: Alignment.centerLeft, child: Text(Traductor.get('bitacora_eventos'), style: TextStyle(color: kVerdeOscuro, fontSize: 12, letterSpacing: 2, fontWeight: FontWeight.bold))),
+            Align(alignment: Alignment.centerLeft, child: Text(Traductor.get('bitacora_eventos'), style: TextStyle(color: kVerdeNeon.withOpacity(0.8), fontSize: 12, letterSpacing: 2, fontWeight: FontWeight.bold))),
             const SizedBox(height: 10),
             
             Expanded(
@@ -287,7 +297,7 @@ class PantallaResumenPartido extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 5),
-        Text('POSESIÓN', style: TextStyle(color: kVerdeOscuro, fontSize: 11, letterSpacing: 2, fontWeight: FontWeight.bold)),
+        Text('POSESIÓN', style: TextStyle(color: kVerdeNeon.withOpacity(0.8), fontSize: 11, letterSpacing: 2, fontWeight: FontWeight.bold)),
         const SizedBox(height: 10),
         
         // Redesigned 2-color Possession Bar

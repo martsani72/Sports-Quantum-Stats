@@ -78,4 +78,12 @@ class QuantumStorage {
     if (data == null) return [];
     return data.map((item) => Partido.fromMap(jsonDecode(item))).toList();
   }
+
+  static Future<void> setTutorialVisto(bool visto) async {
+    await prefs.setBool('tutorial_tablero_visto', visto);
+  }
+
+  static bool getTutorialVisto() {
+    return prefs.getBool('tutorial_tablero_visto') ?? false;
+  }
 }

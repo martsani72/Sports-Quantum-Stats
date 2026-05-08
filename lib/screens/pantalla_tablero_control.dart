@@ -19,6 +19,7 @@ import 'package:mi_nueva_app/widgets/widget_icono_quantum.dart';
 import 'package:mi_nueva_app/screens/pantalla_registro_evento.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 import 'package:mi_nueva_app/core/ad_helper.dart';
+import 'dart:ui';
 
 class PantallaTableroControl extends StatefulWidget {
   final Partido partido;
@@ -43,12 +44,30 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   TextEditingController _ctrlLanzador = TextEditingController();
   bool _inicializadoBaseball = false;
 
+  // CLAVES PARA TUTORIAL
+  final GlobalKey _keyBody = GlobalKey();
+  final GlobalKey _keyPlay = GlobalKey();
+  final GlobalKey _keyNext = GlobalKey();
+  final GlobalKey _keyUndo = GlobalKey();
+  final GlobalKey _keyNote = GlobalKey();
+  final GlobalKey _keyPossession = GlobalKey();
+  final GlobalKey _keyFinalize = GlobalKey();
+  
+  bool _mostrarTutorial = false;
+  int _pasoTutorial = 1;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _blinkController = AnimationController(vsync: this, duration: const Duration(milliseconds: 600))..repeat(reverse: true);
     AdHelper.cargarInterstitialAd();
+
+    if (!QuantumStorage.getTutorialVisto()) {
+      Future.delayed(const Duration(milliseconds: 800), () {
+        if (mounted) setState(() => _mostrarTutorial = true);
+      });
+    }
   }
 
   @override
@@ -723,14 +742,20 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           centerTitle: true,
           actions: [
             IconButton(
+              key: _keyFinalize,
               icon: const Icon(Icons.sports_score, color: kRojoStop),
               onPressed: _confirmarFinalizarDirecto,
               tooltip: 'Finalizar Encuentro',
+            ),
+            IconButton(
+              icon: const Icon(Icons.help_outline, color: Colors.white54, size: 20),
+              onPressed: () => setState(() { _pasoTutorial = 1; _mostrarTutorial = true; }),
             )
           ],
         ),
         body: SafeArea(
           child: Stack(
+            key: _keyBody,
             children: [
               Column(
                 children: [
@@ -797,6 +822,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                   children: [
                                     // BOTÓN UNDO (QUANTUM)
                                     IconButton(
+                                      key: _keyUndo,
                                       icon: Icon(Icons.undo, color: widget.partido.historialAcciones.isEmpty ? Colors.white24 : kVerdeNeon, size: 22),
                                       onPressed: widget.partido.historialAcciones.isEmpty ? null : () {
                                         HapticFeedback.vibrate();
@@ -809,11 +835,11 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                       animation: _blinkController,
                                       builder: (context, child) => Opacity(
                                         opacity: _estaCorriendo ? 1.0 : _blinkController.value,
-                                        child: IconButton(icon: Icon(_estaCorriendo ? Icons.pause_circle_filled : Icons.play_circle_fill, color: kCelestePlay, size: 30), onPressed: _estaCorriendo ? _pausarTimer : _iniciarTimer, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+                                        child: IconButton(key: _keyPlay, icon: Icon(_estaCorriendo ? Icons.pause_circle_filled : Icons.play_circle_fill, color: kCelestePlay, size: 30), onPressed: _estaCorriendo ? _pausarTimer : _iniciarTimer, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
                                       )
                                     ),
                                     const SizedBox(width: 8),
-                                    IconButton(icon: const Icon(Icons.skip_next, color: Colors.orangeAccent, size: 30), onPressed: _manejarFinPeriodo, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
+                                    IconButton(key: _keyNext, icon: const Icon(Icons.skip_next, color: Colors.orangeAccent, size: 30), onPressed: _manejarFinPeriodo, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
                                   ],
                                 ),
                                 if (widget.partido.deporte.toLowerCase() == 'baseball') ...[
@@ -895,7 +921,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                       children: _generarListaEstadisticasUnificada()
                     ), 
                   ),
-                  if (widget.partido.deporte.toLowerCase() != 'baseball' && widget.partido.deporte.toLowerCase() != 'football americano') _buildSelectorPosesion(),
+                  if (widget.partido.deporte.toLowerCase() != 'baseball' && widget.partido.deporte.toLowerCase() != 'football americano') Container(key: _keyPossession, child: _buildSelectorPosesion()),
 
                   Container( 
                     padding: const EdgeInsets.all(10), color: const Color(0xFF050505), 
@@ -959,6 +985,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                   },
                   onTap: _abrirAnotadorLibre,
                   child: Container(
+                    key: _keyNote,
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
                       color: kVerdeNeon,
@@ -976,8 +1003,201 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                   ),
                 ),
               ),
+              if (_mostrarTutorial) _buildOverlayTutorial(),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOverlayTutorial() {
+    String titulo = "";
+    String desc = "";
+    GlobalKey? keyActual;
+    bool mostrarFlecha = true;
+    Widget? iconoPaso;
+
+    switch (_pasoTutorial) {
+      case 1:
+        titulo = Traductor.get('tut_1_t');
+        desc = Traductor.get('tut_1_d');
+        mostrarFlecha = false;
+        iconoPaso = const Icon(Icons.sports, color: kVerdeNeon, size: 40);
+        break;
+      case 2:
+        titulo = Traductor.get('tut_2_t');
+        desc = Traductor.get('tut_2_d');
+        keyActual = _keyPlay;
+        iconoPaso = const Icon(Icons.play_circle_fill, color: kCelestePlay, size: 40);
+        break;
+      case 3:
+        titulo = Traductor.get('tut_3_t');
+        desc = Traductor.get('tut_3_d');
+        keyActual = _keyNext;
+        iconoPaso = const Icon(Icons.skip_next, color: Colors.orangeAccent, size: 40);
+        break;
+      case 4:
+        titulo = Traductor.get('tut_4_t');
+        desc = Traductor.get('tut_4_d');
+        keyActual = _keyUndo;
+        iconoPaso = const Icon(Icons.undo, color: kVerdeNeon, size: 40);
+        break;
+      case 5:
+        titulo = Traductor.get('tut_5_t');
+        desc = Traductor.get('tut_5_d');
+        keyActual = _keyNote;
+        iconoPaso = Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          decoration: BoxDecoration(color: kVerdeNeon, borderRadius: BorderRadius.circular(15)),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [const Icon(Icons.edit_note, color: kNegro, size: 16), const SizedBox(width: 4), Text(Traductor.get('nota_mayus'), style: const TextStyle(color: kNegro, fontSize: 10, fontWeight: FontWeight.bold))]),
+        );
+        break;
+      case 6:
+        titulo = Traductor.get('tut_6_t');
+        desc = Traductor.get('tut_6_d');
+        keyActual = _keyPossession;
+        iconoPaso = Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 30, height: 10, decoration: const BoxDecoration(color: kVerdeNeon, borderRadius: BorderRadius.only(topLeft: Radius.circular(5), bottomLeft: Radius.circular(5)))),
+            Container(width: 20, height: 10, color: Colors.white24),
+            Container(width: 30, height: 10, decoration: const BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.only(topRight: Radius.circular(5), bottomRight: Radius.circular(5)))),
+          ],
+        );
+        break;
+      case 7:
+        titulo = Traductor.get('tut_7_t');
+        desc = Traductor.get('tut_7_d');
+        keyActual = _keyFinalize;
+        iconoPaso = const Icon(Icons.sports_score, color: kRojoStop, size: 40);
+        break;
+    }
+
+    Offset pos = Offset.zero;
+    Size size = Size.zero;
+    if (keyActual != null && keyActual.currentContext != null) {
+      final RenderBox box = keyActual.currentContext!.findRenderObject() as RenderBox;
+      final RenderBox bodyBox = _keyBody.currentContext!.findRenderObject() as RenderBox;
+      
+      // Calculamos la posición relativa al cuerpo (Stack)
+      pos = bodyBox.globalToLocal(box.localToGlobal(Offset.zero));
+      size = box.size;
+    }
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (_pasoTutorial < 7) {
+            _pasoTutorial++;
+          } else {
+            _mostrarTutorial = false;
+            QuantumStorage.setTutorialVisto(true);
+          }
+        });
+      },
+      child: Material(
+        color: Colors.transparent,
+        child: Stack(
+          children: [
+            // Fondo Oscuro Sólido (sin blur para máxima claridad)
+            Container(color: Colors.black.withOpacity(0.6)),
+            
+            // Foco de luz: Solo el recuadro verde (sin rellenos que tapen el botón)
+            if (keyActual != null)
+              Positioned(
+                left: pos.dx - 5,
+                top: pos.dy - 5,
+                child: Container(
+                  width: size.width + 10,
+                  height: size.height + 10,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: kVerdeNeon, width: 3),
+                  ),
+                ),
+              ),
+
+            // Flecha (si hay key)
+            if (keyActual != null && mostrarFlecha)
+              Positioned(
+                left: pos.dx + (size.width / 2) - 20,
+                top: pos.dy > MediaQuery.of(context).size.height / 2 ? pos.dy - 60 : pos.dy + size.height + 15,
+                child: TweenAnimationBuilder(
+                  duration: const Duration(milliseconds: 600),
+                  tween: Tween<double>(begin: 0, end: 10),
+                  builder: (context, double val, child) => Padding(
+                    padding: EdgeInsets.only(top: pos.dy > MediaQuery.of(context).size.height / 2 ? 10 - val : val),
+                    child: Icon(
+                      pos.dy > MediaQuery.of(context).size.height / 2 ? Icons.keyboard_double_arrow_down : Icons.keyboard_double_arrow_up,
+                      color: kVerdeNeon,
+                      size: 40,
+                    ),
+                  ),
+                ),
+              ),
+
+            // Cartel Informativo
+            Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 40),
+                padding: const EdgeInsets.all(25),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0F0F0F),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: kVerdeNeon.withOpacity(0.3), width: 1.5),
+                  boxShadow: const [BoxShadow(color: Colors.black, blurRadius: 30, spreadRadius: 5)]
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (iconoPaso != null) ...[
+                      iconoPaso,
+                      const SizedBox(height: 20),
+                    ],
+                    Text(titulo, style: const TextStyle(color: kVerdeNeon, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 2.5)),
+                    const SizedBox(height: 15),
+                    Text(desc, textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 15, height: 1.5, fontWeight: FontWeight.w400)),
+                    const SizedBox(height: 25),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      decoration: BoxDecoration(color: Colors.white.withOpacity(0.03), borderRadius: BorderRadius.circular(10)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("${Traductor.get('tut_paso')} $_pasoTutorial ${Traductor.get('tut_de')} 7", style: const TextStyle(color: Colors.white24, fontSize: 11, fontWeight: FontWeight.bold)),
+                          Row(
+                            children: [
+                              Text(Traductor.get('tut_siguiente'), style: TextStyle(color: kVerdeNeon.withOpacity(0.8), fontSize: 11, fontWeight: FontWeight.w900)),
+                              const SizedBox(width: 5),
+                              Icon(Icons.arrow_forward_ios, color: kVerdeNeon.withOpacity(0.8), size: 10),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+
+            // Botón Salir
+            Positioned(
+              top: 20,
+              right: 20,
+              child: SafeArea(
+                child: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _mostrarTutorial = false;
+                      QuantumStorage.setTutorialVisto(true);
+                    });
+                  },
+                  icon: const Icon(Icons.close, color: Colors.white38),
+                ),
+              ),
+            )
+          ],
         ),
       ),
     );
