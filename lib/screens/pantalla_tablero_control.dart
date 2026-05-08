@@ -933,45 +933,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     ), 
                   ),
                   if (widget.partido.deporte.toLowerCase() != 'baseball' && widget.partido.deporte.toLowerCase() != 'football americano') Container(key: _keyPossession, child: _buildSelectorPosesion()),
-
-                  Container( 
-                    padding: const EdgeInsets.all(10), color: const Color(0xFF050505), 
-                    child: Row( 
-                      children: [ 
-                        Expanded(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: widget.partido.localFondo.withOpacity(0.35), 
-                              padding: const EdgeInsets.symmetric(vertical: 15), 
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10), 
-                                side: BorderSide(color: widget.partido.localTexto, width: 2)
-                              ),
-                              elevation: 5,
-                            ), 
-                            onPressed: () => _abrirRegistro('Local'), 
-                            child: Column(children: [Text(Traductor.get('registrar_mayus'), style: TextStyle(color: widget.partido.localTexto.withOpacity(0.7), fontSize: 9, letterSpacing: 1)), Text(widget.partido.local, style: TextStyle(color: widget.partido.localTexto, fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis)])
-                          )
-                        ), 
-                        const SizedBox(width: 10), 
-                        Expanded(
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: widget.partido.visitaFondo.withOpacity(0.35), 
-                              padding: const EdgeInsets.symmetric(vertical: 15), 
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10), 
-                                side: BorderSide(color: widget.partido.visitaTexto, width: 2)
-                              ),
-                              elevation: 5,
-                            ), 
-                            onPressed: () => _abrirRegistro('Visita'), 
-                            child: Column(children: [Text(Traductor.get('registrar_mayus'), style: TextStyle(color: widget.partido.visitaTexto.withOpacity(0.7), fontSize: 9, letterSpacing: 1)), Text(widget.partido.visita, style: TextStyle(color: widget.partido.visitaTexto, fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis)])
-                          )
-                        ), 
-                      ], 
-                    ), 
-                  )
                 ],
               ),
 
@@ -1270,34 +1231,34 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           Text(textoTimer, style: TextStyle(color: colorTarjeta, fontSize: 8, fontWeight: FontWeight.bold))
         ]
       ],
-    );
-  }
-
-  
-
   List<Widget> _generarListaEstadisticasUnificada() { 
     List<Widget> filasRapidas = []; 
     List<Widget> filasPasivas = []; 
     
     final List<String> eventosRapidos = [
+      'Gol', 'Try (5 pts)', 'Conversión (2 pts)', 'Penal (3 pts)', 'Drop (3 pts)',
+      'Tiro Libre (1 pt)', 'Doble (2 pts)', 'Triple (3 pts)', 'Touchdown (6 pts)',
+      'Field Goal (3 pts)', 'Extra Point (1 pt)', 'Safety (2 pts)', 'Carrera', 'Home Run',
       'Corner', 'Falta', 'Remates', 'Remates al arco', 'Penal', 
-      'Line Out', 'Scrum', 'Rebotes', 'Tapones', 'Ponche', 'Castigo'
+      'Line Out', 'Scrum', 'Rebotes', 'Tapones', 'Ponche', 'Castigo', 'Asistencia', 'Tarjeta Amarilla', 'Tarjeta Roja', 'Tarjeta Verde', 'Cambio'
     ];
 
     widget.partido.stats['Local']!.forEach((evento, _) { 
-      bool esAnotacion = evento.toLowerCase().contains('gol') || 
-                         evento.toLowerCase().contains('punto') || 
-                         evento.toLowerCase().contains('try') || 
-                         evento.toLowerCase().contains('carrera');
       bool esHecho = evento.contains('Hech');
       
-      if (!esAnotacion && !esHecho) { 
+      if (!esHecho) { 
         int cantLocal = widget.partido.stats['Local']![evento] ?? 0;
         int cantVisita = widget.partido.stats['Visita']![evento] ?? 0;
         bool rapido = eventosRapidos.contains(evento);
 
-        Widget fila = Padding( 
-          padding: const EdgeInsets.symmetric(vertical: 8.0), 
+        Widget fila = Container( 
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.03),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.white.withOpacity(0.05), width: 1)
+          ),
           child: Row( 
             mainAxisAlignment: MainAxisAlignment.spaceBetween, 
             children: [ 
@@ -1305,43 +1266,46 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
               Row(
                 children: [
                   SizedBox(
-                    width: 45,
+                    width: 48,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 4), 
+                      padding: const EdgeInsets.symmetric(vertical: 6), 
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1), 
-                        borderRadius: BorderRadius.circular(5)
+                        borderRadius: BorderRadius.circular(8)
                       ), 
-                      child: Text('$cantLocal', textAlign: TextAlign.center, style: TextStyle(color: widget.partido.localTexto, fontSize: 15, fontWeight: FontWeight.bold))
+                      child: Text('$cantLocal', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))
                     )
                   ),
-                  const SizedBox(width: 5),
-                  if (rapido) _buildBotonRapido('Local', evento) else const SizedBox(width: 24),
+                  const SizedBox(width: 8),
+                  if (rapido) _buildBotonRapido('Local', evento) else const SizedBox(width: 40),
                 ],
               ),
 
               Expanded(
-                child: Text(
-                  Traductor.get(evento).toUpperCase(), 
-                  textAlign: TextAlign.center, 
-                  style: const TextStyle(color: Colors.white70, fontSize: 11, letterSpacing: 1)
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  child: Text(
+                    Traductor.get(evento).toUpperCase(), 
+                    textAlign: TextAlign.center, 
+                    style: const TextStyle(color: Colors.white60, fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w600)
+                  ),
                 )
               ),
               
               // Lado Visita
               Row(
                 children: [
-                  if (rapido) _buildBotonRapido('Visita', evento) else const SizedBox(width: 24),
-                  const SizedBox(width: 5),
+                  if (rapido) _buildBotonRapido('Visita', evento) else const SizedBox(width: 40),
+                  const SizedBox(width: 8),
                   SizedBox(
-                    width: 45,
+                    width: 48,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 4), 
+                      padding: const EdgeInsets.symmetric(vertical: 6), 
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1), 
-                        borderRadius: BorderRadius.circular(5)
+                        borderRadius: BorderRadius.circular(8)
                       ), 
-                      child: Text('$cantVisita', textAlign: TextAlign.center, style: TextStyle(color: widget.partido.visitaTexto, fontSize: 15, fontWeight: FontWeight.bold))
+                      child: Text('$cantVisita', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))
                     )
                   ),
                 ],
@@ -1360,12 +1324,13 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
 
     return [
       ...filasRapidas,
-      if (filasPasivas.isNotEmpty && filasRapidas.isNotEmpty) 
+      if (filasPasivas.isNotEmpty) ...[
         const Padding(
-          padding: EdgeInsets.symmetric(vertical: 10),
-          child: Divider(color: Colors.white10, thickness: 1),
+          padding: EdgeInsets.symmetric(vertical: 15),
+          child: Divider(color: Colors.white10, thickness: 1.5),
         ),
-      ...filasPasivas,
+        ...filasPasivas,
+      ]
     ]; 
   }
 
@@ -1482,39 +1447,178 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   Widget _buildBotonRapido(String equipo, String evento) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          widget.partido.stats[equipo]![evento] = (widget.partido.stats[equipo]![evento] ?? 0) + 1;
-          String tiempoActual = _formatearTiempo();
-          String nombreReal = equipo == 'Local' ? widget.partido.local : widget.partido.visita;
-          String logText = 'MIN $tiempoActual | ${nombreReal.toUpperCase()}: $evento (EQUIPO)';
-          
-          widget.partido.registrarAccion(
-            equipo: equipo, 
-            tipo: 'stat', 
-            evento: evento, 
-            log: logText
-          );
-          
-          // LÓGICA AUTOMÁTICA BASEBALL
-          if (widget.partido.deporte.toLowerCase() == 'baseball') {
-            if (evento == 'Hit' || evento == 'Home Run' || evento == 'Error') {
-              widget.partido.balls = 0;
-              widget.partido.strikes = 0;
-              _incrementarOrdenBateo(widget.partido.rolLocal == 'Bateador' ? 'Local' : 'Visita');
-            } else if (evento == 'Out' || evento == 'Ponche') {
-              _incrementarOut();
-            }
-          }
-        });
-        _guardarEstado();
-        HapticFeedback.lightImpact();
+        HapticFeedback.mediumImpact();
+        _mostrarDialogoSelectorJugador(equipo, evento);
       },
       child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(color: kVerdeOscuro.withOpacity(0.3), shape: BoxShape.circle, border: Border.all(color: kVerdeNeon.withOpacity(0.5))),
-        child: const Icon(Icons.add, color: kVerdeNeon, size: 14),
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: kVerdeOscuro.withOpacity(0.4), 
+          shape: BoxShape.circle, 
+          border: Border.all(color: kVerdeNeon.withOpacity(0.6), width: 1.5),
+          boxShadow: [BoxShadow(color: kVerdeNeon.withOpacity(0.1), blurRadius: 4)]
+        ),
+        child: const Icon(Icons.add, color: kVerdeNeon, size: 22),
       ),
     );
+  }
+
+  void _mostrarDialogoSelectorJugador(String equipo, String evento) async {
+    String numero = "";
+    
+    final result = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            backgroundColor: kNegro,
+            shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon, width: 2), borderRadius: BorderRadius.circular(20)),
+            title: Column(
+              children: [
+                Text(Traductor.get(evento).toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 2)),
+                Text(equipo == 'Local' ? widget.partido.local.toUpperCase() : widget.partido.visita.toUpperCase(), style: const TextStyle(color: Colors.white38, fontSize: 11)),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 70,
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(15)),
+                  child: Text(
+                    numero.isEmpty ? "#" : numero,
+                    style: const TextStyle(color: kVerdeNeon, fontSize: 45, fontWeight: FontWeight.bold, fontFamily: 'monospace'),
+                  ),
+                ),
+                const SizedBox(height: 25),
+                SizedBox(
+                  width: 260,
+                  child: GridView.count(
+                    shrinkWrap: true,
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 1.4,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      for (int i = 1; i <= 9; i++) _buildBotonTeclado("$i", (v) => setDialogState(() => numero += v)),
+                      _buildBotonTeclado("C", (v) => setDialogState(() => numero = ""), color: kRojoStop.withOpacity(0.3), textColor: kRojoStop),
+                      _buildBotonTeclado("0", (v) => setDialogState(() => numero += v)),
+                      _buildBotonTeclado("OK", (v) => Navigator.pop(context, numero), color: kVerdeNeon.withOpacity(0.3), textColor: kVerdeNeon),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            actionsPadding: const EdgeInsets.only(bottom: 15, right: 15),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context, "CANCEL"), child: Text(Traductor.get('cancelar_mayus'), style: const TextStyle(color: Colors.white24))),
+            ],
+          );
+        }
+      )
+    );
+
+    if (result != null && result != "CANCEL") {
+      _ejecutarRegistroAccion(equipo, evento, result);
+    }
+  }
+
+  Widget _buildBotonTeclado(String texto, Function(String) onTap, {Color? color, Color? textColor}) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap(texto);
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: color ?? Colors.white.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: (textColor ?? Colors.white).withOpacity(0.1))
+        ),
+        child: Center(
+          child: Text(texto, style: TextStyle(color: textColor ?? Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+        ),
+      ),
+    );
+  }
+
+  void _ejecutarRegistroAccion(String equipo, String evento, String numeroJugador) {
+    setState(() {
+      // INCREMENTAR STAT
+      widget.partido.stats[equipo]![evento] = (widget.partido.stats[equipo]![evento] ?? 0) + 1;
+      
+      // LÓGICA DE PUNTOS SEGÚN EVENTO
+      int puntos = 0;
+      if (evento.contains('Gol')) puntos = 1;
+      else if (evento.contains('Try')) puntos = 5;
+      else if (evento.contains('Conversión')) puntos = 2;
+      else if (evento.contains('Penal (3 pts)')) puntos = 3;
+      else if (evento.contains('Drop')) puntos = 3;
+      else if (evento.contains('Tiro Libre')) puntos = 1;
+      else if (evento.contains('Doble')) puntos = 2;
+      else if (evento.contains('Triple')) puntos = 3;
+      else if (evento.contains('Touchdown')) puntos = 6;
+      else if (evento.contains('Field Goal')) puntos = 3;
+      else if (evento.contains('Extra Point')) puntos = 1;
+      else if (evento.contains('Safety')) puntos = 2;
+      else if (evento.contains('Carrera')) puntos = 1;
+      else if (evento.contains('Home Run')) puntos = 1;
+
+      if (puntos > 0) {
+        String tiempoAct = _formatearTiempo();
+        widget.partido.anotaciones[equipo]!.add({
+          'tipo': evento,
+          'minuto': tiempoAct,
+          'jugador': numeroJugador.isEmpty ? 'N/A' : numeroJugador,
+          'puntos': puntos.toString()
+        });
+      }
+
+      // REGISTRAR TARJETAS
+      if (evento.contains('Tarjeta')) {
+        String tiempoAct = _formatearTiempo();
+        var nuevaT = {
+          'tipo': evento,
+          'minuto': tiempoAct,
+          'jugador': numeroJugador.isEmpty ? 'N/A' : numeroJugador,
+        };
+        if (widget.partido.deporte.toLowerCase() == 'rugby' && evento.contains('Amarilla')) {
+          nuevaT['segundosRestantes'] = (widget.partido.tiempoAmarilla * 60).toString();
+        }
+        widget.partido.tarjetas[equipo]!.add(nuevaT);
+      }
+
+      // LOG FINAL
+      String nombreEq = equipo == 'Local' ? widget.partido.local : widget.partido.visita;
+      String tiempoAct = _formatearTiempo();
+      String logText = 'MIN $tiempoAct | ${nombreEq.toUpperCase()}: $evento';
+      if (numeroJugador.isNotEmpty) logText += ' (N° $numeroJugador)';
+      
+      widget.partido.registrarAccion(
+        equipo: equipo, 
+        tipo: 'stat', 
+        evento: evento, 
+        jugador: numeroJugador,
+        log: logText
+      );
+      
+      // LÓGICA AUTOMÁTICA BASEBALL
+      if (widget.partido.deporte.toLowerCase() == 'baseball') {
+        if (evento == 'Hit' || evento == 'Home Run' || evento == 'Error') {
+          widget.partido.balls = 0;
+          widget.partido.strikes = 0;
+          _incrementarOrdenBateo(widget.partido.rolLocal == 'Bateador' ? 'Local' : 'Visita');
+        } else if (evento == 'Out' || evento == 'Ponche') {
+          _incrementarOut();
+        }
+      }
+    });
+    _guardarEstado();
   }
 
   Widget _buildSelectorPosesion() {
