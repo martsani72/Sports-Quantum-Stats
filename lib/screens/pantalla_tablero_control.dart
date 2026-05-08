@@ -128,7 +128,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           }
           widget.partido.posesionPorPeriodo[pKey]![_equipoPosesion!] = (widget.partido.posesionPorPeriodo[pKey]![_equipoPosesion!] ?? 0) + 1;
         }
-        }
         
         // LÓGICA SHOT CLOCK BÁSQUET
         if (widget.partido.deporte.toLowerCase().contains('basquet') || widget.partido.deporte.toLowerCase().contains('basket')) {
