@@ -38,6 +38,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   double _notaY = 0;
   bool _notaInicializada = false;
   String? _equipoPosesion; // 'Local' o 'Visita'
+  int _shotClock = 24; // Reloj de tiro para Básquet
   
   // CONTROLADORES BASEBALL
   TextEditingController _ctrlBateador = TextEditingController();
@@ -126,6 +127,17 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
             widget.partido.posesionPorPeriodo[pKey] = {'Local': 0, 'Visita': 0};
           }
           widget.partido.posesionPorPeriodo[pKey]![_equipoPosesion!] = (widget.partido.posesionPorPeriodo[pKey]![_equipoPosesion!] ?? 0) + 1;
+        }
+        }
+        
+        // LÓGICA SHOT CLOCK BÁSQUET
+        if (widget.partido.deporte.toLowerCase().contains('basquet') || widget.partido.deporte.toLowerCase().contains('basket')) {
+          if (_estaCorriendo && _shotClock > 0) {
+            _shotClock--;
+            if (_shotClock == 0) {
+              HapticFeedback.heavyImpact(); 
+            }
+          }
         }
       });
       if (timer.tick % 5 == 0) _guardarEstado(); 
@@ -1358,6 +1370,101 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     ]; 
   }
 
+  Widget _buildShotClock() {
+    return AnimatedBuilder(
+      animation: _blinkController,
+      builder: (context, child) {
+        bool critico = _shotClock <= 5 && _shotClock > 0;
+        bool agotado = _shotClock == 0;
+        
+        return Container(
+          margin: const EdgeInsets.symmetric(vertical: 5),
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(
+              color: agotado ? kRojoStop : (critico ? Colors.orange : kVerdeNeon.withOpacity(0.3)),
+              width: 2
+            ),
+            boxShadow: (critico || agotado) ? [
+              BoxShadow(color: (agotado ? kRojoStop : Colors.orange).withOpacity(0.3), blurRadius: 10, spreadRadius: 1)
+            ] : []
+          ),
+          child: Row(
+            children: [
+              // Botón 14s (Izquierda)
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    HapticFeedback.mediumImpact();
+                    setState(() => _shotClock = 14);
+                  },
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('RESET', style: TextStyle(color: Colors.white24, fontSize: 8)),
+                          Text('14', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 18, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              
+              // Contador Central
+              Container(
+                width: 100,
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.3),
+                  border: Border.symmetric(vertical: BorderSide(color: Colors.white10, width: 1))
+                ),
+                child: Center(
+                  child: Text(
+                    '$_shotClock',
+                    style: TextStyle(
+                      color: agotado 
+                        ? kRojoStop.withOpacity(_blinkController.value) 
+                        : (critico ? Colors.orange : kVerdeNeon),
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'monospace'
+                    ),
+                  ),
+                ),
+              ),
+
+              // Botón 24s (Derecha)
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    HapticFeedback.mediumImpact();
+                    setState(() => _shotClock = 24);
+                  },
+                  child: Container(
+                    color: Colors.transparent,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('RESET', style: TextStyle(color: Colors.white24, fontSize: 8)),
+                          Text('24', style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 18, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }
+    );
+  }
+
   Widget _buildBotonRapido(String equipo, String evento) {
     return GestureDetector(
       onTap: () {
@@ -1397,6 +1504,10 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   }
 
   Widget _buildSelectorPosesion() {
+    if (widget.partido.deporte.toLowerCase().contains('basquet') || widget.partido.deporte.toLowerCase().contains('basket')) {
+      return _buildShotClock();
+    }
+
     String pKey = _periodoActual.toString();
     int tLocal = widget.partido.posesionPorPeriodo[pKey]?['Local'] ?? 0;
     int tVisita = widget.partido.posesionPorPeriodo[pKey]?['Visita'] ?? 0;
