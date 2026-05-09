@@ -632,7 +632,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   }
 
   void _mostrarDetallePopUp(String titulo, List<Map<String, String>> datos, String tipo) {
-    IconData iconoDeporte = DeporteConfig.datos[widget.partido.deporte]!['icono'];
+    IconData iconoDeporte = DeporteConfig.datos[widget.partido.deporte]?['icono'] ?? Icons.sports;
 
     showDialog(
       context: context,
@@ -662,8 +662,8 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(children: [const Icon(Icons.arrow_downward, color: Colors.redAccent, size: 16), const SizedBox(width: 5), Text(d['sale']!, style: const TextStyle(color: Colors.white, fontSize: 13))]),
-                                Row(children: [const Icon(Icons.arrow_upward, color: Colors.green, size: 16), const SizedBox(width: 5), Text(d['entra']!, style: const TextStyle(color: Colors.white, fontSize: 13))]),
+                                Row(children: [const Icon(Icons.arrow_downward, color: Colors.redAccent, size: 16), const SizedBox(width: 5), Text(d['sale'] ?? '', style: const TextStyle(color: Colors.white, fontSize: 13))]),
+                                Row(children: [const Icon(Icons.arrow_upward, color: Colors.green, size: 16), const SizedBox(width: 5), Text(d['entra'] ?? '', style: const TextStyle(color: Colors.white, fontSize: 13))]),
                               ],
                             ),
                           )
@@ -672,7 +672,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     );
                   } 
                   else if (tipo == 'tarjeta') {
-                    Color colorT = _obtenerColorTarjeta(d['tipo']!);
+                    Color colorT = _obtenerColorTarjeta(d['tipo'] ?? '');
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
                       child: Row(
@@ -681,7 +681,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                           const SizedBox(width: 15),
                           Container(width: 12, height: 18, decoration: BoxDecoration(color: colorT, borderRadius: BorderRadius.circular(2))),
                           const SizedBox(width: 10),
-                          Expanded(child: Text(d['nombreCompleto']!, style: const TextStyle(color: Colors.white, fontSize: 14))),
+                          Expanded(child: Text(d['nombreCompleto'] ?? d['jugador'] ?? 'Jugador', style: const TextStyle(color: Colors.white, fontSize: 14))),
                         ],
                       ),
                     );
@@ -695,7 +695,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                           const SizedBox(width: 15),
                           Icon(iconoDeporte, color: Colors.white, size: 18),
                           const SizedBox(width: 10),
-                          Expanded(child: Text(d['nombreCompleto']!, style: const TextStyle(color: Colors.white, fontSize: 14))),
+                          Expanded(child: Text(d['nombreCompleto'] ?? d['jugador'] ?? 'Jugador', style: const TextStyle(color: Colors.white, fontSize: 14))),
                         ],
                       ),
                     );
@@ -736,8 +736,8 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     String nombrePeriodo = Traductor.get(clavePeriodo).toUpperCase(); 
 
     if (!_notaInicializada) {
-      _notaX = (MediaQuery.of(context).size.width / 2) - 80; // Centrado horizontal para el botón ancho
-      _notaY = 260; // Bajado para que quede sobre Reservas
+      _notaX = (MediaQuery.of(context).size.width / 2) - 80; 
+      _notaY = 260; 
       _notaInicializada = true;
     }
 
@@ -783,7 +783,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                               child: Column(
                                 children: [
                                   GestureDetector(
-                                    onTap: () => _mostrarDetallePopUp('ANOTACIONES - ${widget.partido.local.toUpperCase()}', widget.partido.anotaciones['Local']!, 'anotacion'),
+                                    onTap: () => _mostrarDetallePopUp('ANOTACIONES - ${widget.partido.local.toUpperCase()}', widget.partido.anotaciones['Local'] ?? [], 'anotacion'),
                                     child: Container(
                                       margin: const EdgeInsets.symmetric(horizontal: 5),
                                       padding: const EdgeInsets.symmetric(vertical: 15),
@@ -808,7 +808,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                   if (widget.partido.deporte.toLowerCase() != 'football americano') ...[
                                     const SizedBox(height: 8),
                                     GestureDetector(
-                                      onTap: () => _mostrarDetallePopUp('TARJETAS - ${widget.partido.local.toUpperCase()}', widget.partido.tarjetas['Local']!, 'tarjeta'),
+                                      onTap: () => _mostrarDetallePopUp('TARJETAS - ${widget.partido.local.toUpperCase()}', widget.partido.tarjetas['Local'] ?? [], 'tarjeta'),
                                       child: SizedBox(
                                         height: 52, 
                                         child: Wrap(
@@ -831,7 +831,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                 Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    // BOTÓN UNDO (QUANTUM)
                                     IconButton(
                                       key: _keyUndo,
                                       icon: Icon(Icons.undo, color: widget.partido.historialAcciones.isEmpty ? Colors.white24 : kVerdeNeon, size: 22),
@@ -865,7 +864,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                               child: Column(
                                 children: [
                                   GestureDetector(
-                                    onTap: () => _mostrarDetallePopUp('ANOTACIONES - ${widget.partido.visita.toUpperCase()}', widget.partido.anotaciones['Visita']!, 'anotacion'),
+                                    onTap: () => _mostrarDetallePopUp('ANOTACIONES - ${widget.partido.visita.toUpperCase()}', widget.partido.anotaciones['Visita'] ?? [], 'anotacion'),
                                     child: Container(
                                       margin: const EdgeInsets.symmetric(horizontal: 5),
                                       padding: const EdgeInsets.symmetric(vertical: 15),
@@ -890,7 +889,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                   if (widget.partido.deporte.toLowerCase() != 'football americano') ...[
                                     const SizedBox(height: 8),
                                     GestureDetector(
-                                      onTap: () => _mostrarDetallePopUp('TARJETAS - ${widget.partido.visita.toUpperCase()}', widget.partido.tarjetas['Visita']!, 'tarjeta'),
+                                      onTap: () => _mostrarDetallePopUp('TARJETAS - ${widget.partido.visita.toUpperCase()}', widget.partido.tarjetas['Visita'] ?? [], 'tarjeta'),
                                       child: SizedBox(
                                         height: 52,
                                         child: Wrap(
@@ -919,9 +918,9 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     child: Row( 
                       mainAxisAlignment: MainAxisAlignment.spaceAround, 
                       children: [ 
-                        GestureDetector(onTap: () => _mostrarDetallePopUp('CAMBIOS - ${widget.partido.local}', widget.partido.cambiosList['Local']!, 'cambio'), child: _infoCambios('Local')), 
+                        GestureDetector(onTap: () => _mostrarDetallePopUp('CAMBIOS - ${widget.partido.local}', widget.partido.cambiosList['Local'] ?? [], 'cambio'), child: _infoCambios('Local')), 
                         Text(Traductor.get('reservas_mayus'), style: TextStyle(color: kVerdeNeon, fontSize: 10, letterSpacing: 2)), 
-                        GestureDetector(onTap: () => _mostrarDetallePopUp('CAMBIOS - ${widget.partido.visita}', widget.partido.cambiosList['Visita']!, 'cambio'), child: _infoCambios('Visita')), 
+                        GestureDetector(onTap: () => _mostrarDetallePopUp('CAMBIOS - ${widget.partido.visita}', widget.partido.cambiosList['Visita'] ?? [], 'cambio'), child: _infoCambios('Visita')), 
                       ], 
                     ), 
                   ),
@@ -936,7 +935,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                 ],
               ),
 
-              // BOTÓN DE NOTA FLOTANTE ARRASTRABLE
               Positioned(
                 left: _notaX,
                 top: _notaY,
@@ -945,12 +943,10 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     setState(() {
                       _notaX += details.delta.dx;
                       _notaY += details.delta.dy;
-
-                      // Limitar límites de la pantalla
                       double maxWidth = MediaQuery.of(context).size.width - 60;
                       double maxHeight = MediaQuery.of(context).size.height - 100;
                       if (_notaX < 0) _notaX = 0;
-                      if (_notaY < 80) _notaY = 80; // No subir más allá del header
+                      if (_notaY < 80) _notaY = 80; 
                       if (_notaX > maxWidth) _notaX = maxWidth;
                       if (_notaY > maxHeight) _notaY = maxHeight;
                     });
@@ -1231,6 +1227,9 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           Text(textoTimer, style: TextStyle(color: colorTarjeta, fontSize: 8, fontWeight: FontWeight.bold))
         ]
       ],
+    );
+  }
+
   List<Widget> _generarListaEstadisticasUnificada() { 
     List<Widget> filasRapidas = []; 
     List<Widget> filasPasivas = []; 
@@ -1239,7 +1238,8 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       'Gol', 'Try (5 pts)', 'Conversión (2 pts)', 'Penal (3 pts)', 'Drop (3 pts)',
       'Tiro Libre (1 pt)', 'Doble (2 pts)', 'Triple (3 pts)', 'Touchdown (6 pts)',
       'Field Goal (3 pts)', 'Extra Point (1 pt)', 'Safety (2 pts)', 'Carrera', 'Home Run',
-      'Corner', 'Falta', 'Remates', 'Remates al arco', 'Penal', 
+      'Corner', 'Falta', 'Remates', 'Remates al arco', 'Penal', 'Falta Personal', 'Falta Técnica',
+      'Hit', 'Error', 'Out', 'Base por Bolas', 'Two-Point Conv. (2 pts)', 'Sack', 'Intercepción', 'Fumble Recuperado', 'Punt',
       'Line Out', 'Scrum', 'Rebotes', 'Tapones', 'Ponche', 'Castigo', 'Asistencia', 'Tarjeta Amarilla', 'Tarjeta Roja', 'Tarjeta Verde', 'Cambio'
     ];
 
@@ -1252,11 +1252,11 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         bool rapido = eventosRapidos.contains(evento);
 
         Widget fila = Container( 
-          margin: const EdgeInsets.symmetric(vertical: 6),
-          padding: const EdgeInsets.all(8),
+          margin: const EdgeInsets.symmetric(vertical: 4),
+          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.03),
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
             border: Border.all(color: Colors.white.withOpacity(0.05), width: 1)
           ),
           child: Row( 
@@ -1266,28 +1266,28 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
               Row(
                 children: [
                   SizedBox(
-                    width: 48,
+                    width: 40,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 6), 
+                      padding: const EdgeInsets.symmetric(vertical: 4), 
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1), 
-                        borderRadius: BorderRadius.circular(8)
+                        borderRadius: BorderRadius.circular(6)
                       ), 
-                      child: Text('$cantLocal', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))
+                      child: Text('$cantLocal', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))
                     )
                   ),
-                  const SizedBox(width: 8),
-                  if (rapido) _buildBotonRapido('Local', evento) else const SizedBox(width: 40),
+                  const SizedBox(width: 6),
+                  if (rapido) _buildBotonRapido('Local', evento) else const SizedBox(width: 36),
                 ],
               ),
 
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: Text(
                     Traductor.get(evento).toUpperCase(), 
                     textAlign: TextAlign.center, 
-                    style: const TextStyle(color: Colors.white60, fontSize: 10, letterSpacing: 1.5, fontWeight: FontWeight.w600)
+                    style: const TextStyle(color: Colors.white60, fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w600)
                   ),
                 )
               ),
@@ -1295,17 +1295,17 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
               // Lado Visita
               Row(
                 children: [
-                  if (rapido) _buildBotonRapido('Visita', evento) else const SizedBox(width: 40),
-                  const SizedBox(width: 8),
+                  if (rapido) _buildBotonRapido('Visita', evento) else const SizedBox(width: 36),
+                  const SizedBox(width: 6),
                   SizedBox(
-                    width: 48,
+                    width: 40,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 6), 
+                      padding: const EdgeInsets.symmetric(vertical: 4), 
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.1), 
-                        borderRadius: BorderRadius.circular(8)
+                        borderRadius: BorderRadius.circular(6)
                       ), 
-                      child: Text('$cantVisita', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))
+                      child: Text('$cantVisita', textAlign: TextAlign.center, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold))
                     )
                   ),
                 ],
@@ -1445,26 +1445,37 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
   }
 
   Widget _buildBotonRapido(String equipo, String evento) {
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.mediumImpact();
-        _mostrarDialogoSelectorJugador(equipo, evento);
-      },
-      child: Container(
-        width: 40,
-        height: 40,
+    return IconButton(
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints(),
+      icon: Container(
+        width: 30,
+        height: 30,
         decoration: BoxDecoration(
           color: kVerdeOscuro.withOpacity(0.4), 
           shape: BoxShape.circle, 
           border: Border.all(color: kVerdeNeon.withOpacity(0.6), width: 1.5),
-          boxShadow: [BoxShadow(color: kVerdeNeon.withOpacity(0.1), blurRadius: 4)]
         ),
-        child: const Icon(Icons.add, color: kVerdeNeon, size: 22),
+        child: const Icon(Icons.add, color: kVerdeNeon, size: 16),
       ),
+      onPressed: () async {
+        debugPrint("QUANTUM: Presionado + para $equipo - $evento");
+        HapticFeedback.mediumImpact();
+        
+        if (evento == 'Cambio') {
+          var res = await _pedirDatosCambioExtra(equipo);
+          if (res != null) {
+            _ejecutarRegistroCambio(equipo, res['jugador'] ?? '', res['jugadorEntra'] ?? '');
+          }
+        } else {
+          _mostrarDialogoSelectorJugador(equipo, evento);
+        }
+      },
     );
   }
 
   void _mostrarDialogoSelectorJugador(String equipo, String evento) async {
+    debugPrint("QUANTUM: Mostrando diálogo para $evento");
     String numero = "";
     
     final result = await showDialog<String>(
@@ -1472,52 +1483,53 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       barrierDismissible: false,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) {
-          return AlertDialog(
-            backgroundColor: kNegro,
-            shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon, width: 2), borderRadius: BorderRadius.circular(20)),
-            title: Column(
-              children: [
-                Text(Traductor.get(evento).toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 2)),
-                Text(equipo == 'Local' ? widget.partido.local.toUpperCase() : widget.partido.visita.toUpperCase(), style: const TextStyle(color: Colors.white38, fontSize: 11)),
-              ],
+          return Dialog(
+            backgroundColor: const Color(0xFF1A1A1A),
+            shape: RoundedRectangleBorder(
+              side: const BorderSide(color: kVerdeNeon, width: 2), 
+              borderRadius: BorderRadius.circular(20)
             ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  height: 70,
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(15)),
-                  child: Text(
-                    numero.isEmpty ? "#" : numero,
-                    style: const TextStyle(color: kVerdeNeon, fontSize: 45, fontWeight: FontWeight.bold, fontFamily: 'monospace'),
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              width: 260,
+              height: 420, // Altura fija garantizada
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(Traductor.get(evento).toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2)),
+                  Text(equipo == 'Local' ? widget.partido.local.toUpperCase() : widget.partido.visita.toUpperCase(), style: const TextStyle(color: Colors.white38, fontSize: 10)),
+                  const SizedBox(height: 15),
+                  Container(
+                    height: 60,
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.white10)),
+                    child: Text(numero.isEmpty ? "#" : numero, style: const TextStyle(color: kVerdeNeon, fontSize: 35, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
                   ),
-                ),
-                const SizedBox(height: 25),
-                SizedBox(
-                  width: 260,
-                  child: GridView.count(
-                    shrinkWrap: true,
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 12,
-                    crossAxisSpacing: 12,
-                    childAspectRatio: 1.4,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      for (int i = 1; i <= 9; i++) _buildBotonTeclado("$i", (v) => setDialogState(() => numero += v)),
-                      _buildBotonTeclado("C", (v) => setDialogState(() => numero = ""), color: kRojoStop.withOpacity(0.3), textColor: kRojoStop),
-                      _buildBotonTeclado("0", (v) => setDialogState(() => numero += v)),
-                      _buildBotonTeclado("OK", (v) => Navigator.pop(context, numero), color: kVerdeNeon.withOpacity(0.3), textColor: kVerdeNeon),
-                    ],
+                  const SizedBox(height: 15),
+                  Expanded(
+                    child: GridView.count(
+                      crossAxisCount: 3,
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      childAspectRatio: 1.4,
+                      physics: const NeverScrollableScrollPhysics(),
+                      children: [
+                        for (int i = 1; i <= 9; i++) _buildBotonTeclado("$i", (v) => setDialogState(() => numero += v)),
+                        _buildBotonTeclado("C", (v) => setDialogState(() => numero = ""), color: kRojoStop.withOpacity(0.2), textColor: kRojoStop),
+                        _buildBotonTeclado("0", (v) => setDialogState(() => numero += v)),
+                        _buildBotonTeclado("OK", (v) => Navigator.pop(context, numero), color: kVerdeNeon.withOpacity(0.2), textColor: kVerdeNeon),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 10),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, "CANCEL"), 
+                    child: Text(Traductor.get('cancelar_mayus'), style: const TextStyle(color: Colors.white24))
+                  ),
+                ],
+              ),
             ),
-            actionsPadding: const EdgeInsets.only(bottom: 15, right: 15),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(context, "CANCEL"), child: Text(Traductor.get('cancelar_mayus'), style: const TextStyle(color: Colors.white24))),
-            ],
           );
         }
       )
@@ -1530,6 +1542,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
 
   Widget _buildBotonTeclado(String texto, Function(String) onTap, {Color? color, Color? textColor}) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: () {
         HapticFeedback.lightImpact();
         onTap(texto);
@@ -1547,10 +1560,38 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     );
   }
 
+  void _ejecutarRegistroCambio(String equipo, String numSale, String numEntra) {
+    setState(() {
+      widget.partido.stats[equipo]!['CambiosHechos'] = (widget.partido.stats[equipo]!['CambiosHechos'] ?? 0) + 1;
+      
+      String tiempoAct = _formatearTiempo();
+      widget.partido.cambiosList[equipo]!.add({
+        'minuto': tiempoAct,
+        'sale': widget.partido.obtenerNombreJugador(equipo, numSale),
+        'entra': widget.partido.obtenerNombreJugador(equipo, numEntra)
+      });
+
+      String nombreEq = equipo == 'Local' ? widget.partido.local : widget.partido.visita;
+      String nombreSale = widget.partido.obtenerNombreJugador(equipo, numSale);
+      String nombreEntra = widget.partido.obtenerNombreJugador(equipo, numEntra);
+      String logText = 'MIN $tiempoAct | ${nombreEq.toUpperCase()}: Cambio ($nombreSale x $nombreEntra)';
+      
+      widget.partido.registrarAccion(
+        equipo: equipo, 
+        tipo: 'cambio', 
+        evento: 'Cambio', 
+        datosExtra: {'sale': numSale, 'entra': numEntra},
+        log: logText
+      );
+    });
+    _guardarEstado();
+  }
+
   void _ejecutarRegistroAccion(String equipo, String evento, String numeroJugador) {
     setState(() {
       // INCREMENTAR STAT
-      widget.partido.stats[equipo]![evento] = (widget.partido.stats[equipo]![evento] ?? 0) + 1;
+      String keyStat = evento == 'Cambio' ? 'CambiosHechos' : evento;
+      widget.partido.stats[equipo]![keyStat] = (widget.partido.stats[equipo]![keyStat] ?? 0) + 1;
       
       // LÓGICA DE PUNTOS SEGÚN EVENTO
       int puntos = 0;
@@ -1575,6 +1616,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           'tipo': evento,
           'minuto': tiempoAct,
           'jugador': numeroJugador.isEmpty ? 'N/A' : numeroJugador,
+          'nombreCompleto': numeroJugador.isEmpty ? 'N/A' : widget.partido.obtenerNombreJugador(equipo, numeroJugador),
           'puntos': puntos.toString()
         });
       }
@@ -1586,24 +1628,39 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           'tipo': evento,
           'minuto': tiempoAct,
           'jugador': numeroJugador.isEmpty ? 'N/A' : numeroJugador,
+          'nombreCompleto': numeroJugador.isEmpty ? 'N/A' : widget.partido.obtenerNombreJugador(equipo, numeroJugador),
         };
         if (widget.partido.deporte.toLowerCase() == 'rugby' && evento.contains('Amarilla')) {
-          nuevaT['segundosRestantes'] = (widget.partido.tiempoAmarilla * 60).toString();
+          nuevaT['segundosRestantes'] = ((widget.partido.contadores['Min. Amarilla'] ?? 10) * 60).toString();
         }
         widget.partido.tarjetas[equipo]!.add(nuevaT);
+      }
+
+      // REGISTRAR CAMBIOS
+      if (evento == 'Cambio') {
+        String tiempoAct = _formatearTiempo();
+        widget.partido.cambiosList[equipo]!.add({
+          'tipo': 'Cambio',
+          'minuto': tiempoAct,
+          'jugador': numeroJugador.isEmpty ? 'N/A' : numeroJugador,
+          'nombreCompleto': numeroJugador.isEmpty ? 'N/A' : widget.partido.obtenerNombreJugador(equipo, numeroJugador),
+        });
       }
 
       // LOG FINAL
       String nombreEq = equipo == 'Local' ? widget.partido.local : widget.partido.visita;
       String tiempoAct = _formatearTiempo();
       String logText = 'MIN $tiempoAct | ${nombreEq.toUpperCase()}: $evento';
-      if (numeroJugador.isNotEmpty) logText += ' (N° $numeroJugador)';
+      if (numeroJugador.isNotEmpty) {
+        String nombreJugador = widget.partido.obtenerNombreJugador(equipo, numeroJugador);
+        logText += ' ($nombreJugador)';
+      }
       
       widget.partido.registrarAccion(
         equipo: equipo, 
         tipo: 'stat', 
         evento: evento, 
-        jugador: numeroJugador,
+        datosExtra: {'jugador': numeroJugador},
         log: logText
       );
       

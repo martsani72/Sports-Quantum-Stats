@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mi_nueva_app/core/traductor.dart';
 import 'package:mi_nueva_app/core/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,6 +12,7 @@ class VersionChecker {
   static const String _versionUrl = 'https://raw.githubusercontent.com/martsani72/Sports-Quantum-Stats/main/version_config.json';
 
   static Future<void> checkVersion(BuildContext context) async {
+    if (kIsWeb) return; // En web no se actualiza por tienda
     try {
       // 1. Obtener versión actual de la app
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
