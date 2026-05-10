@@ -348,94 +348,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       String tiempoActual = _formatearTiempo();
       
       if (eventoRegistrado == 'Cambio') {
-        int maxC = widget.partido.contadores['Cambios'] ?? 0;
-        int maxV = widget.partido.contadores['Ventanas'] ?? 0;
-        
-        bool primeraVez = true;
-        var resActual = resultado;
-
-        while (true) {
-          int hechosC = widget.partido.stats[equipoNombre]!['CambiosHechos'] ?? 0;
-          int hechasV = widget.partido.stats[equipoNombre]!['VentanasHechas'] ?? 0;
-
-          if (primeraVez) {
-            if (maxV > 0 && hechasV >= maxV) {
-              bool confirmar = await _mostrarDialogo(Traductor.get('limite_ventanas_titulo'), Traductor.get('limite_ventanas_msj_1') + '$hechasV/$maxV' + Traductor.get('limite_ventanas_msj_2'), Traductor.get('si_mayus'));
-              if (!confirmar) return; 
-            }
-            if (maxC > 0 && hechosC >= maxC) {
-              bool confirmar = await _mostrarDialogo(Traductor.get('limite_cambios_titulo'), Traductor.get('limite_cambios_msj_1') + '$hechosC/$maxC' + Traductor.get('limite_cambios_msj_2'), Traductor.get('si_mayus'));
-              if (!confirmar) return;
-            }
-          } else {
-            if (maxC > 0 && hechosC >= maxC) {
-              bool confirmar = await _mostrarDialogo(Traductor.get('limite_cambios_titulo'), Traductor.get('limite_cambios_msj_1') + '$hechosC/$maxC' + Traductor.get('limite_cambios_msj_2'), Traductor.get('si_mayus'));
-              if (!confirmar) break; 
-            }
-          }
-
-          setState(() {
-            widget.partido.stats[equipoNombre]!['CambiosHechos'] = hechosC + 1;
-            if (widget.partido.stats[equipoNombre]!.containsKey('Cambio')) {
-               widget.partido.stats[equipoNombre]!['Cambio'] = (widget.partido.stats[equipoNombre]!['Cambio'] ?? 0) + 1;
-            }
-            if (primeraVez && maxV > 0) {
-              widget.partido.stats[equipoNombre]!['VentanasHechas'] = hechasV + 1;
-            }
-            
-            String jugSale = resActual['jugador'] ?? '';
-            String jugEntra = resActual['jugadorEntra'] ?? '';
-            String nombreSale = widget.partido.obtenerNombreJugador(equipoNombre, jugSale);
-            String nombreEntra = widget.partido.obtenerNombreJugador(equipoNombre, jugEntra);
-            
-            widget.partido.cambiosList[equipoNombre]!.add({
-              'minuto': tiempoActual,
-              'sale': nombreSale,
-              'entra': nombreEntra
-            });
-            
-            String nombreReal = equipoNombre == 'Local' ? widget.partido.local : widget.partido.visita;
-            String log = 'MIN $tiempoActual | ${nombreReal.toUpperCase()}: Cambio ($nombreSale x $nombreEntra)';
-            
-            widget.partido.registrarAccion(
-              equipo: equipoNombre,
-              tipo: 'cambio',
-              evento: 'Cambio',
-              datosExtra: {'sale': nombreSale, 'entra': nombreEntra},
-              log: log
-            );
-          });
-          _guardarEstado();
-
-          primeraVez = false; 
-
-          bool? otroCambio = await showDialog<bool>(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) => AlertDialog(
-              backgroundColor: kNegro,
-              shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon), borderRadius: BorderRadius.circular(10)),
-              title: Text(Traductor.get('cambio_registrado'), style: TextStyle(color: kVerdeNeon, fontSize: 16, fontWeight: FontWeight.bold)),
-              content: Text(Traductor.get('quiere_otro_cambio'), style: const TextStyle(color: Colors.white, fontSize: 14)),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(context, false), child: Text(Traductor.get('no_mayus'), style: TextStyle(color: Colors.grey))),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: kVerdeNeon),
-                  onPressed: () => Navigator.pop(context, true), 
-                  child: Text(Traductor.get('si_mayus'), style: TextStyle(color: kNegro, fontWeight: FontWeight.bold))
-                ),
-              ]
-            )
-          );
-
-          if (otroCambio == null || !otroCambio) break; 
-
-          var datosExtra = await _pedirDatosCambioExtra(equipoNombre);
-          if (datosExtra == null) break; 
-          
-          resActual = datosExtra; 
-        }
-
+        await _manejarVentanaCambios(equipoNombre, resultado);
       } else {
         String jugadorNum = resultado['jugador'] ?? '';
         setState(() {
@@ -487,6 +400,103 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         });
         _guardarEstado();
       }
+    }
+  }
+
+  Future<void> _manejarVentanaCambios(String equipoNombre, Map<String, dynamic> primerCambio) async {
+    int maxC = widget.partido.contadores['Cambios'] ?? 0;
+    int maxV = widget.partido.contadores['Ventanas'] ?? 0;
+    
+    bool primeraVez = true;
+    var resActual = primerCambio;
+
+    while (true) {
+      int hechosC = widget.partido.stats[equipoNombre]!['CambiosHechos'] ?? 0;
+      int hechasV = widget.partido.stats[equipoNombre]!['VentanasHechas'] ?? 0;
+
+      if (primeraVez) {
+        if (maxV > 0 && hechasV >= maxV) {
+          bool confirmar = await _mostrarDialogo(Traductor.get('limite_ventanas_titulo'), Traductor.get('limite_ventanas_msj_1') + '$hechasV/$maxV' + Traductor.get('limite_ventanas_msj_2'), Traductor.get('si_mayus'));
+          if (!confirmar) return; 
+        }
+        if (maxC > 0 && hechosC >= maxC) {
+          bool confirmar = await _mostrarDialogo(Traductor.get('limite_cambios_titulo'), Traductor.get('limite_cambios_msj_1') + '$hechosC/$maxC' + Traductor.get('limite_cambios_msj_2'), Traductor.get('si_mayus'));
+          if (!confirmar) return;
+        }
+      } else {
+        if (maxC > 0 && hechosC >= maxC) {
+          bool confirmar = await _mostrarDialogo(Traductor.get('limite_cambios_titulo'), Traductor.get('limite_cambios_msj_1') + '$hechosC/$maxC' + Traductor.get('limite_cambios_msj_2'), Traductor.get('si_mayus'));
+          if (!confirmar) break; 
+        }
+      }
+
+      setState(() {
+        widget.partido.stats[equipoNombre]!['CambiosHechos'] = hechosC + 1;
+        if (widget.partido.stats[equipoNombre]!.containsKey('Cambio')) {
+           widget.partido.stats[equipoNombre]!['Cambio'] = (widget.partido.stats[equipoNombre]!['Cambio'] ?? 0) + 1;
+        }
+        if (primeraVez && maxV > 0) {
+          widget.partido.stats[equipoNombre]!['VentanasHechas'] = hechasV + 1;
+        }
+        
+        String jugSale = resActual['jugador'] ?? '';
+        String jugEntra = resActual['jugadorEntra'] ?? '';
+        String nombreSale = widget.partido.obtenerNombreJugador(equipoNombre, jugSale);
+        String nombreEntra = widget.partido.obtenerNombreJugador(equipoNombre, jugEntra);
+        
+        String tiempoActual = _formatearTiempo();
+        String actionId = DateTime.now().millisecondsSinceEpoch.toString();
+
+        widget.partido.cambiosList[equipoNombre]!.add({
+          'id': actionId,
+          'minuto': tiempoActual,
+          'sale': nombreSale,
+          'entra': nombreEntra,
+          'jugadorSaleNum': jugSale,
+          'jugadorEntraNum': jugEntra
+        });
+        
+        String nombreReal = equipoNombre == 'Local' ? widget.partido.local : widget.partido.visita;
+        String log = 'MIN $tiempoActual | ${nombreReal.toUpperCase()}: Cambio ($nombreSale x $nombreEntra)';
+        
+        widget.partido.registrarAccion(
+          id: actionId,
+          equipo: equipoNombre,
+          tipo: 'cambio',
+          evento: 'Cambio',
+          datosExtra: {'sale': nombreSale, 'entra': nombreEntra, 'jugadorSaleNum': jugSale, 'jugadorEntraNum': jugEntra},
+          log: log
+        );
+      });
+      _guardarEstado();
+
+      primeraVez = false; 
+
+      bool? otroCambio = await showDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          backgroundColor: kNegro,
+          shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon), borderRadius: BorderRadius.circular(10)),
+          title: Text(Traductor.get('cambio_registrado'), style: TextStyle(color: kVerdeNeon, fontSize: 16, fontWeight: FontWeight.bold)),
+          content: Text(Traductor.get('quiere_otro_cambio'), style: const TextStyle(color: Colors.white, fontSize: 14)),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: Text(Traductor.get('no_mayus'), style: TextStyle(color: Colors.grey))),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: kVerdeNeon),
+              onPressed: () => Navigator.pop(context, true), 
+              child: Text(Traductor.get('si_mayus'), style: TextStyle(color: kNegro, fontWeight: FontWeight.bold))
+            ),
+          ]
+        )
+      );
+
+      if (otroCambio == null || !otroCambio) break; 
+
+      var datosExtra = await _pedirDatosCambioExtra(equipoNombre);
+      if (datosExtra == null) break; 
+      
+      resActual = datosExtra; 
     }
   }
 
@@ -631,81 +641,321 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     );
   }
 
-  void _mostrarDetallePopUp(String titulo, List<Map<String, String>> datos, String tipo) {
+
+
+  void _mostrarDetallePopUp(String titulo, List<dynamic> datos, String tipo, {String? equipoFijo}) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: kNegro,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+        shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon, width: 2), borderRadius: BorderRadius.circular(15)),
+        title: Column(
+          children: [
+            Text(titulo, style: const TextStyle(color: kVerdeNeon, fontSize: 18, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+            if (equipoFijo != null) 
+              Text((equipoFijo == 'Local' ? widget.partido.local : widget.partido.visita).toUpperCase(), style: const TextStyle(color: Colors.white38, fontSize: 11, letterSpacing: 1.5)),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(color: kVerdeNeon.withOpacity(0.1), borderRadius: BorderRadius.circular(20)),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.touch_app, color: kVerdeNeon, size: 12),
+                  const SizedBox(width: 5),
+                  Text(Traductor.get('mantenga_presionado_editar') ?? 'MANTÉN PRESIONADO PARA EDITAR', style: const TextStyle(color: kVerdeNeon, fontSize: 9, fontWeight: FontWeight.bold)),
+                ],
+              ),
+            ),
+          ],
+        ),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: datos.isEmpty
+            ? Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(Traductor.get('no_hay_registros'), style: const TextStyle(color: Colors.white54), textAlign: TextAlign.center),
+              )
+            : SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (equipoFijo != null) 
+                      _buildListaDetalle(datos, tipo, equipoFijo)
+                    else ...[
+                      // Grupo Local
+                      _buildHeaderEquipoPopUp(widget.partido.local, widget.partido.localTexto),
+                      _buildListaDetalle(datos.where((e) => e['equipo'] == 'Local').toList(), tipo, 'Local'),
+                      
+                      const SizedBox(height: 20),
+                      
+                      // Grupo Visita
+                      _buildHeaderEquipoPopUp(widget.partido.visita, widget.partido.visitaTexto),
+                      _buildListaDetalle(datos.where((e) => e['equipo'] == 'Visita').toList(), tipo, 'Visita'),
+                    ]
+                  ],
+                ),
+              )
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: Text(Traductor.get('cerrar_mayus'), style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.bold))
+          )
+        ],
+      )
+    );
+  }
+
+  Widget _buildHeaderEquipoPopUp(String nombre, Color color) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
+      margin: const EdgeInsets.only(bottom: 5),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        border: Border(left: BorderSide(color: color, width: 3))
+      ),
+      child: Text(nombre.toUpperCase(), style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+    );
+  }
+
+  Widget _buildListaDetalle(List<dynamic> items, String tipo, String eq) {
+    if (items.isEmpty) return const Padding(padding: EdgeInsets.all(10), child: Text('-', style: TextStyle(color: Colors.white24)));
+    
     IconData iconoDeporte = DeporteConfig.datos[widget.partido.deporte]?['icono'] ?? Icons.sports;
 
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: items.length,
+      separatorBuilder: (_, __) => const Divider(color: Colors.white12, height: 1),
+      itemBuilder: (context, i) {
+        var d = items[i];
+        
+        String min = d['minuto']?.toString() ?? "";
+        if (min.isEmpty && d['log'] != null) {
+          min = d['log'].split('|')[0].replaceAll('MIN ', '').trim();
+        }
+
+        String displayJugador = "";
+        if (tipo == 'cambio') {
+          String numSale = d['jugadorSaleNum']?.toString() ?? "";
+          String numEntra = d['jugadorEntraNum']?.toString() ?? "";
+          if (numSale.isNotEmpty && numEntra.isNotEmpty) {
+            displayJugador = "${widget.partido.obtenerNombreJugador(eq, numSale)} x ${widget.partido.obtenerNombreJugador(eq, numEntra)}";
+          } else {
+            displayJugador = "${d['sale'] ?? ''} x ${d['entra'] ?? ''}";
+          }
+        } else {
+          String num = d['jugador']?.toString() ?? d['datosExtra']?['jugador']?.toString() ?? "";
+          if (num.isNotEmpty && num != 'N/A') {
+            displayJugador = widget.partido.obtenerNombreJugador(eq, num);
+          } else {
+            displayJugador = d['nombreCompleto']?.toString() ?? d['datosExtra']?['actor']?.toString() ?? Traductor.get('jugador_n_a');
+          }
+        }
+
+        Widget rowContent;
+        if (tipo == 'cambio') {
+          rowContent = Row(
+            children: [
+              Text('MIN $min', style: const TextStyle(color: kVerdeNeon, fontWeight: FontWeight.bold, fontSize: 11)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(children: [const Icon(Icons.arrow_downward, color: Colors.redAccent, size: 14), const SizedBox(width: 5), Expanded(child: Text(d['sale'] ?? '', style: const TextStyle(color: Colors.white, fontSize: 12), overflow: TextOverflow.ellipsis))]),
+                    Row(children: [const Icon(Icons.arrow_upward, color: Colors.green, size: 14), const SizedBox(width: 5), Expanded(child: Text(d['entra'] ?? '', style: const TextStyle(color: Colors.white, fontSize: 12), overflow: TextOverflow.ellipsis))]),
+                  ],
+                ),
+              ),
+              const Icon(Icons.edit, color: kVerdeNeon, size: 14, shadows: [Shadow(color: kVerdeNeon, blurRadius: 10)]),
+            ],
+          );
+        } else if (tipo == 'tarjeta') {
+          Color colorT = _obtenerColorTarjeta(d['tipo']?.toString() ?? '');
+          rowContent = Row(
+            children: [
+              Text('MIN $min', style: const TextStyle(color: kVerdeNeon, fontWeight: FontWeight.bold, fontSize: 11)),
+              const SizedBox(width: 12),
+              Container(width: 10, height: 14, decoration: BoxDecoration(color: colorT, borderRadius: BorderRadius.circular(2))),
+              const SizedBox(width: 10),
+              Expanded(child: Text(displayJugador, style: const TextStyle(color: Colors.white, fontSize: 13), overflow: TextOverflow.ellipsis)),
+              const Icon(Icons.edit, color: kVerdeNeon, size: 14, shadows: [Shadow(color: kVerdeNeon, blurRadius: 10)]),
+            ],
+          );
+        } else {
+          rowContent = Row(
+            children: [
+              Text('MIN $min', style: const TextStyle(color: kVerdeNeon, fontWeight: FontWeight.bold, fontSize: 11)),
+              const SizedBox(width: 12),
+              Icon(iconoDeporte, color: Colors.white38, size: 14),
+              const SizedBox(width: 10),
+              Expanded(child: Text(displayJugador, style: const TextStyle(color: Colors.white, fontSize: 13), overflow: TextOverflow.ellipsis)),
+              const Icon(Icons.edit, color: kVerdeNeon, size: 14, shadows: [Shadow(color: kVerdeNeon, blurRadius: 10)]),
+            ],
+          );
+        }
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onLongPress: () {
+            HapticFeedback.heavyImpact();
+            Navigator.pop(context); 
+            _mostrarOpcionesEdicion(d, tipo);
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            child: rowContent,
+          ),
+        );
+      },
+    );
+  }
+
+  void _mostrarOpcionesEdicion(dynamic d, String tipo) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: kNegro,
         shape: RoundedRectangleBorder(side: const BorderSide(color: kVerdeNeon), borderRadius: BorderRadius.circular(10)),
-        title: Text(titulo, style: const TextStyle(color: kVerdeNeon, fontSize: 16, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: datos.isEmpty
-            ? Text(Traductor.get('no_hay_registros'), style: TextStyle(color: Colors.white54), textAlign: TextAlign.center)
-            : ListView.separated(
-                shrinkWrap: true,
-                itemCount: datos.length,
-                separatorBuilder: (_, __) => const Divider(color: Colors.white12),
-                itemBuilder: (context, i) {
-                  var d = datos[i];
-                  
-                  if (tipo == 'cambio') {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        children: [
-                          Text('MIN ${d['minuto']}', style: const TextStyle(color: kVerdeNeon, fontWeight: FontWeight.bold, fontSize: 12)),
-                          const SizedBox(width: 15),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(children: [const Icon(Icons.arrow_downward, color: Colors.redAccent, size: 16), const SizedBox(width: 5), Text(d['sale'] ?? '', style: const TextStyle(color: Colors.white, fontSize: 13))]),
-                                Row(children: [const Icon(Icons.arrow_upward, color: Colors.green, size: 16), const SizedBox(width: 5), Text(d['entra'] ?? '', style: const TextStyle(color: Colors.white, fontSize: 13))]),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    );
-                  } 
-                  else if (tipo == 'tarjeta') {
-                    Color colorT = _obtenerColorTarjeta(d['tipo'] ?? '');
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        children: [
-                          Text('MIN ${d['minuto']}', style: const TextStyle(color: kVerdeNeon, fontWeight: FontWeight.bold, fontSize: 12)),
-                          const SizedBox(width: 15),
-                          Container(width: 12, height: 18, decoration: BoxDecoration(color: colorT, borderRadius: BorderRadius.circular(2))),
-                          const SizedBox(width: 10),
-                          Expanded(child: Text(d['nombreCompleto'] ?? d['jugador'] ?? 'Jugador', style: const TextStyle(color: Colors.white, fontSize: 14))),
-                        ],
-                      ),
-                    );
-                  } 
-                  else {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        children: [
-                          Text('MIN ${d['minuto']}', style: const TextStyle(color: kVerdeNeon, fontWeight: FontWeight.bold, fontSize: 12)),
-                          const SizedBox(width: 15),
-                          Icon(iconoDeporte, color: Colors.white, size: 18),
-                          const SizedBox(width: 10),
-                          Expanded(child: Text(d['nombreCompleto'] ?? d['jugador'] ?? 'Jugador', style: const TextStyle(color: Colors.white, fontSize: 14))),
-                        ],
-                      ),
-                    );
-                  }
-                }
-              )
+        title: Text(Traductor.get('opciones').toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 16, fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (tipo == 'cambio') ...[
+              ListTile(
+                leading: const Icon(Icons.arrow_downward, color: Colors.redAccent),
+                title: Text(Traductor.get('editar_salida') ?? 'EDITAR SALIDA', style: const TextStyle(color: Colors.white)),
+                onTap: () { Navigator.pop(context); _editarRegistro(d, tipo, esEntra: false); },
+              ),
+              ListTile(
+                leading: const Icon(Icons.arrow_upward, color: Colors.green),
+                title: Text(Traductor.get('editar_entrada') ?? 'EDITAR ENTRADA', style: const TextStyle(color: Colors.white)),
+                onTap: () { Navigator.pop(context); _editarRegistro(d, tipo, esEntra: true); },
+              ),
+            ] else ...[
+              ListTile(
+                leading: const Icon(Icons.edit, color: kVerdeNeon),
+                title: Text(Traductor.get('editar_jugador') ?? 'EDITAR JUGADOR', style: const TextStyle(color: Colors.white)),
+                onTap: () { Navigator.pop(context); _editarRegistro(d, tipo); },
+              ),
+            ],
+            const Divider(color: Colors.white24),
+            ListTile(
+              leading: const Icon(Icons.delete, color: kRojoStop),
+              title: Text(Traductor.get('eliminar_registro') ?? 'ELIMINAR REGISTRO', style: const TextStyle(color: kRojoStop)),
+              onTap: () { Navigator.pop(context); _eliminarRegistro(d, tipo); },
+            ),
+          ],
         ),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: Text(Traductor.get('cerrar_mayus'), style: TextStyle(color: Colors.grey)))],
       )
     );
+  }
+
+  void _eliminarRegistro(dynamic d, String tipo) {
+    String? id = d['id'];
+    if (id == null) return;
+
+    setState(() {
+      int idx = widget.partido.historialAcciones.indexWhere((e) => e['id'] == id);
+      if (idx != -1) {
+        var accion = widget.partido.historialAcciones[idx];
+        String equipo = accion['equipo'];
+        String evento = accion['evento'];
+        String tReal = accion['tipo'] ?? tipo; // Usar el tipo real guardado
+
+        // Decrementar contadores
+        String keyStat = tReal == 'cambio' ? 'CambiosHechos' : evento;
+        if (widget.partido.stats[equipo]!.containsKey(keyStat)) {
+          widget.partido.stats[equipo]![keyStat] = (widget.partido.stats[equipo]![keyStat] ?? 1) - 1;
+        }
+
+        // Remover de bitácora
+        widget.partido.logEventos.remove(accion['log']);
+        widget.partido.historialAcciones.removeAt(idx);
+
+        // Remover de listas específicas según el tipo real
+        if (tReal == 'anotacion') widget.partido.anotaciones[equipo]?.removeWhere((e) => e['id'] == id);
+        if (tReal == 'tarjeta') widget.partido.tarjetas[equipo]?.removeWhere((e) => e['id'] == id);
+        if (tReal == 'cambio') widget.partido.cambiosList[equipo]?.removeWhere((e) => e['id'] == id);
+      }
+    });
+    _guardarEstado();
+  }
+
+  void _editarRegistro(dynamic d, String tipo, {bool esEntra = false}) async {
+    String? id = d['id'];
+    if (id == null) return;
+
+    int idx = widget.partido.historialAcciones.indexWhere((e) => e['id'] == id);
+    if (idx == -1) return;
+    var accion = widget.partido.historialAcciones[idx];
+    String equipo = accion['equipo'];
+    String evento = accion['evento'];
+    String tReal = accion['tipo'] ?? tipo; // Usar el tipo real guardado
+
+    String? nuevoNum = await _obtenerNumeroConTeclado(equipo, evento);
+    if (nuevoNum == null || nuevoNum == "CANCEL") return;
+
+    setState(() {
+      String nuevoNombreComp = widget.partido.obtenerNombreJugador(equipo, nuevoNum);
+      
+      if (tReal == 'cambio') {
+        var list = widget.partido.cambiosList[equipo]!;
+        int itemIdx = list.indexWhere((e) => e['id'] == id);
+        if (itemIdx != -1) {
+          if (esEntra) {
+            list[itemIdx]['entra'] = nuevoNombreComp;
+            list[itemIdx]['jugadorEntraNum'] = nuevoNum;
+          } else {
+            list[itemIdx]['sale'] = nuevoNombreComp;
+            list[itemIdx]['jugadorSaleNum'] = nuevoNum;
+          }
+          String s = list[itemIdx]['sale']!;
+          String e = list[itemIdx]['entra']!;
+          String nombreReal = equipo == 'Local' ? widget.partido.local : widget.partido.visita;
+          String nuevoLog = 'MIN ${list[itemIdx]['minuto']} | ${nombreReal.toUpperCase()}: Cambio ($s x $e)';
+          
+          int logIdx = widget.partido.logEventos.indexOf(accion['log']);
+          if (logIdx != -1) widget.partido.logEventos[logIdx] = nuevoLog;
+          
+          accion['log'] = nuevoLog;
+          accion['datosExtra']['sale'] = s;
+          accion['datosExtra']['entra'] = e;
+        }
+      } else {
+        if (tReal == 'anotacion') {
+          var item = widget.partido.anotaciones[equipo]?.firstWhere((e) => e['id'] == id);
+          if (item != null) {
+            item['jugador'] = nuevoNum;
+            item['nombreCompleto'] = nuevoNombreComp;
+          }
+        } else if (tReal == 'tarjeta') {
+          var item = widget.partido.tarjetas[equipo]?.firstWhere((e) => e['id'] == id);
+          if (item != null) {
+            item['jugador'] = nuevoNum;
+            item['nombreCompleto'] = nuevoNombreComp;
+          }
+        }
+
+        // Actualizar Log
+        String nombreReal = equipo == 'Local' ? widget.partido.local : widget.partido.visita;
+        String minText = accion['minuto'] ?? accion['log'].split('|')[0].trim().replaceFirst("MIN ", "");
+        String nuevoLog = 'MIN $minText | ${nombreReal.toUpperCase()}: $evento ($nuevoNombreComp)';
+        
+        int logIdx = widget.partido.logEventos.indexOf(accion['log']);
+        if (logIdx != -1) widget.partido.logEventos[logIdx] = nuevoLog;
+        
+        accion['log'] = nuevoLog;
+        accion['datosExtra']['jugador'] = nuevoNum;
+        accion['datosExtra']['actor'] = nuevoNombreComp;
+      }
+    });
+    _guardarEstado();
   }
 
   @override void dispose() { 
@@ -783,7 +1033,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                               child: Column(
                                 children: [
                                   GestureDetector(
-                                    onTap: () => _mostrarDetallePopUp('ANOTACIONES - ${widget.partido.local.toUpperCase()}', widget.partido.anotaciones['Local'] ?? [], 'anotacion'),
+                                    onTap: () => _mostrarDetallePopUp(Traductor.get('anotaciones_mayus') ?? 'ANOTACIONES', widget.partido.anotaciones['Local'] ?? [], 'anotacion', equipoFijo: 'Local'),
                                     child: Container(
                                       margin: const EdgeInsets.symmetric(horizontal: 5),
                                       padding: const EdgeInsets.symmetric(vertical: 15),
@@ -808,9 +1058,9 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                   if (widget.partido.deporte.toLowerCase() != 'football americano') ...[
                                     const SizedBox(height: 8),
                                     GestureDetector(
-                                      onTap: () => _mostrarDetallePopUp('TARJETAS - ${widget.partido.local.toUpperCase()}', widget.partido.tarjetas['Local'] ?? [], 'tarjeta'),
+                                      onTap: () => _mostrarDetallePopUp(Traductor.get('tarjetas_mayus') ?? 'TARJETAS', widget.partido.tarjetas['Local'] ?? [], 'tarjeta', equipoFijo: 'Local'),
                                       child: SizedBox(
-                                        height: 52, 
+                                        height: 40,
                                         child: Wrap(
                                           alignment: WrapAlignment.center, spacing: 4, runSpacing: 4,
                                           children: widget.partido.tarjetas['Local']!.take(6).map((t) => _buildMiniTarjetaFisica(t)).toList(),
@@ -864,7 +1114,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                               child: Column(
                                 children: [
                                   GestureDetector(
-                                    onTap: () => _mostrarDetallePopUp('ANOTACIONES - ${widget.partido.visita.toUpperCase()}', widget.partido.anotaciones['Visita'] ?? [], 'anotacion'),
+                                    onTap: () => _mostrarDetallePopUp(Traductor.get('anotaciones_mayus') ?? 'ANOTACIONES', widget.partido.anotaciones['Visita'] ?? [], 'anotacion', equipoFijo: 'Visita'),
                                     child: Container(
                                       margin: const EdgeInsets.symmetric(horizontal: 5),
                                       padding: const EdgeInsets.symmetric(vertical: 15),
@@ -889,9 +1139,9 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                   if (widget.partido.deporte.toLowerCase() != 'football americano') ...[
                                     const SizedBox(height: 8),
                                     GestureDetector(
-                                      onTap: () => _mostrarDetallePopUp('TARJETAS - ${widget.partido.visita.toUpperCase()}', widget.partido.tarjetas['Visita'] ?? [], 'tarjeta'),
+                                      onTap: () => _mostrarDetallePopUp(Traductor.get('tarjetas_mayus') ?? 'TARJETAS', widget.partido.tarjetas['Visita'] ?? [], 'tarjeta', equipoFijo: 'Visita'),
                                       child: SizedBox(
-                                        height: 52,
+                                        height: 40,
                                         child: Wrap(
                                           alignment: WrapAlignment.center, spacing: 4, runSpacing: 4,
                                           children: widget.partido.tarjetas['Visita']!.take(6).map((t) => _buildMiniTarjetaFisica(t)).toList(),
@@ -918,9 +1168,9 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     child: Row( 
                       mainAxisAlignment: MainAxisAlignment.spaceAround, 
                       children: [ 
-                        GestureDetector(onTap: () => _mostrarDetallePopUp('CAMBIOS - ${widget.partido.local}', widget.partido.cambiosList['Local'] ?? [], 'cambio'), child: _infoCambios('Local')), 
+                        GestureDetector(onTap: () => _mostrarDetallePopUp(Traductor.get('cambios_mayus') ?? 'CAMBIOS', widget.partido.cambiosList['Local'] ?? [], 'cambio', equipoFijo: 'Local'), child: _infoCambios('Local')), 
                         Text(Traductor.get('reservas_mayus'), style: TextStyle(color: kVerdeNeon, fontSize: 10, letterSpacing: 2)), 
-                        GestureDetector(onTap: () => _mostrarDetallePopUp('CAMBIOS - ${widget.partido.visita}', widget.partido.cambiosList['Visita'] ?? [], 'cambio'), child: _infoCambios('Visita')), 
+                        GestureDetector(onTap: () => _mostrarDetallePopUp(Traductor.get('cambios_mayus') ?? 'CAMBIOS', widget.partido.cambiosList['Visita'] ?? [], 'cambio', equipoFijo: 'Visita'), child: _infoCambios('Visita')), 
                       ], 
                     ), 
                   ),
@@ -1282,12 +1532,21 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
               ),
 
               Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Text(
-                    Traductor.get(evento).toUpperCase(), 
-                    textAlign: TextAlign.center, 
-                    style: const TextStyle(color: Colors.white60, fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w600)
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    var items = widget.partido.historialAcciones
+                        .where((e) => e['evento'] == evento)
+                        .toList();
+                    _mostrarDetallePopUp(Traductor.get(evento).toUpperCase(), items, 'stat');
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                    child: Text(
+                      Traductor.get(evento).toUpperCase(), 
+                      textAlign: TextAlign.center, 
+                      style: const TextStyle(color: Colors.white60, fontSize: 9, letterSpacing: 1.2, fontWeight: FontWeight.w600)
+                    ),
                   ),
                 )
               ),
@@ -1465,7 +1724,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         if (evento == 'Cambio') {
           var res = await _pedirDatosCambioExtra(equipo);
           if (res != null) {
-            _ejecutarRegistroCambio(equipo, res['jugador'] ?? '', res['jugadorEntra'] ?? '');
+            await _manejarVentanaCambios(equipo, res);
           }
         } else {
           _mostrarDialogoSelectorJugador(equipo, evento);
@@ -1474,11 +1733,9 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     );
   }
 
-  void _mostrarDialogoSelectorJugador(String equipo, String evento) async {
-    debugPrint("QUANTUM: Mostrando diálogo para $evento");
+  Future<String?> _obtenerNumeroConTeclado(String equipo, String evento) async {
     String numero = "";
-    
-    final result = await showDialog<String>(
+    return await showDialog<String>(
       context: context,
       barrierDismissible: false,
       builder: (context) => StatefulBuilder(
@@ -1532,7 +1789,10 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         }
       )
     );
+  }
 
+  void _mostrarDialogoSelectorJugador(String equipo, String evento) async {
+    final result = await _obtenerNumeroConTeclado(equipo, evento);
     if (result != null && result != "CANCEL") {
       _ejecutarRegistroAccion(equipo, evento, result);
     }
@@ -1558,33 +1818,6 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     );
   }
 
-  void _ejecutarRegistroCambio(String equipo, String numSale, String numEntra) {
-    setState(() {
-      widget.partido.stats[equipo]!['CambiosHechos'] = (widget.partido.stats[equipo]!['CambiosHechos'] ?? 0) + 1;
-      
-      String tiempoAct = _formatearTiempo();
-      widget.partido.cambiosList[equipo]!.add({
-        'minuto': tiempoAct,
-        'sale': widget.partido.obtenerNombreJugador(equipo, numSale),
-        'entra': widget.partido.obtenerNombreJugador(equipo, numEntra)
-      });
-
-      String nombreEq = equipo == 'Local' ? widget.partido.local : widget.partido.visita;
-      String nombreSale = widget.partido.obtenerNombreJugador(equipo, numSale);
-      String nombreEntra = widget.partido.obtenerNombreJugador(equipo, numEntra);
-      String logText = 'MIN $tiempoAct | ${nombreEq.toUpperCase()}: Cambio ($nombreSale x $nombreEntra)';
-      
-      widget.partido.registrarAccion(
-        equipo: equipo, 
-        tipo: 'cambio', 
-        evento: 'Cambio', 
-        datosExtra: {'sale': numSale, 'entra': numEntra},
-        log: logText
-      );
-    });
-    _guardarEstado();
-  }
-
   void _ejecutarRegistroAccion(String equipo, String evento, String numeroJugador) {
     setState(() {
       // INCREMENTAR STAT
@@ -1608,9 +1841,12 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       else if (evento.contains('Carrera')) puntos = 1;
       else if (evento.contains('Home Run')) puntos = 1;
 
+      String actionId = DateTime.now().millisecondsSinceEpoch.toString();
+
       if (puntos > 0) {
         String tiempoAct = _formatearTiempo();
         widget.partido.anotaciones[equipo]!.add({
+          'id': actionId,
           'tipo': evento,
           'minuto': tiempoAct,
           'jugador': numeroJugador.isEmpty ? 'N/A' : numeroJugador,
@@ -1623,6 +1859,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       if (evento.contains('Tarjeta')) {
         String tiempoAct = _formatearTiempo();
         var nuevaT = {
+          'id': actionId,
           'tipo': evento,
           'minuto': tiempoAct,
           'jugador': numeroJugador.isEmpty ? 'N/A' : numeroJugador,
@@ -1638,6 +1875,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       if (evento == 'Cambio') {
         String tiempoAct = _formatearTiempo();
         widget.partido.cambiosList[equipo]!.add({
+          'id': actionId,
           'tipo': 'Cambio',
           'minuto': tiempoAct,
           'jugador': numeroJugador.isEmpty ? 'N/A' : numeroJugador,
@@ -1649,16 +1887,21 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
       String nombreEq = equipo == 'Local' ? widget.partido.local : widget.partido.visita;
       String tiempoAct = _formatearTiempo();
       String logText = 'MIN $tiempoAct | ${nombreEq.toUpperCase()}: $evento';
+      String nombreActor = numeroJugador.isEmpty ? 'N/A' : widget.partido.obtenerNombreJugador(equipo, numeroJugador);
       if (numeroJugador.isNotEmpty) {
-        String nombreJugador = widget.partido.obtenerNombreJugador(equipo, numeroJugador);
-        logText += ' ($nombreJugador)';
+        logText += ' ($nombreActor)';
       }
       
+      String tipoAccion = evento.toLowerCase().contains('tarjeta') 
+          ? 'tarjeta' 
+          : (puntos > 0 ? 'anotacion' : 'stat');
+
       widget.partido.registrarAccion(
+        id: actionId,
         equipo: equipo, 
-        tipo: 'stat', 
+        tipo: tipoAccion, 
         evento: evento, 
-        datosExtra: {'jugador': numeroJugador},
+        datosExtra: {'jugador': numeroJugador, 'actor': nombreActor},
         log: logText
       );
       

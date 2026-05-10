@@ -254,13 +254,23 @@ class Partido {
     required String evento, 
     Map<String, String>? datosExtra,
     required String log,
+    String? id,
+    String? minuto,
   }) {
+    String actionId = id ?? DateTime.now().millisecondsSinceEpoch.toString() + '_' + log.hashCode.toString();
+    String min = minuto ?? "";
+    if (min.isEmpty && log.contains('MIN ')) {
+      min = log.split('|')[0].replaceAll('MIN ', '').trim();
+    }
+    
     historialAcciones.add({
+      'id': actionId,
       'equipo': equipo,
       'tipo': tipo,
       'evento': evento,
       'datosExtra': datosExtra,
       'log': log,
+      'minuto': min,
     });
     logEventos.add(log);
   }
