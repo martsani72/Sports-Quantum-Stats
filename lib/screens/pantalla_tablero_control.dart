@@ -1490,42 +1490,40 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
               borderRadius: BorderRadius.circular(20)
             ),
             child: Container(
-              padding: const EdgeInsets.all(20),
-              width: 260,
-              height: 420, // Altura fija garantizada
+              padding: const EdgeInsets.all(15),
+              width: 220,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(Traductor.get(evento).toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 2)),
+                  Text(Traductor.get(evento).toUpperCase(), style: const TextStyle(color: kVerdeNeon, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
                   Text(equipo == 'Local' ? widget.partido.local.toUpperCase() : widget.partido.visita.toUpperCase(), style: const TextStyle(color: Colors.white38, fontSize: 10)),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 10),
                   Container(
-                    height: 60,
+                    height: 50,
                     width: double.infinity,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(color: Colors.white.withOpacity(0.05), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.white10)),
-                    child: Text(numero.isEmpty ? "#" : numero, style: const TextStyle(color: kVerdeNeon, fontSize: 35, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
-                  ),
-                  const SizedBox(height: 15),
-                  Expanded(
-                    child: GridView.count(
-                      crossAxisCount: 3,
-                      mainAxisSpacing: 8,
-                      crossAxisSpacing: 8,
-                      childAspectRatio: 1.4,
-                      physics: const NeverScrollableScrollPhysics(),
-                      children: [
-                        for (int i = 1; i <= 9; i++) _buildBotonTeclado("$i", (v) => setDialogState(() => numero += v)),
-                        _buildBotonTeclado("C", (v) => setDialogState(() => numero = ""), color: kRojoStop.withOpacity(0.2), textColor: kRojoStop),
-                        _buildBotonTeclado("0", (v) => setDialogState(() => numero += v)),
-                        _buildBotonTeclado("OK", (v) => Navigator.pop(context, numero), color: kVerdeNeon.withOpacity(0.2), textColor: kVerdeNeon),
-                      ],
-                    ),
+                    child: Text(numero.isEmpty ? "#" : numero, style: const TextStyle(color: kVerdeNeon, fontSize: 30, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
                   ),
                   const SizedBox(height: 10),
+                  GridView.count(
+                    shrinkWrap: true,
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 6,
+                    crossAxisSpacing: 6,
+                    childAspectRatio: 1.5,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      for (int i = 1; i <= 9; i++) _buildBotonTeclado("$i", (v) => setDialogState(() => numero += v)),
+                      _buildBotonTeclado("C", (v) => setDialogState(() => numero = ""), color: kRojoStop.withOpacity(0.2), textColor: kRojoStop),
+                      _buildBotonTeclado("0", (v) => setDialogState(() => numero += v)),
+                      _buildBotonTeclado("OK", (v) => Navigator.pop(context, numero), color: kVerdeNeon.withOpacity(0.2), textColor: kVerdeNeon),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
                   TextButton(
                     onPressed: () => Navigator.pop(context, "CANCEL"), 
-                    child: Text(Traductor.get('cancelar_mayus'), style: const TextStyle(color: Colors.white24))
+                    child: Text(Traductor.get('cancelar_mayus'), style: const TextStyle(color: Colors.white24, fontSize: 12))
                   ),
                 ],
               ),
@@ -1554,7 +1552,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
           border: Border.all(color: (textColor ?? Colors.white).withOpacity(0.1))
         ),
         child: Center(
-          child: Text(texto, style: TextStyle(color: textColor ?? Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+          child: Text(texto, style: TextStyle(color: textColor ?? Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
         ),
       ),
     );
