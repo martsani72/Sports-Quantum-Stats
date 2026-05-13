@@ -61,8 +61,8 @@ class PurchasesService {
   /// Realiza la compra de un paquete
   Future<bool> purchasePackage(Package package) async {
     try {
-      CustomerInfo customerInfo = await Purchases.purchasePackage(package);
-      _updateStatusFromInfo(customerInfo);
+      PurchaseResult result = await Purchases.purchasePackage(package);
+      _updateStatusFromInfo(result.customerInfo);
       return isPremium.value;
     } catch (e) {
       debugPrint("Error en la compra: $e");
