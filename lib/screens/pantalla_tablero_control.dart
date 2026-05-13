@@ -1100,7 +1100,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
     String nombrePeriodo = Traductor.get(clavePeriodo).toUpperCase(); 
 
     if (!_notaInicializada) {
-      _notaX = (MediaQuery.of(context).size.width / 2) - 80; 
+      _notaX = MediaQuery.of(context).size.width - 80; 
       _notaY = 260; 
       _notaInicializada = true;
     }
@@ -1135,7 +1135,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
               Column(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                     decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white12, width: 1)), color: Color(0xFF0A0A0A)),
                     child: Column(
                       children: [
@@ -1170,7 +1170,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                       ),
                                     ),
                                   ),
-                                  if (widget.partido.deporte.toLowerCase() != 'football americano') ...[
+                                  if (widget.partido.deporte.toLowerCase() != 'football americano' && widget.partido.deporte.toLowerCase() != 'baseball') ...[
                                     const SizedBox(height: 8),
                                     GestureDetector(
                                       onTap: () => _mostrarDetallePopUp(Traductor.get('tarjetas_mayus') ?? 'TARJETAS', widget.partido.tarjetas['Local'] ?? [], 'tarjeta', equipoFijo: 'Local'),
@@ -1190,7 +1190,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                             Column(
                               children: [
                                 Text('VS', style: const TextStyle(color: Colors.white24, fontSize: 18, fontWeight: FontWeight.bold)),
-                                const SizedBox(height: 10),
+                                const SizedBox(height: 4),
                                 Text('${_formatearOrdinal(_periodoActual)} $nombrePeriodo', style: const TextStyle(color: Colors.white54, fontSize: 12, letterSpacing: 2)),
                                 Text(_formatearTiempo(), style: const TextStyle(color: Colors.white, fontSize: 28, fontFamily: 'monospace', fontWeight: FontWeight.bold)),
                                 Row(
@@ -1205,7 +1205,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                         _guardarEstado();
                                       },
                                     ),
-                                    const SizedBox(width: 8),
+                                    const SizedBox(width: 4),
                                     AnimatedBuilder(
                                       animation: _blinkController,
                                       builder: (context, child) => Opacity(
@@ -1213,14 +1213,13 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                         child: IconButton(key: _keyPlay, icon: Icon(_estaCorriendo ? Icons.pause_circle_filled : Icons.play_circle_fill, color: kCelestePlay, size: 30), onPressed: _estaCorriendo ? _pausarTimer : _iniciarTimer, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
                                       )
                                     ),
-                                    const SizedBox(width: 8),
+                                    const SizedBox(width: 4),
                                     IconButton(key: _keyNext, icon: const Icon(Icons.skip_next, color: Colors.orangeAccent, size: 30), onPressed: _manejarFinPeriodo, padding: EdgeInsets.zero, constraints: const BoxConstraints()),
                                   ],
                                 ),
                                 if (widget.partido.deporte.toLowerCase() == 'baseball') ...[
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 4),
                                   Container(key: _keyBaseball, child: _buildDiamantesBases()),
-                                  _buildContadorBaseballSimplificado(),
                                 ],
                               ],
                             ),
@@ -1251,7 +1250,7 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                                       ),
                                     ),
                                   ),
-                                  if (widget.partido.deporte.toLowerCase() != 'football americano') ...[
+                                  if (widget.partido.deporte.toLowerCase() != 'football americano' && widget.partido.deporte.toLowerCase() != 'baseball') ...[
                                     const SizedBox(height: 8),
                                     GestureDetector(
                                       onTap: () => _mostrarDetallePopUp(Traductor.get('tarjetas_mayus') ?? 'TARJETAS', widget.partido.tarjetas['Visita'] ?? [], 'tarjeta', equipoFijo: 'Visita'),
@@ -1270,8 +1269,12 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                           ],
                         ),
                         if (widget.partido.deporte.toLowerCase() == 'football americano') ...[
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 2),
                           Container(key: _keyFootball, child: _buildPanelFootballAmericano()),
+                        ],
+                        if (widget.partido.deporte.toLowerCase() == 'baseball') ...[
+                          const SizedBox(height: 2),
+                          _buildContadorBaseballSimplificado(),
                         ],
                       ],
                     ),
@@ -1342,18 +1345,18 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                   onTap: _abrirAnotadorLibre,
                   child: Container(
                     key: _keyNote,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: kVerdeNeon,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 6, offset: Offset(0, 2))],
+                      boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 4, offset: Offset(0, 2))],
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.edit_note, color: kNegro, size: 18),
+                        const Icon(Icons.edit_note, color: kNegro, size: 16),
                         const SizedBox(width: 4),
-                        Text(Traductor.get('nota_mayus'), style: const TextStyle(color: kNegro, fontSize: 10, fontWeight: FontWeight.bold)),
+                        Text(Traductor.get('nota_mayus'), style: const TextStyle(color: kNegro, fontSize: 8, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -1623,35 +1626,29 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
               ),
 
               Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        Traductor.get(evento).toUpperCase(), 
-                        textAlign: TextAlign.center, 
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: Colors.white, fontSize: 10, letterSpacing: 1.2, fontWeight: FontWeight.bold)
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () {
+                    var items = widget.partido.historialAcciones
+                        .where((e) => e['evento'] == evento)
+                        .toList();
+                    _mostrarDetallePopUp(Traductor.get(evento).toUpperCase(), items, 'stat');
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          Traductor.get(evento).toUpperCase(), 
+                          textAlign: TextAlign.center, 
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(color: Colors.white, fontSize: 10, letterSpacing: 1.2, fontWeight: FontWeight.bold)
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 6),
-                    // BOTÓN OJO (DETALLE)
-                    GestureDetector(
-                      onTap: () {
-                        var items = widget.partido.historialAcciones
-                            .where((e) => e['evento'] == evento)
-                            .toList();
-                        _mostrarDetallePopUp(Traductor.get(evento).toUpperCase(), items, 'stat');
-                      },
-                      child: const Icon(Icons.visibility, color: kVerdeNeon, size: 14),
-                    ),
-                    const SizedBox(width: 8),
-                    // TIRADOR DE ARRASTRE
-                    ReorderableDragStartListener(
-                      index: dragIndex,
-                      child: const Icon(Icons.drag_indicator, color: kVerdeNeon, size: 16),
-                    ),
-                  ],
+                      const SizedBox(width: 6),
+                      const Icon(Icons.visibility, color: kVerdeNeon, size: 12),
+                    ],
+                  ),
                 )
               ),
 
@@ -1672,6 +1669,15 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                     )
                   ),
                 ],
+              ),
+
+              // TIRADOR DE ARRASTRE AL FINAL (DERECHA TOTAL)
+              ReorderableDragStartListener(
+                index: dragIndex,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                  child: const Icon(Icons.drag_indicator, color: kVerdeNeon, size: 18),
+                ),
               ),
             ], 
           ), 
@@ -2190,11 +2196,19 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
         HapticFeedback.lightImpact();
         accion();
       },
-      child: Column(
-        children: [
-          Text(Traductor.get(etiqueta), style: const TextStyle(color: Colors.white24, fontSize: 7, fontWeight: FontWeight.bold)),
-          Text(valor, style: TextStyle(color: color, fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
-        ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withOpacity(0.2), width: 1),
+        ),
+        child: Column(
+          children: [
+            Text(Traductor.get(etiqueta).toUpperCase(), style: TextStyle(color: color.withOpacity(0.5), fontSize: 6, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+            Text(valor, style: TextStyle(color: color, fontSize: 18, fontWeight: FontWeight.bold, fontFamily: 'monospace')),
+          ],
+        ),
       ),
     );
   }
@@ -2596,13 +2610,42 @@ class _PantallaTableroControlState extends State<PantallaTableroControl> with Si
                         setState(() => p.posicionCampo = yard.clamp(1, 99).toInt());
                         _guardarEstado();
                       },
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(3),
-                        child: LinearProgressIndicator(
-                          value: (p.posicionCampo.clamp(1, 99)) / 100, // Ajustado a 100 para coincidir con el touch
-                          minHeight: 12, // Un poco más alta para que sea más fácil de tocar
-                          backgroundColor: Colors.white.withOpacity(0.05),
-                          valueColor: AlwaysStoppedAnimation<Color>(colorPosesion.withOpacity(0.6)),
+                      child: Container(
+                        height: 20,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: Colors.white10),
+                        ),
+                        child: Stack(
+                          alignment: Alignment.centerLeft,
+                          children: [
+                            // MARCAS CADA 10 YARDAS
+                            for (int i = 10; i < 100; i += 10)
+                              Positioned(
+                                left: (i / 100) * constraints.maxWidth,
+                                child: Container(
+                                  width: 1, 
+                                  height: 20, 
+                                  color: Colors.white.withOpacity(0.15)
+                                ),
+                              ),
+                            // PROGRESO DE CAMPO
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 300),
+                              width: (p.posicionCampo / 100) * constraints.maxWidth,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: colorPosesion.withOpacity(0.4),
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                            ),
+                            // BALÓN INDICADOR
+                            Positioned(
+                              left: ((p.posicionCampo / 100) * constraints.maxWidth) - 6,
+                              child: const Text('🏈', style: TextStyle(fontSize: 10)),
+                            ),
+                          ],
                         ),
                       ),
                     );
