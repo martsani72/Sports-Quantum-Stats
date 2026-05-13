@@ -13,11 +13,12 @@ class PurchasesService {
   final ValueNotifier<bool> isPremium = ValueNotifier<bool>(false);
 
   Future<void> init() async {
+    if (kIsWeb) return;
     // Debug logs solo en desarrollo
     await Purchases.setLogLevel(kDebugMode ? LogLevel.debug : LogLevel.error);
 
     PurchasesConfiguration configuration;
-    if (Platform.isAndroid) {
+    if (!kIsWeb && Platform.isAndroid) {
       configuration = PurchasesConfiguration(_apiKey);
       await Purchases.configure(configuration);
     }
@@ -32,6 +33,7 @@ class PurchasesService {
   }
 
   Future<void> updatePurchaseStatus() async {
+    if (kIsWeb) return;
     try {
       CustomerInfo customerInfo = await Purchases.getCustomerInfo();
       _updateStatusFromInfo(customerInfo);
@@ -49,6 +51,7 @@ class PurchasesService {
 
   /// Obtiene las ofertas configuradas en RevenueCat
   Future<Offering?> getCurrentOffering() async {
+    if (kIsWeb) return null;
     try {
       Offerings offerings = await Purchases.getOfferings();
       return offerings.current;
@@ -60,6 +63,7 @@ class PurchasesService {
 
   /// Realiza la compra de un paquete
   Future<bool> purchasePackage(Package package) async {
+    if (kIsWeb) return false;
     try {
       PurchaseResult result = await Purchases.purchasePackage(package);
       _updateStatusFromInfo(result.customerInfo);
@@ -72,6 +76,7 @@ class PurchasesService {
 
   /// Restaura compras previas
   Future<void> restorePurchases() async {
+    if (kIsWeb) return;
     try {
       CustomerInfo customerInfo = await Purchases.restorePurchases();
       _updateStatusFromInfo(customerInfo);
