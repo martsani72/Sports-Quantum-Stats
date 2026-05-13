@@ -1,6 +1,7 @@
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
+import 'package:mi_nueva_app/core/purchases_service.dart';
 
 class AdHelper {
   static InterstitialAd? _interstitialAd;
@@ -10,7 +11,7 @@ class AdHelper {
   static String get interstitialAdUnitId {
     if (kIsWeb) return "";
     if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/1033173712';
+      return 'ca-app-pub-5212228288336430/1245039761'; // ID Real Intersticial
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/4411468910';
     } else {
@@ -20,7 +21,7 @@ class AdHelper {
 
   /// Carga el anuncio en segundo plano para que esté listo cuando se necesite
   static void cargarInterstitialAd() {
-    if (kIsWeb) return;
+    if (kIsWeb || PurchasesService().isPremium.value) return;
     InterstitialAd.load(
       adUnitId: interstitialAdUnitId,
       request: const AdRequest(),
@@ -53,6 +54,10 @@ class AdHelper {
 
   /// Muestra el anuncio si está cargado, y ejecuta una acción (onAdClosed) cuando el usuario lo cierra
   static void mostrarInterstitialAd({required Function() onAdClosed}) {
+    if (PurchasesService().isPremium.value) {
+      onAdClosed();
+      return;
+    }
     if (!kIsWeb && _isInterstitialAdLoaded && _interstitialAd != null) {
       // Reemplazamos el callback de cierre temporalmente para ejecutar la acción de navegación de la app
       _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(

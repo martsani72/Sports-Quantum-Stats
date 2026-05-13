@@ -33,11 +33,13 @@ import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
 
 import 'package:mi_nueva_app/screens/pantalla_splash.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:mi_nueva_app/core/purchases_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if (!kIsWeb) {
     await MobileAds.instance.initialize();
+    await PurchasesService().init();
   }
   await QuantumStorage.init();
   perfilUsuario = QuantumStorage.cargarPerfil();

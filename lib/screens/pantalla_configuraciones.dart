@@ -29,6 +29,8 @@ import 'package:mi_nueva_app/screens/pantalla_encuentros_personalizados.dart';
 import 'package:mi_nueva_app/screens/pantalla_editar_identidad.dart';
 import 'package:mi_nueva_app/screens/pantalla_estadisticas.dart';
 import 'package:mi_nueva_app/screens/pantalla_configuraciones.dart';
+import 'package:mi_nueva_app/screens/pantalla_premium.dart';
+import 'package:mi_nueva_app/core/purchases_service.dart';
 
 class PantallaConfiguraciones extends StatefulWidget {
   const PantallaConfiguraciones({super.key});
@@ -155,7 +157,20 @@ class _PantallaConfiguracionesState extends State<PantallaConfiguraciones> {
             ),
           ),
           
-          const SizedBox(height: 30),
+          const SizedBox(height: 20),
+          ValueListenableBuilder<bool>(
+            valueListenable: PurchasesService().isPremium,
+            builder: (context, isPremium, child) {
+              return _buildOpcionMenu(
+                icono: isPremium ? Icons.verified : Icons.stars,
+                titulo: isPremium ? 'YA ERES PREMIUM' : 'HAZTE PREMIUM',
+                subtitulo: isPremium ? 'Disfrutando la app sin anuncios' : 'Quita los anuncios y apoya la app',
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const PantallaPremium())),
+              );
+            },
+          ),
+
+          const SizedBox(height: 10),
           Text(Traductor.get('ajustes_trabajo').toUpperCase(), style: const TextStyle(color: Colors.white54, fontSize: 10, letterSpacing: 2)),
           const SizedBox(height: 10),
 

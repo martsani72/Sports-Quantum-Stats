@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
+import 'package:mi_nueva_app/core/purchases_service.dart';
 
 class AdBannerWidget extends StatefulWidget {
   const AdBannerWidget({Key? key}) : super(key: key);
@@ -17,7 +18,7 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
   String get _adUnitId {
     if (kIsWeb) return "";
     return Platform.isAndroid
-      ? 'ca-app-pub-3940256099942544/6300978111'
+      ? 'ca-app-pub-5212228288336430/2691201960' // ID Real Banner
       : 'ca-app-pub-3940256099942544/2934735716';
   }
 
@@ -56,15 +57,21 @@ class _AdBannerWidgetState extends State<AdBannerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isAdLoaded && _bannerAd != null) {
-      return SafeArea(
-        child: SizedBox(
-          width: _bannerAd!.size.width.toDouble(),
-          height: _bannerAd!.size.height.toDouble(),
-          child: AdWidget(ad: _bannerAd!),
-        ),
-      );
-    }
-    return const SizedBox.shrink(); // No ocupa espacio si no carga
+    return ValueListenableBuilder<bool>(
+      valueListenable: PurchasesService().isPremium,
+      builder: (context, isPremium, child) {
+        if (isPremium) return const SizedBox.shrink();
+        if (_isAdLoaded && _bannerAd != null) {
+          return SafeArea(
+            child: SizedBox(
+              width: _bannerAd!.size.width.toDouble(),
+              height: _bannerAd!.size.height.toDouble(),
+              child: AdWidget(ad: _bannerAd!),
+            ),
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
   }
 }
