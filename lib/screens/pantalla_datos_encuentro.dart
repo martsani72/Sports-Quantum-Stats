@@ -107,13 +107,19 @@ class _PantallaDatosEncuentroState extends State<PantallaDatosEncuentro> {
   Future<Color?> _seleccionarColor(BuildContext context, {bool esDetalle = false}) {
     List<Color> paleta = [
       Colors.black, const Color(0xFF111111), Colors.white, Colors.grey, 
-      Colors.red, Colors.blue, const Color(0xFF001F70), 
-      Colors.green, Colors.yellow, const Color(0xFFFFD700), 
-      Colors.orange, Colors.purple, Colors.cyan, Colors.pink
+      Colors.red, const Color(0xFF800000), // Maroon
+      Colors.blue, const Color(0xFF001F70), // Deep Navy
+      const Color(0xFF87CEEB), // Sky Blue
+      Colors.green, const Color(0xFF006400), // Dark Green
+      const Color(0xFF32CD32), // Lime
+      Colors.yellow, const Color(0xFFFFD700), // Gold
+      Colors.orange, const Color(0xFFD2691E), // Chocolate/Brown
+      Colors.purple, const Color(0xFF4B0082), // Indigo
+      Colors.cyan, const Color(0xFF008080), // Teal
+      Colors.pink, const Color(0xFFFF1493), // Deep Pink
+      const Color(0xFFE0E0E0), // Silver
+      const Color(0xFFCD7F32), // Bronze
     ];
-    if (esDetalle) {
-      paleta = paleta.where((c) => c != Colors.black && c != const Color(0xFF111111)).toList();
-    }
     return showDialog<Color>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -268,7 +274,7 @@ class _PantallaDatosEncuentroState extends State<PantallaDatosEncuentro> {
               Expanded(
                 child: TextField(
                   controller: nombreCtrl,
-                  style: TextStyle(color: texto, fontWeight: FontWeight.bold),
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                   textCapitalization: TextCapitalization.words,
                   decoration: _inputDecoration(tipo == 'LOCAL' ? Traductor.get('nombre_local_hint') : Traductor.get('nombre_visita_hint'), fondo),
                 ),

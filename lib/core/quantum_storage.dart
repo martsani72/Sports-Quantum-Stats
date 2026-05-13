@@ -86,4 +86,12 @@ class QuantumStorage {
   static bool getTutorialVisto() {
     return prefs.getBool('tutorial_tablero_visto') ?? false;
   }
+
+  static Future<void> guardarOrdenStats(String deporte, List<String> orden) async {
+    await prefs.setStringList('orden_stats_$deporte', orden);
+  }
+
+  static List<String>? cargarOrdenStats(String deporte) {
+    return prefs.getStringList('orden_stats_$deporte');
+  }
 }
